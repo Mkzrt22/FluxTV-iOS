@@ -1,0 +1,20 @@
+# Essai sur simulateurs (iPhone, iPad, Apple TV) : lancement, démonstration, lecture vidéo,
+# captures d'écran sur la branche « ci-simulateurs ». À la demande : envoi sur la branche
+# « simulateur » ou bouton « Run workflow ».
+name: Simulateurs
+on:
+  push:
+    branches: [simulateur]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  essai:
+    runs-on: macos-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - name: Essai sur simulateurs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/simulateurs.sh

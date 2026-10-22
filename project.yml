@@ -31,7 +31,6 @@ targets:
         excludes:
           - "Resources/tvOS.xcassets"
       - path: Core/Sources/FluxCore
-        group: Core
     dependencies:
       - framework: Vendor/MobileVLCKit.xcframework
         embed: true
@@ -57,7 +56,6 @@ targets:
         excludes:
           - "Resources/iOS.xcassets"
       - path: Core/Sources/FluxCore
-        group: Core
     dependencies:
       - framework: Vendor/TVVLCKit.xcframework
         embed: true

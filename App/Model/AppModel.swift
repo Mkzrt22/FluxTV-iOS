@@ -49,6 +49,9 @@ final class AppModel: ObservableObject {
 
     func start() {
         guard phase == .launching else { return }
+        #if DEBUG
+        if startForAutomatedTest() { return }
+        #endif
         if let saved = SourceKeychain.load() {
             use(saved)
             phase = .ready
@@ -60,6 +63,28 @@ final class AppModel: ObservableObject {
             phase = .needsSetup
         }
     }
+
+    #if DEBUG
+    /**
+     Essais automatiques sur simulateur (jamais dans la version installée) :
+     « -FluxTVDemo YES » ouvre la démonstration, « -FluxTVPlay <id> » lance aussitôt un film
+     ou une chaîne de la démonstration (« demo:bbb », « demo:live2 »…).
+     */
+    private func startForAutomatedTest() -> Bool {
+        let d = UserDefaults.standard
+        guard d.bool(forKey: "FluxTVDemo") else { return false }
+        Task {
+            try? await connect(.demo)
+            guard let id = d.string(forKey: "FluxTVPlay") else { return }
+            if let m = Demo.movies.first(where: { $0.id == id }) {
+                play(movie: m, group: nil, fromStart: true)
+            } else if let ch = Demo.channels.first(where: { $0.id == id }) {
+                play(channel: ch, in: Demo.channels)
+            }
+        }
+        return true
+    }
+    #endif
 
     private func use(_ s: Source) {
         source = s
