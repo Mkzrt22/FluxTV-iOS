@@ -52,8 +52,11 @@ final class AppModel: ObservableObject {
         #if DEBUG
         if startForAutomatedTest() { return }
         #endif
-        // Source choisie dans l'app, sinon compte intégré (copie personnelle)
-        if let saved = SourceKeychain.load() ?? EmbeddedAccount.load() {
+        // Source choisie dans l'app, sinon compte intégré (copie personnelle). La démonstration
+        // essayée avant d'installer la copie personnelle ne remplace pas le compte intégré.
+        var source = SourceKeychain.load()
+        if source == nil || source == .demo, let embedded = EmbeddedAccount.load() { source = embedded }
+        if let saved = source {
             use(saved)
             phase = .ready
             Task {
