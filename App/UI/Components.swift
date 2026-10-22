@@ -215,10 +215,18 @@ struct CategoryChips: View {
                 .padding(.horizontal, Theme.pagePadding)
                 .padding(.vertical, Theme.s(8))
             }
+            // Hauteur des pastilles : sans cela, la rangée s'étire dans un écran sans défilement
+            .fixedSize(horizontal: false, vertical: true)
             .onAppear { if let s = selection { proxy.scrollTo(s, anchor: .center) } }
         }
         .tvFocusSection()
     }
+}
+
+/// Taille des affiches dans les grilles : trois par ligne sur iPhone (largeur compacte).
+enum PosterLayout {
+    static func minWidth(_ sizeClass: UserInterfaceSizeClass?) -> CGFloat { sizeClass == .compact ? 96 : 112 }
+    static func cardWidth(_ sizeClass: UserInterfaceSizeClass?) -> CGFloat { sizeClass == .compact ? 98 : 116 }
 }
 
 /// Grille d'affiches adaptée à la largeur de l'écran.

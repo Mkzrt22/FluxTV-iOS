@@ -17,6 +17,7 @@ enum CatalogSort: String, CaseIterable {
 /// Films : catégories en pastilles, grille d'affiches.
 struct MoviesView: View {
     @EnvironmentObject private var app: AppModel
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var categories: [Category] = []
     @State private var selection: String?
     @State private var movies: [Movie] = []
@@ -64,11 +65,11 @@ struct MoviesView: View {
                                  message: categories.isEmpty ? "Ta source ne propose pas de films." : nil)
                         .frame(height: Theme.s(300))
                 } else {
-                    PosterGrid(items: shown) { m in
+                    PosterGrid(items: shown, minWidth: PosterLayout.minWidth(sizeClass)) { m in
                         NavigationLink(value: m) {
                             PosterCard(title: m.name, image: m.poster, subtitle: m.yearText, rating: m.rating,
                                        badges: m.badges, progress: app.library.resume(m.id)?.fraction,
-                                       watched: app.library.isWatched(m.id))
+                                       watched: app.library.isWatched(m.id), width: PosterLayout.cardWidth(sizeClass))
                         }
                         .buttonStyle(FluxButtonStyle())
                     }
@@ -116,6 +117,7 @@ struct MoviesView: View {
 /// Séries : catégories en pastilles, grille d'affiches.
 struct SeriesListView: View {
     @EnvironmentObject private var app: AppModel
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var categories: [Category] = []
     @State private var selection: String?
     @State private var series: [Series] = []
@@ -163,9 +165,10 @@ struct SeriesListView: View {
                                  message: categories.isEmpty ? "Ta source ne propose pas de séries." : nil)
                         .frame(height: Theme.s(300))
                 } else {
-                    PosterGrid(items: shown) { s in
+                    PosterGrid(items: shown, minWidth: PosterLayout.minWidth(sizeClass)) { s in
                         NavigationLink(value: s) {
-                            PosterCard(title: s.name, image: s.cover, subtitle: s.yearText, rating: s.rating)
+                            PosterCard(title: s.name, image: s.cover, subtitle: s.yearText, rating: s.rating,
+                                       width: PosterLayout.cardWidth(sizeClass))
                         }
                         .buttonStyle(FluxButtonStyle())
                     }
@@ -220,6 +223,11 @@ struct SortMenu: View {
                 ForEach(CatalogSort.allCases, id: \.self) { Text($0.label).tag($0) }
             }
         } label: {
+            #if os(tvOS)
+            // Bouton du système : ses couleurs s'inversent quand il est sélectionné
+            Label(sort == .provider ? "Trier" : sort.label, systemImage: "arrow.up.arrow.down")
+                .font(Theme.label(12))
+            #else
             HStack(spacing: Theme.s(6)) {
                 Image(systemName: "arrow.up.arrow.down")
                 Text(sort == .provider ? "Trier" : sort.label).lineLimit(1)
@@ -228,6 +236,7 @@ struct SortMenu: View {
             .foregroundStyle(Theme.textDim)
             .padding(.horizontal, Theme.s(12)).padding(.vertical, Theme.s(7))
             .background(Capsule().fill(Color.white.opacity(0.07)))
+            #endif
         }
     }
 }

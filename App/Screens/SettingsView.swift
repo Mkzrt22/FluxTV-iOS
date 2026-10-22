@@ -60,12 +60,14 @@ struct SettingsView: View {
                     Text("MPEG-TS (le plus compatible)").tag("ts")
                     Text("HLS").tag("m3u8")
                 } label: { Label("Format du direct", systemImage: "antenna.radiowaves.left.and.right") }
+                .tvPickerStyle()
                 Picker(selection: caching) {
                     Text("Courte (1 s)").tag(1000)
                     Text("Normale (1,5 s)").tag(1500)
                     Text("Longue (3 s)").tag(3000)
                     Text("Très longue (6 s)").tag(6000)
                 } label: { Label("Mémoire tampon", systemImage: "timer") }
+                .tvPickerStyle()
             } header: { Text("Lecture") } footer: {
                 Text("Si le direct coupe souvent, choisis une mémoire tampon plus longue.")
             }
@@ -166,6 +168,17 @@ struct LegalView: View {
             Text(title).font(Theme.title(17)).foregroundStyle(Theme.text)
             Text(text).font(Theme.bodyRegular(14)).foregroundStyle(Theme.textDim).fixedSize(horizontal: false, vertical: true)
         }
+    }
+}
+
+extension View {
+    /// Apple TV : un choix s'ouvre dans sa propre liste (sinon ses options s'affichent sans titre).
+    @ViewBuilder func tvPickerStyle() -> some View {
+        #if os(tvOS)
+        self.pickerStyle(.navigationLink)
+        #else
+        self
+        #endif
     }
 }
 
