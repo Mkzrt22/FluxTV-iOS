@@ -94,9 +94,11 @@ ensuite de recliquer sur ▶︎.
 6. Si Xcode demande une équipe : clique le projet **FluxTV** à gauche, puis pour chaque cible
    (**FluxTV** et **FluxTV TV**) : onglet **Signing & Capabilities** › **Team** › ton nom.
 
-⚠️ Je n'ai pas pu compiler les écrans moi-même : il faut un Mac. Le « cerveau » de l'app
-(comptes Xtream, playlists, guide, favoris, reprises) est testé : `cd Core && swift test`,
-28 tests. Si Xcode affiche une erreur rouge, envoie-moi une capture et je corrige.
+✔ L'app est compilée par un Mac de GitHub (Xcode 26.6) et essayée sur des simulateurs
+d'iPhone, d'iPad et d'Apple TV : démarrage, démonstration, lecture d'un film et d'une chaîne.
+Le « cerveau » de l'app (comptes Xtream, playlists, guide, favoris, reprises) est testé à part :
+`cd Core && swift test`, 28 tests. Si Xcode affiche une erreur rouge, envoie-moi une capture et
+je corrige.
 
 ## Installer le .ipa sans Mac (Sideloadly)
 
@@ -134,6 +136,11 @@ Le dossier `.github` fait compiler l'app par un Mac de GitHub à chaque envoi su
 - page **Releases** du dépôt › « Version de test » : `FluxTV-iPhone.ipa` et
   `FluxTV-AppleTV.ipa` ;
 - branche `ci` : résumé de la compilation, erreurs et journaux.
+
+Essai sur simulateurs (iPhone, iPad, Apple TV) : envoi sur la branche `simulateur`, ou onglet
+**Actions** › « Simulateurs » › **Run workflow**. L'app y est lancée en mode démonstration, un
+film et une chaîne sont lus ; captures d'écran et rapports de plantage arrivent sur la branche
+`ci-simulateurs`.
 
 Un compte GitHub gratuit a un quota mensuel de minutes de compilation pour les dépôts privés.
 En 2025, c'était 2 000 minutes, et une minute sur Mac en comptait 10. Une compilation dure
