@@ -336,6 +336,11 @@ enum Format {
         return h > 0 ? String(format: "%d h %02d", h, m) : "\(m) min"
     }
 
+    /// Bouton de reprise : « Reprendre à 42 min », ou « Reprendre » avant la première minute.
+    static func resume(_ seconds: Double) -> String {
+        seconds < 60 ? "Reprendre" : "Reprendre à \(duration(seconds))"
+    }
+
     /// Horloge « 1:02:03 » / « 12:34 ».
     static func clock(_ seconds: Double) -> String {
         let s = Int(max(0, seconds.isFinite ? seconds : 0))

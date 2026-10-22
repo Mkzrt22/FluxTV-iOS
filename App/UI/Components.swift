@@ -257,7 +257,9 @@ struct FlowLayout: Layout {
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         var y = bounds.minY
-        for row in arrange(subviews, maxWidth: bounds.width) {
+        // Même largeur que pour le calcul de la taille (les bords arrondis au pixel près ne
+        // doivent pas faire passer un élément à la ligne et déborder sur la suite)
+        for row in arrange(subviews, maxWidth: proposal.width ?? .infinity) {
             var x = bounds.minX
             for (index, size) in zip(row.indices, row.sizes) {
                 subviews[index].place(at: CGPoint(x: x, y: y + (row.height - size.height) / 2), proposal: ProposedViewSize(size))
@@ -279,7 +281,7 @@ struct FlowLayout: Layout {
         var row = Row()
         for (index, view) in subviews.enumerated() {
             let size = view.sizeThatFits(.unspecified)
-            if !row.indices.isEmpty && row.width + spacing + size.width > maxWidth {
+            if !row.indices.isEmpty && row.width + spacing + size.width > maxWidth + 0.5 {
                 rows.append(row)
                 row = Row()
             }

@@ -85,7 +85,7 @@ struct MovieDetailView: View {
     private var actions: some View {
         FlowLayout(spacing: Theme.s(12)) {
             if let r = resume {
-                PillButton(title: "Reprendre à \(Format.duration(r.position))", systemImage: "play.fill") {
+                PillButton(title: Format.resume(r.position), systemImage: "play.fill") {
                     app.play(movie: movie, group: info?.genre)
                 }
                 RoundIconButton(systemImage: "arrow.counterclockwise", label: "Lire depuis le début") {

@@ -224,7 +224,7 @@ struct HomeView: View {
         guard let p = app.library.resume(ref.id) else { return ref.group }
         let left = max(0, p.duration - p.position)
         let base = ref.kind == .episode ? ref.name : nil
-        let remain = p.duration > 0 ? "Reste \(Format.duration(left))" : "Reprendre à \(Format.duration(p.position))"
+        let remain = p.duration > 0 ? "Reste \(Format.duration(left))" : Format.resume(p.position)
         return [base, remain].compactMap { $0 }.joined(separator: " · ")
     }
 
