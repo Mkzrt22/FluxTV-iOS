@@ -9,3 +9,4 @@ ipa/
 # Copies personnelles avec un compte intégré : jamais sur GitHub
 *-perso.ipa
 compte.flux
+__pycache__/
