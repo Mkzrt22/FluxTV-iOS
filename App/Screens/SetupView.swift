@@ -47,16 +47,14 @@ struct SetupView: View {
                     .transition(.opacity)
                 }
 
-                HStack(spacing: Theme.s(12)) {
-                    PillButton(title: busy ? "Connexion…" : "Se connecter", systemImage: busy ? nil : "arrow.right") { connect() }
-                        .disabled(busy)
-                    PillButton(title: "Essayer la démo", systemImage: "sparkles", primary: false) { tryDemo() }
-                        .disabled(busy)
-                    if busy { ProgressView().tint(Theme.accentBright) }
+                // Côte à côte s'il y a la place, sinon l'un sous l'autre (iPhone)
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: Theme.s(12)) { actionButtons }
+                    VStack(alignment: .leading, spacing: Theme.s(10)) { actionButtons }
                 }
                 .padding(.top, Theme.s(4))
 
-                Text("FluxTV est un lecteur : il ne fournit aucune chaîne ni aucun contenu. Utilise uniquement des sources auxquelles tu as légalement accès. Tes identifiants restent sur cet appareil, dans le trousseau sécurisé d'Apple.")
+                Text("FluxTV est un lecteur : il ne fournit aucune chaîne ni aucun contenu. Utilise uniquement des sources auxquelles tu as légalement accès. Tes identifiants restent chiffrés sur cet appareil.")
                     .font(Theme.bodyRegular(12))
                     .foregroundStyle(Theme.textFaint)
                     .fixedSize(horizontal: false, vertical: true)
@@ -73,6 +71,14 @@ struct SetupView: View {
         .scrollDismissesKeyboardIfAvailable()
         .animation(.easeInOut(duration: 0.2), value: mode)
         .animation(.easeInOut(duration: 0.2), value: error)
+    }
+
+    @ViewBuilder private var actionButtons: some View {
+        PillButton(title: busy ? "Connexion…" : "Se connecter", systemImage: busy ? nil : "arrow.right") { connect() }
+            .disabled(busy)
+        PillButton(title: "Essayer la démo", systemImage: "sparkles", primary: false) { tryDemo() }
+            .disabled(busy)
+        if busy { ProgressView().tint(Theme.accentBright) }
     }
 
     private var xtreamFields: some View {

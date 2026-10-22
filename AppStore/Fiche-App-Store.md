@@ -46,7 +46,7 @@ PENSÉ POUR CHAQUE ÉCRAN
 
 VOS DONNÉES RESTENT CHEZ VOUS
 • Aucune collecte de données, aucun pistage, aucune publicité
-• Vos identifiants sont stockés dans le trousseau sécurisé de l'appareil
+• Vos identifiants restent chiffrés sur votre appareil (trousseau sécurisé)
 
 IMPORTANT : FluxTV est un lecteur multimédia. Il ne fournit, n'héberge et ne vend aucun contenu, aucune chaîne ni aucun abonnement. Vous devez disposer de vos propres sources et des droits nécessaires pour les regarder.
 

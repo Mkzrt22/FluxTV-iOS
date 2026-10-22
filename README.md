@@ -50,7 +50,8 @@ que FluxTV sur Android : nuit profonde, indigo et violet, polices Sora et Manrop
   « FR - Dune (2021) [MULTI] » devient « Dune », 2021, badge MULTI ;
   « FR | SPORTS » devient « Sports ».
 - **Confidentialité** :
-  - ton compte est enregistré dans le **trousseau sécurisé d'Apple** ;
+  - ton compte est enregistré chiffré sur l'appareil, dans le **trousseau sécurisé d'Apple**
+    (à défaut, dans un fichier chiffré par iOS, exclu des sauvegardes) ;
   - favoris, reprises et historique restent sur l'appareil ;
   - aucune donnée collectée, aucun pistage, aucune publicité.
 

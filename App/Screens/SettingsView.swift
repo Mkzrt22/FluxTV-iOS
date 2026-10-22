@@ -140,7 +140,7 @@ struct LegalView: View {
             VStack(alignment: .leading, spacing: Theme.s(18)) {
                 block("Confidentialité", """
                 FluxTV ne collecte aucune donnée. Pas de compte FluxTV, pas de publicité, pas de mesure d'audience.
-                Ton abonnement (adresse du serveur, identifiants) est enregistré uniquement sur cet appareil, dans le trousseau sécurisé d'Apple, et n'est envoyé qu'au serveur de ton fournisseur.
+                Ton abonnement (adresse du serveur, identifiants) est enregistré uniquement sur cet appareil, chiffré (trousseau sécurisé d'Apple ou, à défaut, fichier chiffré par le système), et n'est envoyé qu'au serveur de ton fournisseur.
                 Favoris, reprises et historique restent sur cet appareil.
                 """)
                 block("Contenus", """

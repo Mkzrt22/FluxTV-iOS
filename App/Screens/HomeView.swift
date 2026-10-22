@@ -20,6 +20,7 @@ struct HomeView: View {
                 resumeRow
                 channelsRow(title: "Mes chaînes", channels: app.favoriteChannels)
                 channelsRow(title: "Dernières chaînes", channels: recentNotFavorite)
+                channelsRow(title: "Chaînes en direct", channels: discoverChannels)
                 moviesRow
                 seriesRow
                 favoriteMoviesRow
@@ -39,6 +40,12 @@ struct HomeView: View {
     private var recentNotFavorite: [LiveChannel] {
         let favs = Set(app.favoriteChannels.map(\.id))
         return app.recentChannels.filter { !favs.contains($0.id) }
+    }
+
+    /// Premières chaînes de la source, tant qu'il n'y a ni favori ni chaîne récente.
+    private var discoverChannels: [LiveChannel] {
+        guard app.favoriteChannels.isEmpty && app.recentChannels.isEmpty else { return [] }
+        return Array(app.visibleChannels().prefix(16))
     }
 
     // ───────────────────────────── Rangées ─────────────────────────────

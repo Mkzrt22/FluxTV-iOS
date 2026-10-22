@@ -3,12 +3,17 @@ import Security
 import SwiftUI
 
 /**
- Compte ou playlist de l'utilisateur, dans le trousseau d'Apple (chiffré, jamais dans les
- sauvegardes iCloud en clair ni dans les fichiers de l'app).
+ Compte ou playlist de l'utilisateur, chiffré sur l'appareil : dans le trousseau d'Apple, ou à
+ défaut (app signée sans les droits du trousseau, simulateur) dans un fichier chiffré par iOS,
+ lisible uniquement par FluxTV et exclu des sauvegardes.
  */
 enum SourceKeychain {
     private static let service = "bzh.fluxtv.source"
     private static let account = "current"
+
+    private static var fallbackURL: URL {
+        LibraryFile.defaultURL.deletingLastPathComponent().appendingPathComponent("source.json")
+    }
 
     static func load() -> Source? {
         let query: [String: Any] = [
@@ -19,7 +24,11 @@ enum SourceKeychain {
             kSecMatchLimit as String: kSecMatchLimitOne,
         ]
         var item: CFTypeRef?
-        guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess, let data = item as? Data else { return nil }
+        if SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess, let data = item as? Data,
+           let source = try? JSONDecoder().decode(Source.self, from: data) {
+            return source
+        }
+        guard let data = try? Data(contentsOf: fallbackURL) else { return nil }
         return try? JSONDecoder().decode(Source.self, from: data)
     }
 
@@ -34,7 +43,19 @@ enum SourceKeychain {
             kSecValueData as String: data,
             kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
         ]
-        return SecItemAdd(attrs as CFDictionary, nil) == errSecSuccess
+        if SecItemAdd(attrs as CFDictionary, nil) == errSecSuccess { return true }
+        // Trousseau refusé : fichier chiffré par iOS (sinon le compte serait redemandé à chaque lancement)
+        do {
+            var url = fallbackURL
+            try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+            var values = URLResourceValues()
+            values.isExcludedFromBackup = true
+            try? url.setResourceValues(values)
+            return true
+        } catch {
+            return false
+        }
     }
 
     static func delete() {
@@ -44,6 +65,7 @@ enum SourceKeychain {
             kSecAttrAccount as String: account,
         ]
         SecItemDelete(query as CFDictionary)
+        try? FileManager.default.removeItem(at: fallbackURL)
     }
 }
 

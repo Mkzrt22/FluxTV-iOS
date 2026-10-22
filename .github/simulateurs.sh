@@ -57,17 +57,19 @@ capture() {
 
 # $1 simulateur, $2 attente (s), $3 nom de la capture, puis les arguments de lancement
 essai() {
-  local udid="$1" attente="$2" nom="$3"
+  local udid="$1" attente="$2" nom="$3" pid
   shift 3
   xcrun simctl terminate "$udid" bzh.fluxtv.player > /dev/null 2>&1
   sleep 1
-  if ! xcrun simctl launch --stdout="$OUT/$nom.out.txt" --stderr="$OUT/$nom.err.txt" \
-      "$udid" bzh.fluxtv.player "$@" > /dev/null 2>&1; then
+  # « bzh.fluxtv.player: 12345 » : l'app du simulateur est un processus du Mac
+  pid="$(xcrun simctl launch --stdout="$OUT/$nom.out.txt" --stderr="$OUT/$nom.err.txt" \
+      "$udid" bzh.fluxtv.player "$@" 2>/dev/null | awk -F': ' '/bzh.fluxtv.player/ { print $2 }')"
+  if [ -z "$pid" ]; then
     log "  ✘ lancement impossible ($nom)"
     return
   fi
   sleep "$attente"
-  if xcrun simctl spawn "$udid" launchctl list 2>/dev/null | grep -q "bzh.fluxtv.player"; then
+  if kill -0 "$pid" 2>/dev/null; then
     capture "$udid" "$nom"
   else
     log "  ✘ PLANTAGE : l'app s'est fermée ($nom)"
@@ -87,6 +89,7 @@ if compiler FluxTV "iOS Simulator" ios; then
     essai "$UDID" 8 "$p-3-tv" -lastTab live
     essai "$UDID" 8 "$p-4-films" -lastTab movies
     essai "$UDID" 8 "$p-5-series" -lastTab series
+    essai "$UDID" 8 "$p-8-recherche" -lastTab search
     essai "$UDID" 30 "$p-6-lecture-film" -FluxTVDemo YES -FluxTVPlay demo:bbb
     essai "$UDID" 30 "$p-7-lecture-direct" -FluxTVDemo YES -FluxTVPlay demo:live2
     xcrun simctl shutdown "$UDID" > /dev/null 2>&1
@@ -101,6 +104,7 @@ if compiler "FluxTV TV" "tvOS Simulator" tvos; then
       essai "$UDID" 12 "tv-2-accueil" -FluxTVDemo YES -lastTab home
       essai "$UDID" 8 "tv-3-direct" -lastTab live
       essai "$UDID" 8 "tv-4-films" -lastTab movies
+      essai "$UDID" 8 "tv-6-reglages" -lastTab settings
       essai "$UDID" 30 "tv-5-lecture-film" -FluxTVDemo YES -FluxTVPlay demo:bbb
     else
       log "✘ installation (Apple TV)"
