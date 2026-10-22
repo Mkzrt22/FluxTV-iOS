@@ -52,7 +52,8 @@ final class AppModel: ObservableObject {
         #if DEBUG
         if startForAutomatedTest() { return }
         #endif
-        if let saved = SourceKeychain.load() {
+        // Source choisie dans l'app, sinon compte intégré (copie personnelle)
+        if let saved = SourceKeychain.load() ?? EmbeddedAccount.load() {
             use(saved)
             phase = .ready
             Task {

@@ -69,6 +69,24 @@ enum SourceKeychain {
     }
 }
 
+/**
+ Compte intégré à une copie personnelle de l'app : fichier « compte.flux » ajouté au .ipa par
+ `Ajouter-Compte.py`, jamais présent dans la version publiée. FluxTV s'y connecte tout seul tant
+ qu'aucune autre source n'a été choisie dans l'app.
+ */
+enum EmbeddedAccount {
+    static func load() -> Source? {
+        guard let url = Bundle.main.url(forResource: "compte", withExtension: "flux"),
+              let text = try? String(contentsOf: url, encoding: .utf8),
+              let data = Data(base64Encoded: text.trimmingCharacters(in: .whitespacesAndNewlines)),
+              let fields = try? JSONDecoder().decode([String: String].self, from: data),
+              let server = fields["serveur"], let user = fields["utilisateur"], let password = fields["motdepasse"]
+        else { return nil }
+        let account = XtreamAccount(server: server, username: user, password: password)
+        return account.isComplete ? .xtream(account) : nil
+    }
+}
+
 /// Favoris, historique et reprises, enregistrés sur l'appareil.
 @MainActor
 final class LibraryStore: ObservableObject {

@@ -126,6 +126,11 @@ Il faut :
    confiance**.
 6. Ouvre FluxTV.
 
+**Version personnelle avec ton compte** (connexion automatique, comme l'APK privée Android) :
+`python3 Ajouter-Compte.py FluxTV-iPhone.ipa` demande le serveur, l'utilisateur et le mot de
+passe, puis crée `FluxTV-iPhone-perso.ipa`. Quiconque a ce fichier peut y lire ton compte : ne le
+partage pas et ne l'envoie pas sur GitHub.
+
 Avec un identifiant Apple gratuit, l'app fonctionne **7 jours**. Pour la prolonger, refais
 l'étape 3 : favoris et reprises sont conservés. Avec l'Apple Developer Program, c'est 1 an.
 

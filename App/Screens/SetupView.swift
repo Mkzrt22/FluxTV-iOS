@@ -74,6 +74,10 @@ struct SetupView: View {
     }
 
     @ViewBuilder private var actionButtons: some View {
+        if let embedded = EmbeddedAccount.load() {
+            PillButton(title: "Mon compte", systemImage: "person.fill") { error = nil; run(embedded) }
+                .disabled(busy)
+        }
         PillButton(title: busy ? "Connexion…" : "Se connecter", systemImage: busy ? nil : "arrow.right") { connect() }
             .disabled(busy)
         PillButton(title: "Essayer la démo", systemImage: "sparkles", primary: false) { tryDemo() }
