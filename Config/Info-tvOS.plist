@@ -30,9 +30,9 @@
 	<string>public.app-category.entertainment</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
+		<!-- Serveurs IPTV en http. Ne pas ajouter NSAllowsArbitraryLoadsForMedia : tvOS ignorerait
+		     alors cette clé. -->
 		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-		<key>NSAllowsArbitraryLoadsForMedia</key>
 		<true/>
 	</dict>
 	<key>UIAppFonts</key>

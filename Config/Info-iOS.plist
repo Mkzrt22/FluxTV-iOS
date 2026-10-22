@@ -32,10 +32,9 @@
 	<string>public.app-category.entertainment</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<!-- Les serveurs IPTV des fournisseurs sont très souvent en http (sans « s ») -->
+		<!-- Les serveurs IPTV des fournisseurs sont très souvent en http (sans « s »).
+		     Ne pas ajouter NSAllowsArbitraryLoadsForMedia : iOS ignorerait alors cette clé. -->
 		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-		<key>NSAllowsArbitraryLoadsForMedia</key>
 		<true/>
 	</dict>
 	<key>UIAppFonts</key>

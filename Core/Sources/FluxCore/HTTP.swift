@@ -88,6 +88,8 @@ final class HTTPClient: @unchecked Sendable {
         case NSURLErrorCannotConnectToHost: return .network("le serveur refuse la connexion")
         case NSURLErrorSecureConnectionFailed, NSURLErrorServerCertificateUntrusted, NSURLErrorServerCertificateHasBadDate:
             return .network("connexion sécurisée impossible (essaie avec http://)")
+        case -1022: // NSURLErrorAppTransportSecurityRequiresSecureConnection
+            return .network("le système refuse les connexions http de l'app")
         default: return .network(ns.localizedDescription)
         }
     }
