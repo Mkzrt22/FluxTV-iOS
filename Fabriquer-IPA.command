@@ -25,7 +25,6 @@ fabriquer() {
   echo "→ Compilation de $name (quelques minutes)…"
   if xcodebuild -project FluxTV.xcodeproj -scheme "$scheme" -configuration Release \
       -destination "generic/platform=$platform" -derivedDataPath build/DerivedData \
-      -continueBuildingAfterErrors \
       CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
       build >"$log" 2>&1; then
     local tmp
