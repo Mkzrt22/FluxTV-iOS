@@ -213,30 +213,39 @@ struct SeriesListView: View {
     }
 }
 
-/// Menu de tri.
+/// Tri : menu sur iPhone et iPad ; sur Apple TV, chaque appui passe au tri suivant (le menu du
+/// système y rend le bouton illisible quand il est sélectionné).
 struct SortMenu: View {
     @Binding var sort: CatalogSort
 
     var body: some View {
+        #if os(tvOS)
+        Button {
+            let all = CatalogSort.allCases
+            sort = all[((all.firstIndex(of: sort) ?? 0) + 1) % all.count]
+        } label: {
+            label(sort.label)
+        }
+        .buttonStyle(FluxButtonStyle(focusScale: 1.08, cornerRadius: 40))
+        #else
         Menu {
             Picker("Trier", selection: $sort) {
                 ForEach(CatalogSort.allCases, id: \.self) { Text($0.label).tag($0) }
             }
         } label: {
-            #if os(tvOS)
-            // Bouton du système : ses couleurs s'inversent quand il est sélectionné
-            Label(sort == .provider ? "Trier" : sort.label, systemImage: "arrow.up.arrow.down")
-                .font(Theme.label(12))
-            #else
-            HStack(spacing: Theme.s(6)) {
-                Image(systemName: "arrow.up.arrow.down")
-                Text(sort == .provider ? "Trier" : sort.label).lineLimit(1)
-            }
-            .font(Theme.label(12))
-            .foregroundStyle(Theme.textDim)
-            .padding(.horizontal, Theme.s(12)).padding(.vertical, Theme.s(7))
-            .background(Capsule().fill(Color.white.opacity(0.07)))
-            #endif
+            label(sort == .provider ? "Trier" : sort.label)
         }
+        #endif
+    }
+
+    private func label(_ text: String) -> some View {
+        HStack(spacing: Theme.s(6)) {
+            Image(systemName: "arrow.up.arrow.down")
+            Text(text).lineLimit(1)
+        }
+        .font(Theme.label(12))
+        .foregroundStyle(Theme.textDim)
+        .padding(.horizontal, Theme.s(12)).padding(.vertical, Theme.s(7))
+        .background(Capsule().fill(Color.white.opacity(0.07)))
     }
 }
