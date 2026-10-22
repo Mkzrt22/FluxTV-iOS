@@ -16,9 +16,7 @@ struct MovieDetailView: View {
             VStack(alignment: .leading, spacing: 0) {
                 ZStack(alignment: .bottomLeading) {
                     RemoteImage(url: backdrop, contentMode: .fill, maxSize: 1200, placeholderTitle: movie.name)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: Theme.s(300))
-                        .clipped()
+                        .filling(height: Theme.s(300))
                         .overlay(LinearGradient(colors: [.clear, Theme.bg.opacity(0.65), Theme.bg], startPoint: .top, endPoint: .bottom))
                     HStack(alignment: .bottom, spacing: Theme.s(18)) {
                         RemoteImage(url: info?.cover ?? movie.poster, contentMode: .fill, maxSize: 180, placeholderTitle: movie.name)
@@ -73,7 +71,7 @@ struct MovieDetailView: View {
     }
 
     private var chips: some View {
-        HStack(spacing: Theme.s(6)) {
+        FlowLayout(spacing: Theme.s(6)) {
             if let y = info?.year ?? movie.year { Badge(text: String(y)) }
             if let d = info?.durationSecs, d > 0 { Badge(text: Format.duration(Double(d))) }
             if let g = info?.genre?.split(separator: ",").first {
@@ -85,7 +83,7 @@ struct MovieDetailView: View {
     }
 
     private var actions: some View {
-        HStack(spacing: Theme.s(12)) {
+        FlowLayout(spacing: Theme.s(12)) {
             if let r = resume {
                 PillButton(title: "Reprendre à \(Format.duration(r.position))", systemImage: "play.fill") {
                     app.play(movie: movie, group: info?.genre)

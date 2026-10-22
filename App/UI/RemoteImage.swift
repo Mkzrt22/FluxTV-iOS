@@ -110,6 +110,21 @@ struct RemoteImage: View {
     }
 }
 
+extension RemoteImage {
+    /**
+     Remplit une bande de hauteur fixe sur toute la largeur, sans élargir la mise en page : en
+     mode « remplir », une image panoramique est plus large que l'écran et pousserait tout le
+     contenu hors des bords (fiche coupée à gauche et à droite).
+     */
+    func filling(height: CGFloat) -> some View {
+        Color.clear
+            .frame(maxWidth: .infinity)
+            .frame(height: height)
+            .overlay { self }
+            .clipped()
+    }
+}
+
 private struct Placeholder: View {
     let title: String?
     let icon: String

@@ -35,6 +35,10 @@ struct HomeView: View {
         .toolbar(.hidden, for: .navigationBar)
         #endif
         .task(id: app.source) { await loadRows() }
+        #if DEBUG
+        .navigationDestination(item: $app.debugMovie) { MovieDetailView(movie: $0) }
+        .navigationDestination(item: $app.debugSeries) { SeriesDetailView(series: $0) }
+        #endif
     }
 
     private var recentNotFavorite: [LiveChannel] {
@@ -283,22 +287,22 @@ private struct HeroCardBody: View {
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            ZStack {
-                LinearGradient(colors: [Theme.surface3, Theme.abyss], startPoint: .topLeading, endPoint: .bottomTrailing)
-                if fitImage {
-                    RemoteImage(url: image, contentMode: .fit, maxSize: 260, placeholderTitle: title, placeholderIcon: "tv")
-                        .frame(maxWidth: Theme.s(240), maxHeight: Theme.s(130))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
-                        .padding(.trailing, Theme.s(36))
-                        .opacity(0.9)
-                } else {
-                    RemoteImage(url: image, contentMode: .fill, maxSize: 900, placeholderTitle: title)
-                        .blur(radius: 0)
+            // Image posée sur le dégradé : une image panoramique n'élargit pas la carte
+            LinearGradient(colors: [Theme.surface3, Theme.abyss], startPoint: .topLeading, endPoint: .bottomTrailing)
+                .overlay {
+                    if fitImage {
+                        RemoteImage(url: image, contentMode: .fit, maxSize: 260, placeholderTitle: title, placeholderIcon: "tv")
+                            .frame(maxWidth: Theme.s(240), maxHeight: Theme.s(130))
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
+                            .padding(.trailing, Theme.s(36))
+                            .opacity(0.9)
+                    } else {
+                        RemoteImage(url: image, contentMode: .fill, maxSize: 900, placeholderTitle: title)
+                    }
                 }
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: Theme.s(230))
-            .clipped()
+                .frame(maxWidth: .infinity)
+                .frame(height: Theme.s(230))
+                .clipped()
 
             LinearGradient(colors: [.clear, Theme.abyss.opacity(0.92)], startPoint: .top, endPoint: .bottom)
 

@@ -53,9 +53,7 @@ struct SeriesDetailView: View {
     private var header: some View {
         ZStack(alignment: .bottomLeading) {
             RemoteImage(url: details?.backdrop ?? cover, contentMode: .fill, maxSize: 1200, placeholderTitle: current.name)
-                .frame(maxWidth: .infinity)
-                .frame(height: Theme.s(280))
-                .clipped()
+                .filling(height: Theme.s(280))
                 .overlay(LinearGradient(colors: [.clear, Theme.bg.opacity(0.6), Theme.bg], startPoint: .top, endPoint: .bottom))
             HStack(alignment: .bottom, spacing: Theme.s(18)) {
                 RemoteImage(url: cover, contentMode: .fill, maxSize: 180, placeholderTitle: current.name)
@@ -67,7 +65,7 @@ struct SeriesDetailView: View {
                     Eyebrow(text: "Série")
                     Text(current.name).font(Theme.display(28)).foregroundStyle(.white).lineLimit(3)
                         .fixedSize(horizontal: false, vertical: true)
-                    HStack(spacing: Theme.s(6)) {
+                    FlowLayout(spacing: Theme.s(6)) {
                         if let y = details?.year ?? current.year { Badge(text: String(y)) }
                         if let g = (details?.genre ?? current.genre)?.split(separator: ",").first {
                             Badge(text: String(g).trimmingCharacters(in: .whitespaces))

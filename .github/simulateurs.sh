@@ -92,6 +92,9 @@ if compiler FluxTV "iOS Simulator" ios; then
     essai "$UDID" 8 "$p-8-recherche" -lastTab search
     essai "$UDID" 30 "$p-6-lecture-film" -FluxTVDemo YES -FluxTVPlay demo:bbb
     essai "$UDID" 30 "$p-7-lecture-direct" -FluxTVDemo YES -FluxTVPlay demo:live2
+    # Fiches (après la lecture : le film a une reprise, comme sur un vrai appareil)
+    essai "$UDID" 10 "$p-9-fiche-film" -FluxTVDemo YES -lastTab home -FluxTVOpen demo:bbb
+    essai "$UDID" 10 "$p-10-fiche-serie" -FluxTVDemo YES -lastTab home -FluxTVOpen m3us:demo-open-movies
     xcrun simctl shutdown "$UDID" > /dev/null 2>&1
   done
 fi
@@ -106,6 +109,7 @@ if compiler "FluxTV TV" "tvOS Simulator" tvos; then
       essai "$UDID" 8 "tv-4-films" -lastTab movies
       essai "$UDID" 8 "tv-6-reglages" -lastTab settings
       essai "$UDID" 30 "tv-5-lecture-film" -FluxTVDemo YES -FluxTVPlay demo:bbb
+      essai "$UDID" 10 "tv-7-fiche-film" -FluxTVDemo YES -lastTab home -FluxTVOpen demo:bbb
     else
       log "✘ installation (Apple TV)"
     fi

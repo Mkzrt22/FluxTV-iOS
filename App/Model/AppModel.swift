@@ -65,16 +65,26 @@ final class AppModel: ObservableObject {
     }
 
     #if DEBUG
+    /// Essais automatiques : fiche ouverte depuis l'accueil.
+    @Published var debugMovie: Movie?
+    @Published var debugSeries: Series?
+
     /**
      Essais automatiques sur simulateur (jamais dans la version installée) :
-     « -FluxTVDemo YES » ouvre la démonstration, « -FluxTVPlay <id> » lance aussitôt un film
-     ou une chaîne de la démonstration (« demo:bbb », « demo:live2 »…).
+     « -FluxTVDemo YES » ouvre la démonstration, « -FluxTVOpen <id> » ouvre la fiche d'un film ou
+     d'une série, « -FluxTVPlay <id> » lance aussitôt un film ou une chaîne de la démonstration
+     (« demo:tos », « m3us:demo-open-movies », « demo:bbb », « demo:live2 »…).
      */
     private func startForAutomatedTest() -> Bool {
         let d = UserDefaults.standard
         guard d.bool(forKey: "FluxTVDemo") else { return false }
         Task {
             try? await connect(.demo)
+            if let id = d.string(forKey: "FluxTVOpen") {
+                try? await Task.sleep(nanoseconds: 800_000_000)
+                debugMovie = Demo.movies.first { $0.id == id }
+                debugSeries = Demo.series.first { $0.id == id }
+            }
             guard let id = d.string(forKey: "FluxTVPlay") else { return }
             if let m = Demo.movies.first(where: { $0.id == id }) {
                 play(movie: m, group: nil, fromStart: true)
