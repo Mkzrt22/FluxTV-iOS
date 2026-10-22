@@ -95,7 +95,49 @@ ensuite de recliquer sur ▶︎.
 
 ⚠️ Je n'ai pas pu compiler les écrans moi-même : il faut un Mac. Le « cerveau » de l'app
 (comptes Xtream, playlists, guide, favoris, reprises) est testé : `cd Core && swift test`,
-27 tests. Si Xcode affiche une erreur rouge, envoie-moi une capture et je corrige.
+28 tests. Si Xcode affiche une erreur rouge, envoie-moi une capture et je corrige.
+
+## Installer le .ipa sans Mac (Sideloadly)
+
+`FluxTV-iPhone.ipa` est fabriqué par un Mac de GitHub (voir « Compilation automatique »
+plus bas) ou sur un Mac avec `Fabriquer-IPA.command` (double-clic, résultat dans le dossier
+`ipa`). Le fichier n'est pas signé : Sideloadly le signe avec ton identifiant Apple au moment
+de l'installation.
+
+Il faut :
+- un PC Windows ou un Mac, et le câble de l'iPhone ;
+- **Sideloadly**, gratuit : https://sideloadly.io ;
+- sur Windows, **iTunes** et **iCloud** téléchargés sur le site d'Apple (pas les versions du
+  Microsoft Store) ;
+- ton identifiant Apple (un compte gratuit suffit) ;
+- un iPhone ou un iPad sous **iOS 17** ou plus récent.
+
+1. Branche l'iPhone, déverrouille-le et accepte « Faire confiance à cet ordinateur ».
+2. Ouvre Sideloadly et glisse `FluxTV-iPhone.ipa` dans la fenêtre.
+3. Tape ton identifiant Apple puis clique sur **Start**. Le mot de passe et le code de
+   validation à deux facteurs sont demandés : Sideloadly les envoie uniquement à Apple. Si tu
+   préfères, crée un identifiant Apple secondaire, gratuit, juste pour ça.
+4. Sur l'iPhone : **Réglages › Confidentialité et sécurité › Mode développeur** › active-le,
+   laisse l'iPhone redémarrer, puis confirme.
+5. **Réglages › Général › VPN et gestion de l'appareil** › ton identifiant Apple › **Faire
+   confiance**.
+6. Ouvre FluxTV.
+
+Avec un identifiant Apple gratuit, l'app fonctionne **7 jours**. Pour la prolonger, refais
+l'étape 3 : favoris et reprises sont conservés. Avec l'Apple Developer Program, c'est 1 an.
+
+## Compilation automatique (GitHub)
+
+Le dossier `.github` fait compiler l'app par un Mac de GitHub à chaque envoi sur la branche
+`main` d'un dépôt **privé** :
+- page **Releases** du dépôt › « Version de test » : `FluxTV-iPhone.ipa` et
+  `FluxTV-AppleTV.ipa` ;
+- branche `ci` : résumé de la compilation, erreurs et journaux.
+
+Un compte GitHub gratuit a un quota mensuel de minutes de compilation pour les dépôts privés.
+En 2025, c'était 2 000 minutes, et une minute sur Mac en comptait 10. Une compilation dure
+environ 10 minutes : cela fait une vingtaine de compilations par mois. Le détail du quota est
+dans **Settings › Billing** sur GitHub.
 
 ## Publier sur l'App Store
 
@@ -132,12 +174,13 @@ dans `project.yml` ou dans Xcode, puis archive à nouveau.
 ```
 ios/
   Preparer.command     préparation sur le Mac (moteur VLC, équipe Apple)
+  Fabriquer-IPA.command  fabrique les .ipa non signés (Sideloadly)
   FluxTV.xcodeproj     projet Xcode (cibles « FluxTV » iPhone/iPad et « FluxTV TV »)
   project.yml          description du projet (XcodeGen) — sert à régénérer le .xcodeproj
   Config/              Info.plist iOS et tvOS, signature (Signing.xcconfig)
   Core/                cœur sans interface (Swift Package testable partout : swift test)
     Sources/FluxCore   comptes Xtream, M3U, XMLTV, nettoyage des noms, bibliothèque, démo
-    Tests/             27 tests
+    Tests/             28 tests
   App/
     FluxTVApp.swift    démarrage, onglets
     Model/             état de l'app, trousseau, favoris / reprises, réglages
@@ -146,7 +189,7 @@ ios/
     UI/                thème, composants, chargement des images
     Resources/         icônes (iPhone et Apple TV), polices, visuels de la démo, confidentialité
   AppStore/            fiche, notes de validation, politique de confidentialité
-  .github/workflows/   compilation automatique sur un Mac de GitHub (facultatif)
+  .github/             compilation automatique sur un Mac de GitHub (.ipa, journaux)
 ```
 
 ## Licences
