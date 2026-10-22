@@ -1,0 +1,8 @@
+Vendor/*.xcframework
+Vendor/*.txt
+Core/.build/
+xcuserdata/
+DerivedData/
+*.xcuserstate
+build/
+ipa/

@@ -1,0 +1,6 @@
+{"epg_listings":[
+ {"id":"1","title":"TGUgSm91cm5hbCBkZSAyMCBo","description":"TCdhY3R1YWxpdMOp","start_timestamp":"1760000000","stop_timestamp":"1760003600","has_archive":1},
+ {"id":"2","title":"RmlsbQ==","description":"","start_timestamp":1760003600,"stop_timestamp":1760010800},
+ {"id":"3","title":"","start_timestamp":"1760010800","stop_timestamp":"1760014400"},
+ {"id":"4","title":"RG91Ymxvbg==","start_timestamp":"1760003600","stop_timestamp":"1760010800"}
+]}

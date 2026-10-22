@@ -1,0 +1,31 @@
+# Compilation sur un Mac de GitHub : fabrique les .ipa (iPhone et Apple TV), sans signature.
+# Résultat : page « Releases » du dépôt, « Version de test ».
+name: FluxTV iOS
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ipa
+  cancel-in-progress: true
+jobs:
+  ipa:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - id: ipa
+        name: Fabrication des .ipa
+        run: ./Fabriquer-IPA.command --ci
+      - id: core
+        name: Tests du cœur
+        if: always()
+        continue-on-error: true
+        run: mkdir -p build && cd Core && swift test > ../build/core-tests.log 2>&1
+      - name: Publication
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/publier.sh "${{ steps.ipa.outcome }}" "${{ steps.core.outcome }}"

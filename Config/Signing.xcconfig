@@ -1,0 +1,6 @@
+// Signature des apps FluxTV (iPhone / iPad et Apple TV).
+// DEVELOPMENT_TEAM : identifiant de ton équipe Apple (10 caractères, visible sur
+// developer.apple.com › Membership). Rempli automatiquement par « Preparer.command »
+// si ton compte Apple est ajouté dans Xcode (Réglages › Comptes).
+DEVELOPMENT_TEAM =
+CODE_SIGN_STYLE = Automatic

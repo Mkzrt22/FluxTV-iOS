@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tv>
+ <channel id="TF1.fr"><display-name>TF1</display-name></channel>
+ <programme start="20261022180000 +0200" stop="20261022190000 +0200" channel="TF1.fr"><title lang="fr">Le 18 h</title><title lang="en">The 6pm</title><desc lang="fr">Infos.</desc></programme>
+ <programme start="20261022190000 +0200" stop="20261022200000 +0200" channel="TF1.fr"><title lang="fr">Jeu &amp; Quiz</title></programme>
+ <programme start="20261022170000" stop="20261022180000" channel="Other.fr"><title>Ignoré</title></programme>
+ <programme start="20201022170000 +0000" stop="20201022180000 +0000" channel="TF1.fr"><title>Trop ancien</title></programme>
+</tv>
