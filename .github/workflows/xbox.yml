@@ -14,7 +14,7 @@ concurrency:
 jobs:
   msix:
     runs-on: windows-2022
-    timeout-minutes: 60
+    timeout-minutes: 100
     steps:
       - uses: actions/checkout@v4
       - uses: microsoft/setup-msbuild@v2
@@ -34,6 +34,12 @@ jobs:
         timeout-minutes: 10
         shell: powershell
         run: ./.github/captures.ps1
+      - name: Kit de certification Windows
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 25
+        shell: powershell
+        run: ./.github/wack.ps1
       - name: Essai de la copie personnelle (compte fictif)
         id: perso
         if: steps.install.outcome == 'success'
@@ -46,9 +52,16 @@ jobs:
         continue-on-error: true
         shell: pwsh
         run: dotnet run --project Tests/CoreTests.csproj -c Release 2>&1 | Tee-Object -FilePath build/tests.log
+      - id: store
+        name: Paquet pour le Store
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 30
+        shell: pwsh
+        run: ./.github/store.ps1
       - name: Publication
         if: always()
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-        run: ./.github/publier.ps1 -Compilation "${{ steps.build.outcome }}" -Installation "${{ steps.install.outcome }}" -Tests "${{ steps.tests.outcome }}" -Perso "${{ steps.perso.outcome }}"
+        run: ./.github/publier.ps1 -Compilation "${{ steps.build.outcome }}" -Installation "${{ steps.install.outcome }}" -Tests "${{ steps.tests.outcome }}" -Perso "${{ steps.perso.outcome }}" -Store "${{ steps.store.outcome }}"
