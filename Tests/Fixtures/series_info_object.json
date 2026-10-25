@@ -1,0 +1,5 @@
+{"seasons":[],"info":{"name":"Brumes","cover":"http://img.example/brumes.jpg","plot":"Un phare se rallume.","genre":"Drame","releaseDate":"2023-01-05","rating":"8.2","backdrop_path":["http://img.example/b1.jpg"]},
+ "episodes":{"2":[{"id":"902","episode_num":"1","title":"Brumes - S02E01 - Retour","container_extension":"mp4","info":{"plot":"Retour au phare.","duration_secs":2700,"movie_image":"http://img.example/e902.jpg"},"season":2}],
+             "1":[{"id":"802","episode_num":2,"title":"Marée basse","container_extension":"mkv","info":{"duration":"00:44:10"},"season":"1"},
+                  {"id":"801","episode_num":"1","title":"Le Phare","container_extension":"mkv","info":[],"season":1},
+                  {"id":"801b","episode_num":"1","title":"Le Phare (secours)","container_extension":"mkv","season":1}]}}

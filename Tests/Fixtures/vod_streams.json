@@ -1,0 +1,5 @@
+[
+ {"num":1,"name":"FR - Dune (2021) [MULTI]","stream_type":"movie","stream_id":"5001","stream_icon":"http://img.example/dune.jpg","rating":"7.9","rating_5based":3.9,"added":"1700000000","category_id":"20","container_extension":"mkv"},
+ {"num":2,"name":"Oppenheimer 4K","stream_id":5002,"stream_icon":"","rating":8.3,"added":1700000500,"category_id":20,"container_extension":"mp4","year":"2023"},
+ {"name":"Blade Runner 2049","stream_id":"5003","rating":"0","category_id":"20","container_extension":null}
+]

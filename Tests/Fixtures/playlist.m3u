@@ -1,0 +1,18 @@
+#EXTM3U x-tvg-url="http://epg.example/guide.xml.gz,http://other.example/e.xml"
+#EXTINF:-1 tvg-id="TF1.fr" tvg-name="TF1" tvg-logo="http://logos.example/tf1.png" group-title="FR | GÉNÉRALISTES",FR| TF1 HD
+http://srv.example:8080/live/user/pass/101.ts
+#EXTINF:-1 tvg-id="" tvg-logo="" group-title="Sport",Canal+ Sport, HD
+#EXTVLCOPT:http-user-agent=MonLecteur/1.0
+http://srv.example:8080/user/pass/202
+#EXTINF:-1 group-title="Films",Dune (2021)
+http://srv.example:8080/movie/user/pass/5001.mkv
+#EXTINF:-1 group-title="Séries",Brumes S01 E02 Marée basse
+http://srv.example:8080/series/user/pass/802.mkv
+#EXTINF:-1 group-title="Séries",Brumes S01E01
+http://srv.example:8080/series/user/pass/801.mkv
+#EXTINF:-1 group-title="Séries",Autre Série 1x01
+http://cdn.example/files/autre_1x01.mp4
+#EXTINF:-1 group-title="Films",Film local.mp4
+http://cdn.example/films/film.mp4?token=abc
+#EXTINF:-1,Sans groupe
+http://radio.example/stream

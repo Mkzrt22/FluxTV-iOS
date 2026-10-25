@@ -1,0 +1,8 @@
+[
+ {"num":1,"name":"FR| TF1 FHD","stream_type":"live","stream_id":101,"stream_icon":"http://logos.example/tf1.png","epg_channel_id":"TF1.fr","added":"1690000000","category_id":"10","tv_archive":1,"tv_archive_duration":"7"},
+ {"num":"2","name":"FR| France 2 ᴴᴰ","stream_type":"live","stream_id":"102","stream_icon":"","epg_channel_id":null,"category_id":10,"tv_archive":0,"tv_archive_duration":0},
+ {"num":3,"name":"|FR| CANAL+ SPORT 4K","stream_id":103,"stream_icon":null,"category_id":"11"},
+ {"name":"Sans identifiant","category_id":"11"},
+ "pas un objet",
+ {"num":4,"name":"BeIN SPORTS 1 HD","stream_id":104,"category_id":"99"}
+]
