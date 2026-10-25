@@ -1,0 +1,136 @@
+<local:TvPage
+    x:Class="FluxTV.Views.SetupPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FluxTV.Views"
+    xmlns:ui="using:FluxTV.UI"
+    Background="Transparent">
+
+    <Page.Resources>
+        <Style x:Key="ChoiceTitle" TargetType="TextBlock" BasedOn="{StaticResource StrongText}">
+            <Setter Property="FontSize" Value="16" />
+        </Style>
+        <Style x:Key="ChoiceText" TargetType="TextBlock" BasedOn="{StaticResource CardSubText}">
+            <Setter Property="Margin" Value="0,3,0,0" />
+        </Style>
+        <Style x:Key="FieldLabel" TargetType="TextBlock" BasedOn="{StaticResource LabelText}">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="{StaticResource TextDimBrush}" />
+            <Setter Property="Margin" Value="2,14,0,6" />
+        </Style>
+    </Page.Resources>
+
+    <Grid Margin="72,40,64,30">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="40" />
+            <ColumnDefinition Width="400" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Présentation -->
+        <StackPanel VerticalAlignment="Center">
+            <Image Source="ms-appx:///Assets/BrandMark.png" Width="64" Height="64" HorizontalAlignment="Left" />
+            <TextBlock Text="Bienvenue sur FluxTV" Style="{StaticResource DisplayText}" Margin="0,20,0,0" />
+            <TextBlock Style="{StaticResource BodyText}" Margin="0,12,0,0" FontSize="16" LineHeight="24"
+                       Text="La TV en direct, le guide des programmes, les films et les séries de ton abonnement IPTV, sur ta Xbox." />
+            <StackPanel Orientation="Horizontal" Margin="0,22,0,0">
+                <TextBlock Text="&#xE72E;" Style="{StaticResource IconText}" FontSize="13" Foreground="{StaticResource TextFaintBrush}" />
+                <TextBlock Style="{StaticResource FaintText}" Margin="8,0,0,0" VerticalAlignment="Center"
+                           Text="Tes identifiants restent chiffrés sur cette console." />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Choix de la source -->
+        <StackPanel x:Name="Choices" Grid.Column="2" VerticalAlignment="Center">
+            <TextBlock Text="CHOISIS TA SOURCE" Style="{StaticResource EyebrowText}" Margin="0,0,0,6" />
+            <Button x:Name="EmbeddedChoice" Style="{StaticResource CardButton}" Height="70" Margin="0,8,0,0" Click="OnEmbedded" Visibility="Collapsed">
+                <Grid>
+                    <Border CornerRadius="16" Background="{StaticResource AccentGradient}" />
+                    <StackPanel Orientation="Horizontal" Margin="18,0" VerticalAlignment="Center">
+                        <TextBlock Text="&#xE77B;" Style="{StaticResource IconText}" FontSize="20" Width="30" Foreground="{StaticResource WhiteBrush}" />
+                        <StackPanel Margin="14,0,0,0">
+                            <TextBlock Text="Mon compte" Style="{StaticResource ChoiceTitle}" Foreground="{StaticResource WhiteBrush}" />
+                            <TextBlock Text="Ton abonnement est déjà dans cette copie de l'app." Style="{StaticResource ChoiceText}" Foreground="#E6FFFFFF" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Button>
+            <Button x:Name="XtreamChoice" Style="{StaticResource CardButton}" Height="70" Margin="0,12,0,0" Click="OnXtream">
+                <Grid>
+                    <Border CornerRadius="16" Background="{StaticResource GlassStrongBrush}" BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1" />
+                    <StackPanel Orientation="Horizontal" Margin="18,0" VerticalAlignment="Center">
+                        <TextBlock Text="&#xE774;" Style="{StaticResource IconText}" FontSize="20" Width="30" Foreground="{StaticResource AccentBrightBrush}" />
+                        <StackPanel Margin="14,0,0,0">
+                            <TextBlock Text="Compte Xtream" Style="{StaticResource ChoiceTitle}" />
+                            <TextBlock Text="Serveur, identifiant et mot de passe du fournisseur." Style="{StaticResource ChoiceText}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Button>
+            <Button x:Name="PlaylistChoice" Style="{StaticResource CardButton}" Height="70" Margin="0,12,0,0" Click="OnPlaylist">
+                <Grid>
+                    <Border CornerRadius="16" Background="{StaticResource GlassStrongBrush}" BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1" />
+                    <StackPanel Orientation="Horizontal" Margin="18,0" VerticalAlignment="Center">
+                        <TextBlock Text="&#xE8FD;" Style="{StaticResource IconText}" FontSize="20" Width="30" Foreground="{StaticResource AccentBrightBrush}" />
+                        <StackPanel Margin="14,0,0,0">
+                            <TextBlock Text="Playlist M3U" Style="{StaticResource ChoiceTitle}" />
+                            <TextBlock Text="Adresse de la playlist, et du guide TV si tu l'as." Style="{StaticResource ChoiceText}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Button>
+            <Button x:Name="DemoChoice" Style="{StaticResource CardButton}" Height="70" Margin="0,12,0,0" Click="OnDemo">
+                <Grid>
+                    <Border CornerRadius="16" Background="{StaticResource GlassBrush}" BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1" />
+                    <StackPanel Orientation="Horizontal" Margin="18,0" VerticalAlignment="Center">
+                        <TextBlock Text="&#xE768;" Style="{StaticResource IconText}" FontSize="18" Width="30" Foreground="{StaticResource TextDimBrush}" />
+                        <StackPanel Margin="14,0,0,0">
+                            <TextBlock Text="Essayer la démonstration" Style="{StaticResource ChoiceTitle}" />
+                            <TextBlock Text="Chaînes et films libres de droits, sans abonnement." Style="{StaticResource ChoiceText}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Button>
+        </StackPanel>
+
+        <!-- Compte Xtream -->
+        <StackPanel x:Name="XtreamForm" Grid.Column="2" VerticalAlignment="Center" Visibility="Collapsed">
+            <TextBlock Text="COMPTE XTREAM" Style="{StaticResource EyebrowText}" />
+            <TextBlock Text="Serveur" Style="{StaticResource FieldLabel}" />
+            <TextBox x:Name="ServerBox" Style="{StaticResource FieldBox}" InputScope="Url" PlaceholderText="http://mon-serveur.com:8080" />
+            <TextBlock Text="Identifiant" Style="{StaticResource FieldLabel}" />
+            <TextBox x:Name="UserBox" Style="{StaticResource FieldBox}" PlaceholderText="Nom d'utilisateur" />
+            <TextBlock Text="Mot de passe" Style="{StaticResource FieldLabel}" />
+            <PasswordBox x:Name="PassBox" Style="{StaticResource FieldPassword}" PlaceholderText="Mot de passe" />
+            <StackPanel Orientation="Horizontal" Margin="0,22,0,0">
+                <Button x:Name="XtreamConnect" Style="{StaticResource PrimaryButton}" Content="Se connecter" Click="OnConnectXtream" />
+                <Button Style="{StaticResource FluxButton}" Content="Retour" Margin="12,0,0,0" Click="OnBackToChoices" />
+            </StackPanel>
+            <TextBlock Style="{StaticResource FaintText}" Margin="2,12,0,0" TextWrapping="WrapWholeWords"
+                       Text="Tu peux aussi coller le lien complet de ta playlist Xtream dans « Serveur »." />
+        </StackPanel>
+
+        <!-- Playlist M3U -->
+        <StackPanel x:Name="PlaylistForm" Grid.Column="2" VerticalAlignment="Center" Visibility="Collapsed">
+            <TextBlock Text="PLAYLIST M3U" Style="{StaticResource EyebrowText}" />
+            <TextBlock Text="Adresse de la playlist" Style="{StaticResource FieldLabel}" />
+            <TextBox x:Name="PlaylistBox" Style="{StaticResource FieldBox}" InputScope="Url" PlaceholderText="http://…/playlist.m3u" />
+            <TextBlock Text="Guide TV (facultatif)" Style="{StaticResource FieldLabel}" />
+            <TextBox x:Name="EpgBox" Style="{StaticResource FieldBox}" InputScope="Url" PlaceholderText="http://…/guide.xml" />
+            <StackPanel Orientation="Horizontal" Margin="0,22,0,0">
+                <Button x:Name="PlaylistConnect" Style="{StaticResource PrimaryButton}" Content="Ajouter" Click="OnConnectPlaylist" />
+                <Button Style="{StaticResource FluxButton}" Content="Retour" Margin="12,0,0,0" Click="OnBackToChoices" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Connexion en cours, erreur -->
+        <StackPanel Grid.Column="2" VerticalAlignment="Bottom" Margin="0,0,0,4">
+            <StackPanel x:Name="BusyPanel" Orientation="Horizontal" Visibility="Collapsed">
+                <ProgressRing x:Name="BusyRing" Width="20" Height="20" Foreground="{StaticResource AccentBrightBrush}" />
+                <TextBlock x:Name="BusyText" Text="Connexion…" Style="{StaticResource DimText}" Margin="10,0,0,0" VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBlock x:Name="ErrorText" Style="{StaticResource LabelText}" FontSize="13" Foreground="{StaticResource ErrorBrush}"
+                       TextWrapping="WrapWholeWords" MaxLines="3" Visibility="Collapsed" />
+        </StackPanel>
+    </Grid>
+</local:TvPage>

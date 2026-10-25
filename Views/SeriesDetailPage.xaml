@@ -1,0 +1,73 @@
+<local:TvPage
+    x:Class="FluxTV.Views.SeriesDetailPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FluxTV.Views"
+    xmlns:ui="using:FluxTV.UI"
+    Background="Transparent">
+
+    <Grid>
+        <Grid Margin="-112,0,0,0" IsHitTestVisible="False">
+            <ui:RemoteImage x:Name="Backdrop" DecodeWidth="960" Glyph="" Opacity="0.85" />
+            <Rectangle Fill="{StaticResource ShadeLeft}" />
+            <Rectangle Fill="{StaticResource ShadeBottomStrong}" VerticalAlignment="Bottom" Height="330" />
+            <Rectangle Fill="{StaticResource ShadeTop}" VerticalAlignment="Top" Height="110" />
+        </Grid>
+
+        <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
+                      HorizontalScrollBarVisibility="Disabled" IsVerticalRailEnabled="False" ZoomMode="Disabled" IsTabStop="False">
+            <StackPanel Padding="0,27,0,30">
+                <Grid Margin="0,0,48,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel HorizontalAlignment="Left" MaxWidth="520" Margin="0,10,28,0">
+                        <TextBlock Text="SÉRIE" Style="{StaticResource EyebrowText}" />
+                        <TextBlock x:Name="TitleText" Style="{StaticResource DisplayText}" Margin="0,8,0,0" />
+                        <TextBlock x:Name="MetaText" Style="{StaticResource DimText}" Margin="0,8,0,0" TextWrapping="WrapWholeWords" MaxLines="2" />
+                        <TextBlock x:Name="PlotText" Style="{StaticResource BodyText}" MaxLines="4" Margin="0,12,0,0" />
+                        <TextBlock x:Name="CreditsText" Style="{StaticResource FaintText}" TextWrapping="WrapWholeWords" MaxLines="2"
+                                   LineHeight="17" Margin="0,8,0,0" />
+                        <StackPanel Orientation="Horizontal" Margin="0,18,0,0">
+                            <Button x:Name="PlayButton" Style="{StaticResource PrimaryButton}" Click="OnPlay" IsEnabled="False" GotFocus="OnTopFocus">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE768;" Style="{StaticResource IconText}" FontSize="14" Foreground="{StaticResource WhiteBrush}" />
+                                    <TextBlock x:Name="PlayText" Text="Lecture" Margin="9,0,0,0" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="FavoriteButton" Style="{StaticResource IconButton}" Margin="14,0,0,0" Click="OnFavorite" GotFocus="OnTopFocus">
+                                <TextBlock x:Name="FavoriteGlyph" Text="&#xE734;" Style="{StaticResource IconText}" />
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                    <Grid Grid.Column="1" Width="140" Height="210" VerticalAlignment="Top" Margin="0,6,0,0">
+                        <Border CornerRadius="14" Background="{StaticResource Surface2Brush}" />
+                        <ui:RemoteImage x:Name="Poster" Radius="14" DecodeWidth="140" Glyph="&#xE8F1;" />
+                        <Border CornerRadius="14" BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1" />
+                    </Grid>
+                </Grid>
+
+                <StackPanel x:Name="StatePanel" Orientation="Horizontal" Margin="0,22,0,0">
+                    <ProgressRing x:Name="StateRing" Width="22" Height="22" IsActive="True" Foreground="{StaticResource AccentBrightBrush}" Margin="0,0,12,0" />
+                    <TextBlock x:Name="StateText" Style="{StaticResource DimText}" Text="Chargement des épisodes…" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <!-- Saisons -->
+                <ListView x:Name="Seasons" Style="{StaticResource RowListStyle}" ItemContainerStyle="{StaticResource ChipItemStyle}"
+                          ItemTemplate="{StaticResource SeasonTemplate}" ItemClick="OnSeasonClick" GotFocus="OnSeasonFocus"
+                          Margin="-8,16,0,0" Padding="8,6,48,6" ui:TvScroll.Margins="16,20,72,8" Visibility="Collapsed" />
+
+                <!-- Épisodes de la saison -->
+                <StackPanel x:Name="EpisodesHeader" Orientation="Horizontal" Margin="0,10,0,0" Visibility="Collapsed">
+                    <TextBlock x:Name="SeasonTitle" Style="{StaticResource SectionText}" />
+                    <TextBlock x:Name="SeasonCount" Style="{StaticResource FaintText}" VerticalAlignment="Bottom" Margin="10,0,0,2" />
+                    <ui:Hint Key="Y" Text="Vu / non vu" Margin="22,0,0,0" />
+                </StackPanel>
+                <ListView x:Name="Episodes" Style="{StaticResource RowListStyle}" ItemContainerStyle="{StaticResource CardItemStyle}"
+                          ItemTemplate="{StaticResource EpisodeTemplate}" ItemClick="OnEpisodeClick" KeyDown="OnEpisodeKeyDown"
+                          Margin="-14,0,0,0" Padding="14,12,48,14" ui:TvScroll.Margins="24,60,72,24" Visibility="Collapsed" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</local:TvPage>

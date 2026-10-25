@@ -1,7 +1,7 @@
 # GitHub : publie le résultat de la compilation Xbox.
 #  - branche « ci-xbox » : résumé, erreurs, journaux et le paquet (lisible avec un simple git fetch) ;
 #  - page « Releases » : « xbox-test » avec FluxTV-Xbox.zip.
-param([string]$Compilation, [string]$Installation)
+param([string]$Compilation, [string]$Installation, [string]$Tests)
 Set-Location (Split-Path $PSScriptRoot -Parent)
 $racine = Get-Location
 $out = Join-Path $env:RUNNER_TEMP 'ci-xbox'
@@ -12,6 +12,7 @@ New-Item -ItemType Directory -Force $out | Out-Null
   "commit: $env:GITHUB_SHA",
   "compilation: $Compilation",
   "installation: $Installation",
+  "tests: $Tests",
   "date: $((Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ'))"
 ) | Set-Content -Path "$out\resultat.txt" -Encoding utf8
 
@@ -24,9 +25,10 @@ if (Test-Path build\compilation.log) {
     Set-Content "$out\avertissements.txt" -Encoding utf8
   Compress-Archive -Path build\compilation.log -DestinationPath "$out\compilation.zip" -Force
 }
-foreach ($f in 'installation.log', 'FluxTV-Xbox.zip') {
+foreach ($f in 'installation.log', 'tests.log', 'FluxTV-Xbox.zip') {
   if (Test-Path "build\$f") { Copy-Item "build\$f" "$out\$f" }
 }
+if (Test-Path build\captures) { Copy-Item -Recurse build\captures "$out\captures" }
 
 Push-Location $out
 git init -q -b ci-xbox

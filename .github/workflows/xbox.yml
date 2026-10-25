@@ -28,9 +28,20 @@ jobs:
         continue-on-error: true
         shell: powershell
         run: ./.github/essai-installation.ps1
+      - name: Captures d'écran
+        if: steps.install.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 10
+        shell: powershell
+        run: ./.github/captures.ps1
+      - name: Tests du cœur
+        id: tests
+        continue-on-error: true
+        shell: pwsh
+        run: dotnet run --project Tests/CoreTests.csproj -c Release 2>&1 | Tee-Object -FilePath build/tests.log
       - name: Publication
         if: always()
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-        run: ./.github/publier.ps1 -Compilation "${{ steps.build.outcome }}" -Installation "${{ steps.install.outcome }}"
+        run: ./.github/publier.ps1 -Compilation "${{ steps.build.outcome }}" -Installation "${{ steps.install.outcome }}" -Tests "${{ steps.tests.outcome }}"

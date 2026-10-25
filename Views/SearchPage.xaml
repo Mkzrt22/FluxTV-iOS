@@ -1,0 +1,31 @@
+<local:TvPage
+    x:Class="FluxTV.Views.SearchPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FluxTV.Views"
+    xmlns:ui="using:FluxTV.UI"
+    Background="Transparent">
+
+    <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
+                  HorizontalScrollBarVisibility="Disabled" IsVerticalRailEnabled="False" ZoomMode="Disabled" IsTabStop="False">
+        <StackPanel Padding="0,27,0,40">
+            <TextBlock Text="Rechercher" Style="{StaticResource TitleText}" />
+            <Grid Margin="0,14,48,0" HorizontalAlignment="Left" Width="540">
+                <TextBox x:Name="Query" Style="{StaticResource FieldBox}" PlaceholderText="Chaîne, film, série…" InputScope="Search"
+                         TextChanged="OnQueryChanged" KeyDown="OnQueryKeyDown" GotFocus="OnQueryFocus" Padding="40,9,8,0" />
+                <TextBlock Text="&#xE721;" Style="{StaticResource IconText}" FontSize="15" Foreground="{StaticResource TextFaintBrush}"
+                           HorizontalAlignment="Left" Margin="14,0,0,0" IsHitTestVisible="False" />
+            </Grid>
+
+            <StackPanel x:Name="StatePanel" Orientation="Horizontal" Margin="0,18,0,0">
+                <ProgressRing x:Name="StateRing" Width="20" Height="20" Foreground="{StaticResource AccentBrightBrush}" Margin="0,0,12,0" />
+                <TextBlock x:Name="StateText" Style="{StaticResource DimText}" VerticalAlignment="Center"
+                           Text="Appuie sur Ⓐ pour écrire avec le clavier de la console." />
+            </StackPanel>
+
+            <ui:CardRow x:Name="ChannelsRow" Title="Chaînes" CardTemplate="{StaticResource WideTemplate}" ShowCount="True" />
+            <ui:CardRow x:Name="MoviesRow" Title="Films" CardTemplate="{StaticResource PosterTemplate}" ShowCount="True" />
+            <ui:CardRow x:Name="SeriesRow" Title="Séries" CardTemplate="{StaticResource PosterTemplate}" ShowCount="True" />
+        </StackPanel>
+    </ScrollViewer>
+</local:TvPage>

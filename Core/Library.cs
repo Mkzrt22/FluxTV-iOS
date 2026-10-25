@@ -249,11 +249,14 @@ namespace FluxTV.Core
             catch (UnauthorizedAccessException) { return new LibraryData(); }
         }
 
-        public void Save(LibraryData lib)
+        public void Save(LibraryData lib) => SaveText(lib.ToJson());
+
+        /// <summary>Enregistre un JSON déjà préparé (écriture hors du fil de l'interface).</summary>
+        public void SaveText(string json)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             var tmp = path + ".tmp";
-            File.WriteAllText(tmp, lib.ToJson(), new UTF8Encoding(false));
+            File.WriteAllText(tmp, json, new UTF8Encoding(false));
             if (File.Exists(path)) File.Delete(path);
             File.Move(tmp, path);
         }

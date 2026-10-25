@@ -37,7 +37,15 @@ namespace FluxTV.Core
         /// <summary>Tri A→Z à la française (« Été » entre « Eau » et « Fargo »), nombres dans l'ordre naturel.</summary>
         public static int FrenchCompare(string a, string b)
         {
-            string fa = Fold(a), fb = Fold(b);
+            int c = CompareFolded(Fold(a), Fold(b));
+            return c != 0 ? c : string.CompareOrdinal(a ?? "", b ?? "");
+        }
+
+        /// <summary>Comparaison de deux textes déjà passés par Fold (tri de longues listes).</summary>
+        public static int CompareFolded(string fa, string fb)
+        {
+            fa = fa ?? "";
+            fb = fb ?? "";
             int i = 0, j = 0;
             while (i < fa.Length && j < fb.Length)
             {
@@ -56,17 +64,18 @@ namespace FluxTV.Core
                 i++;
                 j++;
             }
-            int rest = (fa.Length - i).CompareTo(fb.Length - j);
-            return rest != 0 ? rest : string.CompareOrdinal(a ?? "", b ?? "");
+            return (fa.Length - i).CompareTo(fb.Length - j);
         }
 
         /// <summary>Tous les mots de la recherche figurent dans le texte (ordre libre, accents ignorés).</summary>
-        public static bool Matches(string text, IList<string> words)
+        public static bool Matches(string text, IList<string> words) => MatchesFolded(Fold(text), words);
+
+        /// <summary>Comme Matches, pour un texte déjà passé par Fold.</summary>
+        public static bool MatchesFolded(string folded, IList<string> words)
         {
             if (words == null || words.Count == 0) return true;
-            var t = Fold(text);
             foreach (var w in words)
-                if (t.IndexOf(w, StringComparison.Ordinal) < 0) return false;
+                if (folded.IndexOf(w, StringComparison.Ordinal) < 0) return false;
             return true;
         }
 
