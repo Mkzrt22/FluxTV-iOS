@@ -30,6 +30,8 @@ $ecrans = @(
     @('movie', 8), @('seriesdetail', 8), @('search', 9), @('settings', 7), @('credits', 8), @('play-live', 13), @('play-channels', 13),
     @('play-movie', 13), @('play-options', 13)
 )
+# Écrans repris sur la fiche du Store (démonstration uniquement : contenus libres de droits)
+$pourLeStore = @('intro', 'home', 'live', 'movies', 'movie', 'seriesdetail', 'search', 'play-channels', 'play-movie')
 foreach ($e in $ecrans) {
     $nom = $e[0]
     Get-Process -Name FluxTV -ErrorAction SilentlyContinue | Stop-Process -Force
@@ -45,7 +47,7 @@ foreach ($e in $ecrans) {
     }
     Start-Sleep -Seconds $e[1]
     if (-not (Get-Process -Id $pid2 -ErrorAction SilentlyContinue)) { Note "$nom : l'app s'est fermée (plantage ?)" }
-    Capturer $nom
+    Capturer $nom -Png:($pourLeStore -contains $nom)
 }
 Get-Process -Name FluxTV -ErrorAction SilentlyContinue | Stop-Process -Force
 

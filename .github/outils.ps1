@@ -31,12 +31,18 @@ $jpeg = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Obje
 $qualite = New-Object System.Drawing.Imaging.EncoderParameters 1
 $qualite.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter ([System.Drawing.Imaging.Encoder]::Quality), 88L
 
-function Capturer([string]$nom) {
+# -Png : copie sans perte en plus (captures d'écran de la fiche du Store, PNG obligatoire)
+function Capturer([string]$nom, [switch]$Png) {
     $b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
     $image = New-Object System.Drawing.Bitmap $b.Width, $b.Height
     $g = [System.Drawing.Graphics]::FromImage($image)
     $g.CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)
     $image.Save((Join-Path (Resolve-Path $dossier) "$nom.jpg"), $jpeg, $qualite)
+    if ($Png) {
+        $store = Join-Path (Resolve-Path $dossier) 'store'
+        New-Item -ItemType Directory -Force $store | Out-Null
+        $image.Save((Join-Path $store "$nom.png"), [System.Drawing.Imaging.ImageFormat]::Png)
+    }
     $g.Dispose()
     $image.Dispose()
 }
