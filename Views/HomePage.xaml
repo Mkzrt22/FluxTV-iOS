@@ -6,9 +6,9 @@
     xmlns:ui="using:FluxTV.UI"
     Background="Transparent">
 
-    <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
+    <ScrollViewer x:Name="Scroller" Margin="-20,0,0,0" VerticalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
                   HorizontalScrollBarVisibility="Disabled" IsVerticalRailEnabled="False" ZoomMode="Disabled" IsTabStop="False">
-        <StackPanel Padding="0,27,0,40">
+        <StackPanel Padding="20,27,0,40">
             <!-- En-tête : salutation, abonnement, heure -->
             <Grid Height="34" Margin="0,0,48,0">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -31,6 +31,12 @@
                     <Border CornerRadius="18" Background="{StaticResource Surface2Brush}" />
                     <ui:RemoteImage x:Name="HeroImage" Radius="18" DecodeWidth="800" Glyph="&#xE714;" />
                     <Border CornerRadius="18" Background="{StaticResource ShadeLeft}" />
+                    <!-- Affiche verticale : montrée entière à droite, sur un fond atténué -->
+                    <Grid x:Name="HeroPosterBox" Width="120" Height="180" HorizontalAlignment="Right" VerticalAlignment="Center"
+                          Margin="0,0,36,0" Visibility="Collapsed">
+                        <ui:RemoteImage x:Name="HeroPoster" Radius="12" DecodeWidth="120" Glyph="&#xE8B2;" />
+                        <Border CornerRadius="12" BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1" />
+                    </Grid>
                     <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="28,0,28,24" MaxWidth="470">
                         <TextBlock x:Name="HeroEyebrow" Style="{StaticResource EyebrowText}" />
                         <TextBlock x:Name="HeroTitle" Style="{StaticResource DisplayText}" FontSize="30" LineHeight="36" Margin="0,6,0,0" />

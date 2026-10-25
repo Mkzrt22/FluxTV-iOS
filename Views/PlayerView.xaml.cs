@@ -50,6 +50,7 @@ namespace FluxTV.Views
         DateTime lastInteraction = DateTime.UtcNow;
         DateTime lastSave = DateTime.UtcNow;
         DateTime lastSeekKey;
+        DateTime openedAt;
         int seekRepeat;
         bool closed;
         bool opened;
@@ -60,6 +61,7 @@ namespace FluxTV.Views
         Episode upNextEpisode;
         int upNextLeft;
         List<ChannelItem> panelChannels = new List<ChannelItem>();
+        bool holdOverlay;
 
         public PlayerView()
         {
@@ -239,6 +241,7 @@ namespace FluxTV.Views
         void OnOpened()
         {
             opened = true;
+            openedAt = DateTime.UtcNow;
             LoadingArt.Visibility = Visibility.Collapsed;
             if (current.IsLive && triedAlternate)
             {
@@ -303,6 +306,12 @@ namespace FluxTV.Views
         void OnFailed(MediaPlayerError error, int code, int httpStatus)
         {
             if (closed || failedShown) return;
+            // Un direct qui a bien marché un moment a de nouveau droit à trois reconnexions
+            if (current.IsLive)
+            {
+                if (opened && DateTime.UtcNow - openedAt > TimeSpan.FromSeconds(30)) failures = 0;
+                opened = false;
+            }
             Journal.Write("Lecture impossible : " + error + " (0x" + code.ToString("X8") + (httpStatus > 0 ? ", HTTP " + httpStatus : "") + ")"
                           + (current.IsLive ? ", direct" : ""));
             // Direct : on réessaie, et on essaie l'autre format (HLS ou TS)
@@ -451,6 +460,15 @@ namespace FluxTV.Views
             else Close();
         }
 
+        /// <summary>Essais automatiques : commandes, liste des chaînes ou options affichées et gardées à l'écran.</summary>
+        public void ShowForTest(string what)
+        {
+            holdOverlay = true;
+            if (what == "channels") OpenChannels();
+            else if (what == "options") OpenOptions();
+            else ShowOverlay(Overlay.Full);
+        }
+
         /// <summary>Retour de veille : le direct reprend en temps réel.</summary>
         public void OnResuming()
         {
@@ -503,7 +521,7 @@ namespace FluxTV.Views
             ClockText.Text = DateTime.Now.ToString("HH:mm");
             if (overlay != Overlay.Hidden) UpdateInfo();
             var playing = player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing;
-            if (overlay != Overlay.Hidden && playing && SidePanel.Visibility != Visibility.Visible)
+            if (overlay != Overlay.Hidden && playing && SidePanel.Visibility != Visibility.Visible && !holdOverlay)
             {
                 var idle = (now - lastInteraction).TotalSeconds;
                 if (idle > (overlay == Overlay.Banner ? 4.5 : 7)) HideOverlay();

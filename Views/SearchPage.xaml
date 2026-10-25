@@ -6,9 +6,9 @@
     xmlns:ui="using:FluxTV.UI"
     Background="Transparent">
 
-    <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
+    <ScrollViewer x:Name="Scroller" Margin="-20,0,0,0" VerticalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
                   HorizontalScrollBarVisibility="Disabled" IsVerticalRailEnabled="False" ZoomMode="Disabled" IsTabStop="False">
-        <StackPanel Padding="0,27,0,40">
+        <StackPanel Padding="20,27,0,40">
             <TextBlock Text="Rechercher" Style="{StaticResource TitleText}" />
             <Grid Margin="0,14,48,0" HorizontalAlignment="Left" Width="540">
                 <TextBox x:Name="Query" Style="{StaticResource FieldBox}" PlaceholderText="Chaîne, film, série…" InputScope="Search"

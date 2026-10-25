@@ -14,9 +14,9 @@
             <Rectangle Fill="{StaticResource ShadeTop}" VerticalAlignment="Top" Height="110" />
         </Grid>
 
-        <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
+        <ScrollViewer x:Name="Scroller" Margin="-20,0,0,0" VerticalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
                       HorizontalScrollBarVisibility="Disabled" IsVerticalRailEnabled="False" ZoomMode="Disabled" IsTabStop="False">
-            <StackPanel Padding="0,27,0,30">
+            <StackPanel Padding="20,27,0,30">
                 <Grid Margin="0,0,48,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />

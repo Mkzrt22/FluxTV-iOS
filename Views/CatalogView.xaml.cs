@@ -60,6 +60,8 @@ namespace FluxTV.Views
 
         string Noun => IsSeries ? "séries" : "films";
 
+        string Count(int n) => n + " " + (n > 1 ? Noun : IsSeries ? "série" : "film");
+
         public void FocusDefault()
         {
             if (cards.Count > 0)
@@ -170,7 +172,7 @@ namespace FluxTV.Views
                 cards = c.Id == FavoritesId ? list : Sorted(list);
                 PosterGrid.ItemsSource = cards;
                 if (c.Count == null) c.Count = cards.Count.ToString();
-                CountText.Text = c.Name + " · " + cards.Count + " " + Noun;
+                CountText.Text = c.Name + " · " + Count(cards.Count);
                 if (cards.Count == 0) ShowMessage("Rien ici", "Cette catégorie est vide.", false);
                 else HideState();
                 if (wantFocus || keepFocus)

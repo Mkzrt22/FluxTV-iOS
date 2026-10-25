@@ -31,6 +31,7 @@ namespace FluxTV.Views
         public SeriesDetailPage()
         {
             InitializeComponent();
+            Backdrop.Opened += (img, w, h) => Backdrop.Opacity = h > w * 1.15 ? 0.45 : 0.9;
             seasonTimer.Tick += (s, e) =>
             {
                 seasonTimer.Stop();

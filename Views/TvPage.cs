@@ -13,6 +13,7 @@ namespace FluxTV.Views
     {
         object savedFocus;
         bool restorePending;
+        bool focusOnLoad;
 
         public TvPage()
         {
@@ -33,13 +34,28 @@ namespace FluxTV.Views
 
         void OnLoadedRestore(object sender, RoutedEventArgs e)
         {
-            if (!restorePending) return;
-            restorePending = false;
-            var target = savedFocus;
-            Tv.Later(() =>
+            if (restorePending)
             {
-                if (!Tv.FocusControl(target)) FocusDefault();
-            });
+                restorePending = false;
+                focusOnLoad = false;
+                var target = savedFocus;
+                Tv.Later(() =>
+                {
+                    if (!Tv.FocusControl(target)) FocusDefault();
+                });
+            }
+            else if (focusOnLoad)
+            {
+                focusOnLoad = false;
+                Tv.Later(FocusDefault);
+            }
+        }
+
+        /// <summary>Focus sur l'élément principal, dès que la page est affichée.</summary>
+        public void RequestFocus()
+        {
+            if (IsLoaded) Tv.Later(FocusDefault);
+            else focusOnLoad = true;
         }
 
         /// <summary>Élément qui prend le focus à l'arrivée sur la page.</summary>

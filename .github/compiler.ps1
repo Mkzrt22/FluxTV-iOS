@@ -25,5 +25,6 @@ Get-ChildItem build\AppPackages -Recurse -Include *.msix, *.appx |
   Where-Object { $_.DirectoryName -match 'Dependencies\\x64' } |
   Copy-Item -Destination "$paquet\Dependances"
 Copy-Item Signature\FluxTV-test.cer "$paquet\FluxTV-certificat.cer"
+Copy-Item LISEZMOI.txt "$paquet\LISEZMOI.txt"
 Compress-Archive -Path "$paquet\*" -DestinationPath build\FluxTV-Xbox.zip -Force
 Get-ChildItem $paquet -Recurse -File | Format-Table Name, Length -AutoSize | Out-String | Write-Host

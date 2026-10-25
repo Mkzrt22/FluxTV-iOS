@@ -40,7 +40,7 @@
 
         <GridView x:Name="PosterGrid" Grid.Row="1" Grid.Column="2" Style="{StaticResource CatalogGridStyle}"
                   ItemContainerStyle="{StaticResource CardGridItemStyle}" ItemTemplate="{StaticResource PosterTemplate}"
-                  ItemClick="OnCardClick" KeyDown="OnGridKeyDown" Padding="10,10,30,40" Margin="-10,0,0,0"
+                  ItemClick="OnCardClick" KeyDown="OnGridKeyDown" Padding="16,16,30,40" Margin="-16,-6,0,0"
                   ui:TvScroll.Margins="16,30,16,46" />
 
         <StackPanel x:Name="StatePanel" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center"

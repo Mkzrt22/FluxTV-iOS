@@ -24,9 +24,9 @@
         </Style>
     </Page.Resources>
 
-    <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
+    <ScrollViewer x:Name="Scroller" Margin="-20,0,0,0" VerticalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
                   HorizontalScrollBarVisibility="Disabled" IsVerticalRailEnabled="False" ZoomMode="Disabled" IsTabStop="False">
-        <StackPanel Padding="0,27,48,40" MaxWidth="660" HorizontalAlignment="Left">
+        <StackPanel Padding="20,27,48,40" MaxWidth="680" HorizontalAlignment="Left">
             <TextBlock Text="Réglages" Style="{StaticResource TitleText}" />
 
             <!-- Source -->

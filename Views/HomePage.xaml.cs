@@ -46,6 +46,7 @@ namespace FluxTV.Views
             app.AccountChanged += UpdateHeader;
             app.ProgrammesLoaded += OnProgrammes;
             app.SourceChanged += OnSourceChanged;
+            HeroImage.Opened += OnHeroImageOpened;
             Loaded += OnLoaded;
             Unloaded += (s, e) =>
             {
@@ -220,8 +221,18 @@ namespace FluxTV.Views
 
         // ───────────────────────────── Mise en avant ─────────────────────────────
 
+        void OnHeroImageOpened(RemoteImage image, int width, int height)
+        {
+            if (heroTarget is LiveChannel) return;
+            var portrait = height > width * 1.15;
+            HeroPosterBox.Visibility = portrait ? Visibility.Visible : Visibility.Collapsed;
+            HeroImage.Opacity = portrait ? 0.4 : 1;
+            if (portrait) HeroPoster.Url = image.Url;
+        }
+
         void UpdateHero(List<ContentRef> resume, List<LiveChannel> channels)
         {
+            var previous = HeroImage.Url;
             HeroImage.ImageStretch = Stretch.UniformToFill;
             HeroImage.ImagePadding = new Thickness(0);
             HeroProgress.Visibility = Visibility.Collapsed;
@@ -278,6 +289,12 @@ namespace FluxTV.Views
             {
                 heroTarget = null;
                 Hero.Visibility = Visibility.Collapsed;
+            }
+            // Nouvelle image : l'affiche verticale éventuelle sera remise en place à son ouverture
+            if (HeroImage.Url != previous || heroTarget is LiveChannel)
+            {
+                HeroPosterBox.Visibility = Visibility.Collapsed;
+                HeroImage.Opacity = 1;
             }
         }
 

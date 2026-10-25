@@ -38,6 +38,7 @@ namespace FluxTV.Views
         bool setupMode;
         bool railOpen;
         Control lastContentFocus;
+        DateTime railQuietUntil;
         PlayerView player;
         object focusBeforePlayer;
 
@@ -137,7 +138,12 @@ namespace FluxTV.Views
             FocusContentSoon();
         }
 
-        void FocusContentSoon() => Tv.Later(() => (ContentFrame.Content as TvPage)?.FocusDefault());
+        void FocusContentSoon()
+        {
+            // Pendant le changement de page, le focus peut passer un instant sur le menu : il reste fermé
+            railQuietUntil = DateTime.UtcNow.AddMilliseconds(600);
+            (ContentFrame.Content as TvPage)?.RequestFocus();
+        }
 
         void OnNavClick(object sender, RoutedEventArgs e)
         {
@@ -172,7 +178,10 @@ namespace FluxTV.Views
 
         public void FocusRail()
         {
-            if (!setupMode) CurrentNavButton.Focus(FocusState.Keyboard);
+            if (setupMode) return;
+            railQuietUntil = DateTime.MinValue;
+            CurrentNavButton.Focus(FocusState.Keyboard);
+            SetRailOpen(true);
         }
 
         void SetRailOpen(bool open)
@@ -190,7 +199,12 @@ namespace FluxTV.Views
         {
             var el = e.NewFocusedElement;
             var inRail = Tv.IsInside(el, Rail);
-            if (!setupMode && player == null) SetRailOpen(inRail);
+            if (!setupMode && player == null)
+            {
+                // Focus déplacé par l'app (page qui change) : le menu ne s'ouvre pas pour autant
+                if (!inRail) SetRailOpen(false);
+                else if (DateTime.UtcNow >= railQuietUntil) SetRailOpen(true);
+            }
             if (!inRail && el is Control c && Tv.IsInside(el, ContentFrame)) lastContentFocus = c;
         }
 
@@ -250,6 +264,7 @@ namespace FluxTV.Views
             if (setupMode) return false;
             if (ContentFrame.CanGoBack)
             {
+                railQuietUntil = DateTime.UtcNow.AddMilliseconds(600);
                 ContentFrame.GoBack();
                 return true;
             }
@@ -362,10 +377,16 @@ namespace FluxTV.Views
                     OpenSeries(Demo.SeriesList[0], Demo.SeriesCategory.Name);
                     break;
                 case "play-live":
+                case "play-channels":
                     app.Play(Demo.Channels[1], Demo.Channels);
+                    await Task.Delay(6000);
+                    player?.ShowForTest(screen == "play-channels" ? "channels" : "controls");
                     break;
                 case "play-movie":
+                case "play-options":
                     app.Play(Demo.Movies[1], Demo.VodCategory.Name, true);
+                    await Task.Delay(6000);
+                    player?.ShowForTest(screen == "play-options" ? "options" : "controls");
                     break;
                 case "row":
                     if (ContentFrame.Content is HomePage home) home.FocusFirstRow();

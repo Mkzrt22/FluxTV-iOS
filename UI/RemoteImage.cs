@@ -18,6 +18,9 @@ namespace FluxTV.UI
         ImageBrush brush;
         Storyboard fade;
 
+        /// <summary>Image affichée : sa largeur et sa hauteur d'origine (affiche verticale ou image large).</summary>
+        public event Action<RemoteImage, int, int> Opened;
+
         public RemoteImage()
         {
             IsHitTestVisible = false;
@@ -153,6 +156,7 @@ namespace FluxTV.UI
             fade.Children.Add(anim);
             fade.Completed += (s, a) => picture.Opacity = 1;
             fade.Begin();
+            if (brush.ImageSource is BitmapImage b) Opened?.Invoke(this, b.PixelWidth, b.PixelHeight);
         }
 
         void OnFailed(object sender, ExceptionRoutedEventArgs e)

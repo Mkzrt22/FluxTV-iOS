@@ -1,0 +1,65 @@
+FluxTV pour Xbox (mode développeur)
+===================================
+
+Ce dossier contient :
+  - FluxTV.msix (ou FluxTV-perso.msix) : l'application
+  - Dependances\ : 3 fichiers dont l'app a besoin
+      Microsoft.VCLibs.x64.14.00.appx
+      Microsoft.NET.Native.Framework.2.2.appx
+      Microsoft.NET.Native.Runtime.2.2.appx
+  - FluxTV-certificat.cer : le certificat de signature (test)
+
+La version « perso » contient ton compte : elle s'ouvre directement sur tes chaînes.
+Ne la partage pas.
+
+
+1. Préparer la console (une seule fois)
+---------------------------------------
+  a. Allume la Xbox en mode développeur : l'application « Dev Home » s'ouvre.
+  b. Dans Dev Home, section « Remote Access » (accès à distance) :
+     active « Xbox Device Portal », et choisis un nom d'utilisateur et un mot de passe.
+  c. Note l'adresse affichée, du genre https://192.168.1.42:11443
+
+
+2. Installer FluxTV depuis un PC (ou un téléphone) sur le même réseau
+---------------------------------------------------------------------
+  a. Décompresse le .zip sur le PC.
+  b. Ouvre l'adresse notée plus haut dans un navigateur (Edge, Chrome…).
+     Le navigateur signale un certificat non sûr : c'est normal pour la console,
+     choisis « Avancé » puis « Continuer vers le site ».
+     Connecte-toi avec le nom et le mot de passe choisis à l'étape 1.
+  c. Page « Home » (Accueil), rubrique « My games & apps » : clique sur « Add » (Ajouter).
+  d. Choisis le fichier FluxTV.msix (ou FluxTV-perso.msix), puis « Next ».
+  e. Clique sur « Choose dependency files » et ajoute les 3 fichiers du dossier
+     Dependances. Si un champ « certificat » est proposé, ajoute FluxTV-certificat.cer.
+  f. Clique sur « Start » : l'installation prend une minute environ.
+  g. FluxTV apparaît dans la liste des applis de Dev Home : lance-la à la manette.
+
+Mise à jour : refais simplement l'étape 2 avec le nouveau fichier (tes favoris et
+tes reprises sont gardés). Désinstallation : Device Portal, « My games & apps »,
+menu « … » de FluxTV, « Uninstall ».
+
+
+3. La manette
+-------------
+  Partout
+    Ⓐ  ouvrir, regarder          Ⓑ  revenir (puis le menu à gauche)
+    Ⓨ  ajouter ou retirer des favoris (chaînes, films, séries)
+  Direct
+    ⬆ ⬇ ou LB / RB  chaîne précédente / suivante
+    Ⓧ  liste des chaînes          Ⓐ  commandes et programme en cours
+  Films et séries
+    ⬅ ➡  reculer / avancer de 10 s (maintenir : 30 s, puis 1 min)
+    LB / RB  −30 s / +30 s         LT / RT  −5 min / +5 min
+    Ⓐ  pause                       Ⓨ  audio, sous-titres et format d'image
+
+  Réglages utiles : « Format du direct » (si une chaîne ne démarre pas),
+  « Adapter la fréquence de la télé » (24, 50 ou 60 Hz selon la vidéo : active aussi
+  « Autoriser 24 Hz » et « Autoriser 50 Hz » dans les réglages vidéo de la Xbox).
+
+
+Bon à savoir
+------------
+  - Une app installée ainsi ne fonctionne qu'en mode développeur.
+  - Si une vidéo ne se lit pas, le message indique pourquoi (format, serveur, connexion).
+    En direct, l'app réessaie seule et passe d'elle-même du format HLS au format TS.
