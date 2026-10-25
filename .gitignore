@@ -1,0 +1,10 @@
+bin/
+obj/
+build/
+AppPackages/
+BundleArtifacts/
+.vs/
+*.user
+# Copies personnelles avec un compte intégré : jamais sur GitHub
+compte.flux
+*-perso.msix

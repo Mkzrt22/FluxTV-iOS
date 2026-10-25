@@ -1,0 +1,36 @@
+# Compilation de FluxTV pour Xbox (UWP) sur un serveur Windows de GitHub : paquet .msix signé
+# avec le certificat de test, dépendances et certificat, puis essai d'installation sur ce serveur.
+# Résultat : branche « ci-xbox » et page Releases (« xbox-test »).
+name: FluxTV Xbox
+on:
+  push:
+    branches: [xbox]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xbox
+  cancel-in-progress: true
+jobs:
+  msix:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: microsoft/setup-msbuild@v2
+      - id: build
+        name: Compilation
+        shell: pwsh
+        run: ./.github/compiler.ps1
+      - id: install
+        name: Essai d'installation
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        shell: powershell
+        run: ./.github/essai-installation.ps1
+      - name: Publication
+        if: always()
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./.github/publier.ps1 -Compilation "${{ steps.build.outcome }}" -Installation "${{ steps.install.outcome }}"

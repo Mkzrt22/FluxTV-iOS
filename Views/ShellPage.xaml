@@ -1,0 +1,10 @@
+<Page
+    x:Class="FluxTV.Views.ShellPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="{StaticResource BgBrush}">
+    <Grid>
+        <TextBlock Text="FluxTV" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="48"
+                   Foreground="{StaticResource TextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    </Grid>
+</Page>

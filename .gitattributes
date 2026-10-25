@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.png binary
+*.ttf binary
+*.pfx binary
+*.cer binary
+*.msix binary
+*.appx binary

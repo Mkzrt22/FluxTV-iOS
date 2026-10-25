@@ -1,0 +1,15 @@
+<Application
+    x:Class="FluxTV.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    RequestedTheme="Dark"
+    RequiresPointerMode="WhenRequested">
+    <Application.Resources>
+        <ResourceDictionary>
+            <Color x:Key="BgColor">#080818</Color>
+            <SolidColorBrush x:Key="BgBrush" Color="#080818" />
+            <SolidColorBrush x:Key="TextBrush" Color="#F1F2FF" />
+            <FontFamily x:Key="DisplayFont">ms-appx:///Assets/Fonts/Sora-Bold.ttf#Sora</FontFamily>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
