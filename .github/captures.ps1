@@ -19,14 +19,14 @@ try {
 $ecran = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
 Note "Écran : $($ecran.Width) × $($ecran.Height)"
 
-$paquet = Get-AppxPackage -Name FluxTV
+$paquet = Get-AppxPackage -Name Kevin22.FluxTVPlayer
 if (-not $paquet) { Note 'App non installée : pas de captures'; exit 0 }
 $aumid = "$($paquet.PackageFamilyName)!App"
 Note "App : $aumid"
 
 # Écran, attente (secondes)
 $ecrans = @(
-    @('setup', 6), @('home', 7), @('rail', 7), @('row', 7), @('live', 8), @('movies', 8), @('series', 8),
+    @('intro', 4), @('demarrage', 11), @('setup', 6), @('home', 7), @('rail', 7), @('row', 7), @('live', 8), @('movies', 8), @('series', 8),
     @('movie', 8), @('seriesdetail', 8), @('search', 9), @('settings', 7), @('play-live', 13), @('play-channels', 13),
     @('play-movie', 13), @('play-options', 13)
 )
@@ -35,7 +35,9 @@ foreach ($e in $ecrans) {
     Get-Process -Name FluxTV -ErrorAction SilentlyContinue | Stop-Process -Force
     Start-Sleep -Seconds 1
     try {
-        $pid2 = [Lanceur]::Lancer($aumid, "test:$nom")
+        # « demarrage » : lancement normal (intro, puis choix de la source)
+        $arguments = if ($nom -eq 'demarrage') { '' } else { "test:$nom" }
+        $pid2 = [Lanceur]::Lancer($aumid, $arguments)
         Note "$nom : lancée (processus $pid2)"
     } catch {
         Note "$nom : lancement impossible : $($_.Exception.Message)"

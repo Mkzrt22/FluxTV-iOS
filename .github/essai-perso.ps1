@@ -20,7 +20,7 @@ python -I -B Ajouter-Compte.py build\paquet\FluxTV.msix build\FluxTV-essai-perso
 if (-not (Test-Path build\FluxTV-essai-perso.msix)) { Note 'Paquet personnel non créé'; exit 1 }
 
 Get-Process -Name FluxTV -ErrorAction SilentlyContinue | Stop-Process -Force
-Get-AppxPackage -Name FluxTV | Remove-AppxPackage
+Get-AppxPackage -Name Kevin22.FluxTVPlayer | Remove-AppxPackage
 $deps = @(Get-ChildItem build\paquet\Dependances -File | ForEach-Object { $_.FullName })
 try {
     Add-AppxPackage -Path build\FluxTV-essai-perso.msix -DependencyPath $deps -ErrorAction Stop
@@ -31,7 +31,7 @@ try {
 }
 
 # Lancement ordinaire : l'app doit s'ouvrir sur le compte intégré (serveur fictif : erreur de connexion attendue)
-$paquet = Get-AppxPackage -Name FluxTV
+$paquet = Get-AppxPackage -Name Kevin22.FluxTVPlayer
 $aumid = "$($paquet.PackageFamilyName)!App"
 try {
     $pid2 = [Lanceur]::Lancer($aumid, '')

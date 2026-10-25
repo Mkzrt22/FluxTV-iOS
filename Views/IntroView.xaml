@@ -1,0 +1,151 @@
+<UserControl
+    x:Class="FluxTV.Views.IntroView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    IsTabStop="True"
+    UseSystemFocusVisuals="False">
+
+    <!-- Animation de lancement, la même que sur PC : nébuleuse et étoiles en vitesse lumière, emblème qui
+         bascule en 3D, lecture qui surgit, ondes qui se dessinent, salve d'étincelles, lettres qui tombent,
+         puis plongée vers l'app. -->
+    <Grid x:Name="Root">
+        <Rectangle x:Name="Backdrop" IsHitTestVisible="False">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#080818" Offset="0" />
+                    <GradientStop Color="#04040D" Offset="1" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <canvas:CanvasAnimatedControl x:Name="Fx" ClearColor="#00000000" IsHitTestVisible="False" />
+
+        <StackPanel x:Name="Core" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.3"
+                    IsHitTestVisible="False">
+            <StackPanel.RenderTransform>
+                <CompositeTransform x:Name="CoreZoom" />
+            </StackPanel.RenderTransform>
+
+            <!-- Emblème -->
+            <Grid x:Name="MarkSlot" Width="100" Height="100" HorizontalAlignment="Center">
+                <Canvas>
+                    <Image x:Name="Rays" Source="ms-appx:///Assets/Intro/Rayons.png" Width="780" Height="780"
+                           Canvas.Left="-340" Canvas.Top="-340" Opacity="0" RenderTransformOrigin="0.5,0.5">
+                        <Image.RenderTransform>
+                            <RotateTransform x:Name="RaysTurn" />
+                        </Image.RenderTransform>
+                    </Image>
+                </Canvas>
+                <Grid RenderTransformOrigin="0.5,0.5">
+                    <Grid.RenderTransform>
+                        <CompositeTransform x:Name="PulseScale" />
+                    </Grid.RenderTransform>
+                    <Grid x:Name="Mark" Opacity="0" RenderTransformOrigin="0.5,0.5">
+                        <Grid.Projection>
+                            <PlaneProjection x:Name="MarkFlip" RotationY="-120" RotationX="25" />
+                        </Grid.Projection>
+                        <Grid.RenderTransform>
+                            <CompositeTransform x:Name="MarkScale" ScaleX="0.25" ScaleY="0.25" />
+                        </Grid.RenderTransform>
+                        <Image Source="ms-appx:///Assets/Intro/OmbreLogo.png" Width="200" Height="200" Margin="-50" />
+                        <Viewbox>
+                            <Canvas Width="48" Height="48">
+                                <Rectangle Width="48" Height="48" RadiusX="13" RadiusY="13">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#6366F1" Offset="0" />
+                                            <GradientStop Color="#A21CAF" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Rectangle Width="48" Height="48" RadiusX="13" RadiusY="13">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#38FFFFFF" Offset="0" />
+                                            <GradientStop Color="#00FFFFFF" Offset="0.5" />
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Path x:Name="Play" Fill="White"
+                                      Data="M11,15.2C11,13.6 12.7,12.7 14,13.5L26.6,22.2C27.7,23 27.7,24.9 26.6,25.7L14,34.5C12.7,35.3 11,34.4 11,32.8Z">
+                                    <Path.RenderTransform>
+                                        <CompositeTransform x:Name="PlayPop" CenterX="19" CenterY="24" ScaleX="0" ScaleY="0" Rotation="-40" />
+                                    </Path.RenderTransform>
+                                </Path>
+                                <!-- Pointillés en multiples de l'épaisseur du trait : un tiret de la longueur de l'arc -->
+                                <Path x:Name="Wave1" Data="M30.5,18.6A7.6,7.6 0 0 1 30.5,29.4" Stroke="White" Opacity="0.9"
+                                      StrokeThickness="2.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round"
+                                      StrokeDashArray="5.2 6" StrokeDashOffset="5.2" />
+                                <Path x:Name="Wave2" Data="M34.8,14.6A13,13 0 0 1 34.8,33.4" Stroke="White" Opacity="0.55"
+                                      StrokeThickness="2.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round"
+                                      StrokeDashArray="8.9 9" StrokeDashOffset="8.9" />
+                                <!-- Reflet qui balaie l'emblème -->
+                                <Rectangle Width="48" Height="48" RadiusX="13" RadiusY="13">
+                                    <Rectangle.Fill>
+                                        <LinearGradientBrush StartPoint="0,0.3" EndPoint="1,0.7">
+                                            <GradientStop x:Name="Glare0" Color="#00FFFFFF" Offset="-0.6" />
+                                            <GradientStop x:Name="Glare1" Color="#BFFFFFFF" Offset="-0.45" />
+                                            <GradientStop x:Name="Glare2" Color="#00FFFFFF" Offset="-0.3" />
+                                        </LinearGradientBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Canvas>
+                        </Viewbox>
+                    </Grid>
+                </Grid>
+            </Grid>
+
+            <!-- « FluxTV » : lettres créées dans le code -->
+            <StackPanel x:Name="Word" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,22,0,0" />
+
+            <TextBlock x:Name="Tag" Text="LECTEUR IPTV" HorizontalAlignment="Center" Margin="0,8,0,0" Opacity="0"
+                       FontFamily="{StaticResource FontBold}" FontWeight="Bold" FontSize="12" CharacterSpacing="320"
+                       Foreground="{StaticResource AccentBrightBrush}" IsTextScaleFactorEnabled="False" RenderTransformOrigin="0.5,0.5">
+                <TextBlock.RenderTransform>
+                    <CompositeTransform x:Name="TagSpread" ScaleX="1.7" />
+                </TextBlock.RenderTransform>
+            </TextBlock>
+
+            <Grid x:Name="Bar" Width="190" Height="4" Margin="0,28,0,0" Opacity="0" HorizontalAlignment="Center">
+                <Grid.Clip>
+                    <RectangleGeometry Rect="0,0,190,4" />
+                </Grid.Clip>
+                <Rectangle RadiusX="2" RadiusY="2" Fill="#1FFFFFFF" />
+                <Rectangle RadiusX="2" RadiusY="2" RenderTransformOrigin="0,0.5">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#5B5CF0" Offset="0" />
+                            <GradientStop Color="#C084FC" Offset="1" />
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                    <Rectangle.RenderTransform>
+                        <CompositeTransform x:Name="BarScale" ScaleX="0.04" />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Rectangle Width="57" HorizontalAlignment="Left">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#00FFFFFF" Offset="0" />
+                            <GradientStop Color="#E6FFFFFF" Offset="0.5" />
+                            <GradientStop Color="#00FFFFFF" Offset="1" />
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                    <Rectangle.RenderTransform>
+                        <TranslateTransform x:Name="Shimmer" X="-57" />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+            </Grid>
+
+            <TextBlock x:Name="Status" HorizontalAlignment="Center" Margin="0,14,0,0" Opacity="0"
+                       FontFamily="{StaticResource FontBold}" FontWeight="Bold" FontSize="11" CharacterSpacing="160"
+                       Foreground="{StaticResource TextFaintBrush}" IsTextScaleFactorEnabled="False" />
+        </StackPanel>
+
+        <TextBlock x:Name="Credit" Text="MADE BY KEVIN G" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,24"
+                   Opacity="0" FontFamily="{StaticResource FontBold}" FontWeight="Bold" FontSize="11" CharacterSpacing="200"
+                   Foreground="{StaticResource TextFaintBrush}" IsTextScaleFactorEnabled="False" />
+
+        <Image x:Name="Flash" Source="ms-appx:///Assets/Intro/Eclair.png" Stretch="Fill" Opacity="0" IsHitTestVisible="False" />
+    </Grid>
+</UserControl>

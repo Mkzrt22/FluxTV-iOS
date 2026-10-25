@@ -41,6 +41,8 @@ namespace FluxTV.Views
         DateTime railQuietUntil;
         PlayerView player;
         object focusBeforePlayer;
+        IntroView intro;
+        bool introBlocking;
 
         public ShellPage()
         {
@@ -60,11 +62,56 @@ namespace FluxTV.Views
             UpdateRail();
         }
 
-        /// <summary>Accueil si une source est connue, sinon choix de la source.</summary>
+        /// <summary>
+        /// Animation de lancement pendant que les chaînes se chargent, puis accueil si une source est connue,
+        /// sinon choix de la source.
+        /// </summary>
         public void Start()
         {
-            if (app.Start()) ShowApp("home");
+            var ready = app.Start();
+            PlayIntro(false);
+            if (ready) ShowApp("home");
             else ShowSetup();
+        }
+
+        // ───────────────────────────── Intro ─────────────────────────────
+
+        void PlayIntro(bool hold)
+        {
+            introBlocking = true;
+            Main.Opacity = 0;
+            intro = new IntroView();
+            intro.Revealing += OnIntroRevealing;
+            intro.Finished += OnIntroFinished;
+            IntroHost.Children.Add(intro);
+            intro.Play(() => app.Source == null || !app.LiveLoading, IntroStatus, hold);
+        }
+
+        string IntroStatus()
+        {
+            if (app.Source == null) return "Bienvenue";
+            if (app.LiveLoading) return "Chargement des chaînes…";
+            return "Prêt";
+        }
+
+        /// <summary>La plongée commence : l'app sort de l'éclair et reçoit le focus.</summary>
+        void OnIntroRevealing()
+        {
+            introBlocking = false;
+            if (intro != null) intro.IsHitTestVisible = false;
+            RevealMain.Begin();
+            FocusContentSoon();
+        }
+
+        void OnIntroFinished()
+        {
+            var v = intro;
+            intro = null;
+            if (v == null) return;
+            v.Revealing -= OnIntroRevealing;
+            v.Finished -= OnIntroFinished;
+            v.Release();
+            IntroHost.Children.Remove(v);
         }
 
         public bool IsPlaying => player != null;
@@ -140,6 +187,8 @@ namespace FluxTV.Views
 
         void FocusContentSoon()
         {
+            // Pendant l'intro, le focus attend la fin de l'animation
+            if (introBlocking) return;
             // Pendant le changement de page, le focus peut passer un instant sur le menu : il reste fermé
             railQuietUntil = DateTime.UtcNow.AddMilliseconds(600);
             (ContentFrame.Content as TvPage)?.RequestFocus();
@@ -197,6 +246,7 @@ namespace FluxTV.Views
 
         void OnGlobalGotFocus(object sender, FocusManagerGotFocusEventArgs e)
         {
+            if (introBlocking) return;
             var el = e.NewFocusedElement;
             var inRail = Tv.IsInside(el, Rail);
             if (!setupMode && player == null)
@@ -211,6 +261,12 @@ namespace FluxTV.Views
         /// <summary>En entrant dans le menu à la manette, le focus va sur la page en cours.</summary>
         void OnGlobalGettingFocus(object sender, GettingFocusEventArgs e)
         {
+            // Pendant l'intro, l'app (encore invisible) ne prend pas le focus
+            if (introBlocking)
+            {
+                if (e.NewFocusedElement != null && !Tv.IsInside(e.NewFocusedElement, IntroHost)) e.TryCancel();
+                return;
+            }
             if (setupMode || player != null || e.Direction == FocusNavigationDirection.None) return;
             var target = e.NewFocusedElement;
             if (target == null || !Tv.IsInside(target, Rail) || Tv.IsInside(e.OldFocusedElement, Rail)) return;
@@ -255,6 +311,7 @@ namespace FluxTV.Views
 
         public bool Back()
         {
+            if (introBlocking) return true;
             if (player != null)
             {
                 player.HandleBack();
@@ -347,6 +404,13 @@ namespace FluxTV.Views
         /// </summary>
         public async void StartTest(string screen)
         {
+            if (screen == "intro")
+            {
+                app.UseForTest(Source.Demo);
+                PlayIntro(true);
+                ShowApp("home");
+                return;
+            }
             if (screen == "setup")
             {
                 app.TestMode = true;

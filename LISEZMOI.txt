@@ -33,11 +33,14 @@ Ne la partage pas.
   e. Clique sur « Choose dependency files » et ajoute les 3 fichiers du dossier
      Dependances. Si un champ « certificat » est proposé, ajoute FluxTV-certificat.cer.
   f. Clique sur « Start » : l'installation prend une minute environ.
-  g. FluxTV apparaît dans la liste des applis de Dev Home : lance-la à la manette.
+  g. FluxTV Player apparaît dans la liste des applis de Dev Home : lance-la à la manette.
+
+Si l'ancienne version « FluxTV » (sans « Player ») est installée, désinstalle-la :
+c'est une autre appli pour la console, elle ne serait pas remplacée.
 
 Mise à jour : refais simplement l'étape 2 avec le nouveau fichier (tes favoris et
 tes reprises sont gardés). Désinstallation : Device Portal, « My games & apps »,
-menu « … » de FluxTV, « Uninstall ».
+menu « … » de FluxTV Player, « Uninstall ».
 
 
 3. La manette

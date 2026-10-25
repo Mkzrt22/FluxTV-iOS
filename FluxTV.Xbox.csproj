@@ -23,7 +23,7 @@
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <PackageCertificateKeyFile>Signature\FluxTV-test.pfx</PackageCertificateKeyFile>
     <PackageCertificatePassword>fluxtv</PackageCertificatePassword>
-    <PackageCertificateThumbprint>5B78BAE85EB1F3A28F8CE0F8480D0F8B7A4A3893</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>668690F8E76EB016CCAAF892CC8F1FB2FF748207</PackageCertificateThumbprint>
     <AppxBundle>Never</AppxBundle>
     <UapAppxPackageBuildMode>SideloadOnly</UapAppxPackageBuildMode>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
@@ -90,11 +90,16 @@
     <Content Include="Assets\*.png" />
     <Content Include="Assets\*.jpg" />
     <Content Include="Assets\Demo\*.png" />
+    <Content Include="Assets\Intro\*.png" />
     <Content Include="Assets\Fonts\*.ttf" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.14</Version>
+    </PackageReference>
+    <!-- Dessin accéléré de l'animation de lancement (étoiles, ondes, étincelles) -->
+    <PackageReference Include="Win2D.uwp">
+      <Version>1.26.0</Version>
     </PackageReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

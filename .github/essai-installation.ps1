@@ -12,7 +12,7 @@ Set-ItemProperty -Path $cle -Name AllowDevelopmentWithoutDevLicense -Value 1 -Ty
 Import-Certificate -FilePath Signature\FluxTV-test.cer -CertStoreLocation Cert:\LocalMachine\TrustedPeople | Out-Null
 
 $deps = @(Get-ChildItem build\paquet\Dependances -File | ForEach-Object { $_.FullName })
-Get-AppxPackage -Name FluxTV | Remove-AppxPackage -ErrorAction SilentlyContinue
+Get-AppxPackage -Name Kevin22.FluxTVPlayer | Remove-AppxPackage -ErrorAction SilentlyContinue
 Add-AppxPackage -Path $msix -DependencyPath $deps
-Get-AppxPackage -Name FluxTV | Format-List Name, Version, Publisher, Architecture, Status, InstallLocation |
+Get-AppxPackage -Name Kevin22.FluxTVPlayer | Format-List Name, Version, Publisher, Architecture, Status, InstallLocation |
   Out-String | Tee-Object -FilePath build\installation.log

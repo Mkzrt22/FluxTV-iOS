@@ -5,13 +5,14 @@
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   IgnorableNamespaces="uap mp">
 
-  <!-- L'éditeur doit être identique au sujet du certificat de signature (Signature\FluxTV-test.cer) -->
-  <Identity Name="FluxTV" Publisher="CN=FluxTV" Version="1.0.0.0" />
+  <!-- Identité réservée dans l'Espace partenaires Microsoft (Store) ; le certificat de test des paquets
+       à installer soi-même (Signature\FluxTV-test.cer) a le même sujet que l'éditeur. -->
+  <Identity Name="Kevin22.FluxTVPlayer" Publisher="CN=05FD659D-6D1F-4B5B-ADB5-C9C3AED73597" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="6f1c2d3e-8a9b-4c5d-9e7f-1a2b3c4d5e6f" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
 
   <Properties>
-    <DisplayName>FluxTV</DisplayName>
-    <PublisherDisplayName>Kevin G</PublisherDisplayName>
+    <DisplayName>FluxTV Player</DisplayName>
+    <PublisherDisplayName>Kevin22</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -26,13 +27,14 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="FluxTV.App">
       <uap:VisualElements
-        DisplayName="FluxTV"
+        DisplayName="FluxTV Player"
         Description="Lecteur IPTV : TV en direct, guide des programmes, films et séries."
         BackgroundColor="#080818"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\LargeTile.png" ShortName="FluxTV" />
-        <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#0C0C22" />
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\LargeTile.png" ShortName="FluxTV Player" />
+        <!-- Lueur sur fond nuit : l'animation de lancement de l'app prend le relais -->
+        <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#06061A" />
       </uap:VisualElements>
     </Application>
   </Applications>

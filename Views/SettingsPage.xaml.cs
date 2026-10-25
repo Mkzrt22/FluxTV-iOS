@@ -21,7 +21,7 @@ namespace FluxTV.Views
         {
             InitializeComponent();
             NavigationCacheMode = NavigationCacheMode.Required;
-            VersionText.Text = "FluxTV pour Xbox · version " + AppInfo.Version;
+            VersionText.Text = "FluxTV Player pour Xbox · version " + AppInfo.Version;
             app.AccountChanged += () => { if (IsLoaded) Fill(); };
             app.SourceChanged += () => { if (IsLoaded) Fill(); };
             Loaded += (s, e) =>

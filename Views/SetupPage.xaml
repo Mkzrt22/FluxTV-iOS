@@ -30,7 +30,7 @@
         <!-- Présentation -->
         <StackPanel VerticalAlignment="Center">
             <Image Source="ms-appx:///Assets/BrandMark.png" Width="64" Height="64" HorizontalAlignment="Left" />
-            <TextBlock Text="Bienvenue sur FluxTV" Style="{StaticResource DisplayText}" Margin="0,20,0,0" />
+            <TextBlock Text="Bienvenue sur FluxTV Player" Style="{StaticResource DisplayText}" Margin="0,20,0,0" />
             <TextBlock Style="{StaticResource BodyText}" Margin="0,12,0,0" FontSize="16" LineHeight="24"
                        Text="La TV en direct, le guide des programmes, les films et les séries de ton abonnement IPTV, sur ta Xbox." />
             <StackPanel Orientation="Horizontal" Margin="0,22,0,0">

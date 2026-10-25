@@ -44,6 +44,24 @@
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
+        <!-- Fin de l'intro : l'app sort de l'éclair (comme sur PC) -->
+        <Storyboard x:Name="RevealMain">
+            <DoubleAnimation Storyboard.TargetName="Main" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:1">
+                <DoubleAnimation.EasingFunction>
+                    <QuinticEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="MainZoom" Storyboard.TargetProperty="ScaleX" From="0.88" To="1" Duration="0:0:1">
+                <DoubleAnimation.EasingFunction>
+                    <QuinticEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="MainZoom" Storyboard.TargetProperty="ScaleY" From="0.88" To="1" Duration="0:0:1">
+                <DoubleAnimation.EasingFunction>
+                    <QuinticEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
         <Storyboard x:Name="ToastHide">
             <DoubleAnimation Storyboard.TargetName="Toast" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.3" />
             <DoubleAnimation Storyboard.TargetName="Toast" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
@@ -52,67 +70,75 @@
     </Page.Resources>
 
     <Grid x:Name="Root" KeyDown="OnRootKeyDown">
-        <Image Source="ms-appx:///Assets/Fond.jpg" Stretch="UniformToFill" IsHitTestVisible="False" />
+        <Grid x:Name="Main" RenderTransformOrigin="0.5,0.5">
+            <Grid.RenderTransform>
+                <CompositeTransform x:Name="MainZoom" />
+            </Grid.RenderTransform>
+            <Image Source="ms-appx:///Assets/Fond.jpg" Stretch="UniformToFill" IsHitTestVisible="False" />
 
-        <Frame x:Name="ContentFrame" Margin="112,0,0,0" />
+            <Frame x:Name="ContentFrame" Margin="112,0,0,0" />
 
-        <!-- Menu latéral : icônes, libellés quand il a le focus -->
-        <Grid x:Name="Rail" HorizontalAlignment="Left" KeyDown="OnRailKeyDown">
-            <Rectangle Width="104" HorizontalAlignment="Left" IsHitTestVisible="False">
-                <Rectangle.Fill>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                        <GradientStop Color="#B304040D" Offset="0" />
-                        <GradientStop Color="#0004040D" Offset="1" />
-                    </LinearGradientBrush>
-                </Rectangle.Fill>
-            </Rectangle>
-            <Rectangle x:Name="RailShade" Width="340" HorizontalAlignment="Left" Fill="{StaticResource RailShade}" Opacity="0" IsHitTestVisible="False" />
-            <Image Source="ms-appx:///Assets/BrandMark.png" Width="30" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="49,27,0,0" />
-            <StackPanel x:Name="RailItems" Margin="40,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">
-                <StackPanel.RenderTransform>
-                    <TranslateTransform />
-                </StackPanel.RenderTransform>
-                <Button x:Name="NavHome" Tag="home" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE80F;" Style="{StaticResource RailIcon}" />
-                        <TextBlock Text="Accueil" Style="{StaticResource RailLabel}" />
-                    </StackPanel>
-                </Button>
-                <Button x:Name="NavLive" Tag="live" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE7F4;" Style="{StaticResource RailIcon}" />
-                        <TextBlock Text="TV en direct" Style="{StaticResource RailLabel}" />
-                    </StackPanel>
-                </Button>
-                <Button x:Name="NavMovies" Tag="movies" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE8B2;" Style="{StaticResource RailIcon}" />
-                        <TextBlock Text="Films" Style="{StaticResource RailLabel}" />
-                    </StackPanel>
-                </Button>
-                <Button x:Name="NavSeries" Tag="series" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE8F1;" Style="{StaticResource RailIcon}" />
-                        <TextBlock Text="Séries" Style="{StaticResource RailLabel}" />
-                    </StackPanel>
-                </Button>
-                <Button x:Name="NavSearch" Tag="search" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE721;" Style="{StaticResource RailIcon}" />
-                        <TextBlock Text="Rechercher" Style="{StaticResource RailLabel}" />
-                    </StackPanel>
-                </Button>
-                <Button x:Name="NavSettings" Tag="settings" Style="{StaticResource RailButton}" Click="OnNavClick">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE713;" Style="{StaticResource RailIcon}" />
-                        <TextBlock Text="Réglages" Style="{StaticResource RailLabel}" />
-                    </StackPanel>
-                </Button>
-            </StackPanel>
+            <!-- Menu latéral : icônes, libellés quand il a le focus -->
+            <Grid x:Name="Rail" HorizontalAlignment="Left" KeyDown="OnRailKeyDown">
+                <Rectangle Width="104" HorizontalAlignment="Left" IsHitTestVisible="False">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#B304040D" Offset="0" />
+                            <GradientStop Color="#0004040D" Offset="1" />
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+                <Rectangle x:Name="RailShade" Width="340" HorizontalAlignment="Left" Fill="{StaticResource RailShade}" Opacity="0" IsHitTestVisible="False" />
+                <Image Source="ms-appx:///Assets/BrandMark.png" Width="30" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="49,27,0,0" />
+                <StackPanel x:Name="RailItems" Margin="40,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform />
+                    </StackPanel.RenderTransform>
+                    <Button x:Name="NavHome" Tag="home" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE80F;" Style="{StaticResource RailIcon}" />
+                            <TextBlock Text="Accueil" Style="{StaticResource RailLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="NavLive" Tag="live" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE7F4;" Style="{StaticResource RailIcon}" />
+                            <TextBlock Text="TV en direct" Style="{StaticResource RailLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="NavMovies" Tag="movies" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8B2;" Style="{StaticResource RailIcon}" />
+                            <TextBlock Text="Films" Style="{StaticResource RailLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="NavSeries" Tag="series" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8F1;" Style="{StaticResource RailIcon}" />
+                            <TextBlock Text="Séries" Style="{StaticResource RailLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="NavSearch" Tag="search" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE721;" Style="{StaticResource RailIcon}" />
+                            <TextBlock Text="Rechercher" Style="{StaticResource RailLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="NavSettings" Tag="settings" Style="{StaticResource RailButton}" Click="OnNavClick">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE713;" Style="{StaticResource RailIcon}" />
+                            <TextBlock Text="Réglages" Style="{StaticResource RailLabel}" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- Lecteur vidéo (par-dessus tout) -->
+            <Grid x:Name="PlayerHost" Visibility="Collapsed" Background="Black" />
         </Grid>
 
-        <!-- Lecteur vidéo (par-dessus tout) -->
-        <Grid x:Name="PlayerHost" Visibility="Collapsed" Background="Black" />
+        <!-- Animation de lancement -->
+        <Grid x:Name="IntroHost" />
 
         <!-- Message bref -->
         <Border x:Name="Toast" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,40" Padding="20,11"
