@@ -41,6 +41,23 @@ namespace FluxTV.Views
 
         void OnTopFocus(object sender, RoutedEventArgs e) => Scroller.ChangeView(null, 0, null);
 
+        void OnBottomFocus(object sender, RoutedEventArgs e) => Scroller.ChangeView(null, Scroller.ScrollableHeight, null);
+
+        void OnCredits(object sender, RoutedEventArgs e)
+        {
+            var show = Credits.Visibility != Visibility.Visible;
+            Credits.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+            CreditsLabel.Text = show ? "Masquer les crédits" : "Crédits et licences";
+            Tv.Later(() => Scroller.ChangeView(null, Scroller.ScrollableHeight, null));
+        }
+
+        /// <summary>Captures automatiques : crédits affichés.</summary>
+        public void ShowCreditsForTest()
+        {
+            CreditsButton.Focus(FocusState.Keyboard);
+            OnCredits(null, null);
+        }
+
         void Fill()
         {
             loading = true;

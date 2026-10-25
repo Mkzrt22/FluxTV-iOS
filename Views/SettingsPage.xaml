@@ -126,11 +126,26 @@
             <!-- À propos -->
             <TextBlock Text="À PROPOS" Style="{StaticResource EyebrowText}" Margin="0,24,0,0" />
             <Border Style="{StaticResource Card}">
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="ms-appx:///Assets/BrandMark.png" Width="40" Height="40" />
-                    <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
-                        <TextBlock x:Name="VersionText" Style="{StaticResource SettingTitle}" />
-                        <TextBlock Style="{StaticResource SettingText}" Text="Tes identifiants restent chiffrés sur cette console." />
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="ms-appx:///Assets/BrandMark.png" Width="40" Height="40" />
+                        <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                            <TextBlock x:Name="VersionText" Style="{StaticResource SettingTitle}" />
+                            <TextBlock Style="{StaticResource SettingText}" Text="Tes identifiants restent chiffrés sur cette console." />
+                        </StackPanel>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource SettingText}" Margin="0,12,0,0"
+                               Text="FluxTV Player est un lecteur : il ne fournit aucune chaîne ni aucun contenu. Il lit uniquement les sources que tu ajoutes." />
+                    <Button x:Name="CreditsButton" Style="{StaticResource ChipButton}" Margin="0,12,0,0" Click="OnCredits" GotFocus="OnBottomFocus">
+                        <TextBlock x:Name="CreditsLabel" Text="Crédits et licences" />
+                    </Button>
+                    <StackPanel x:Name="Credits" Visibility="Collapsed" Margin="0,8,0,0">
+                        <TextBlock Style="{StaticResource SettingText}"
+                                   Text="Films de démonstration : Big Buck Bunny (2008) et Tears of Steel (2012), © Blender Foundation, blender.org, sous licence Creative Commons Attribution 3.0." />
+                        <TextBlock Style="{StaticResource SettingText}"
+                                   Text="Mire en direct : flux de démonstration public d'Unified Streaming. Flux de test hébergés par Mux et Unified Streaming." />
+                        <TextBlock Style="{StaticResource SettingText}"
+                                   Text="Polices Sora et Manrope : SIL Open Font License 1.1. Animation de lancement dessinée avec Win2D (licence MIT)." />
                     </StackPanel>
                 </StackPanel>
             </Border>

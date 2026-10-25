@@ -440,9 +440,14 @@ namespace FluxTV.Views
                 case "seriesdetail":
                     OpenSeries(Demo.SeriesList[0], Demo.SeriesCategory.Name);
                     break;
+                case "credits":
+                    Navigate("settings");
+                    await Task.Delay(800);
+                    (ContentFrame.Content as SettingsPage)?.ShowCreditsForTest();
+                    break;
                 case "play-live":
                 case "play-channels":
-                    app.Play(Demo.Channels[1], Demo.Channels);
+                    app.Play(Demo.Channels[screen == "play-live" ? 0 : 1], Demo.Channels);
                     await Task.Delay(6000);
                     player?.ShowForTest(screen == "play-channels" ? "channels" : "controls");
                     break;

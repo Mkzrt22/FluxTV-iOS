@@ -149,7 +149,7 @@ namespace FluxTV.Views
                 Add(intro, cell.Projection, "RotationX", begin, K(0, 80), K(900, 0, Spring()));
             }
             // Slogan qui se resserre
-            Add(intro, Tag, "Opacity", 1520, K(0, 0), K(1100, 1, EaseOut(4)));
+            Add(intro, Tagline, "Opacity", 1520, K(0, 0), K(1100, 1, EaseOut(4)));
             Add(intro, TagSpread, "ScaleX", 1520, K(0, 1.7), K(1100, 1, EaseOut(4)));
             // Barre de chargement, état, signature
             Add(intro, Bar, "Opacity", 1670, K(0, 0), K(500, 1));
@@ -185,7 +185,7 @@ namespace FluxTV.Views
             Add(outro, BarScale, "ScaleX", 0, K(0, 0.85), K(350, 1, EaseOut(2)));
             Add(outro, CoreZoom, "ScaleX", 300, K(0, 1), K(750, 5, EaseIn(3)));
             Add(outro, CoreZoom, "ScaleY", 300, K(0, 1), K(750, 5, EaseIn(3)));
-            Add(outro, Core, "Opacity", 300, K(0, 1), K(750, 0, EaseIn(2)));
+            Add(outro, SplashCore, "Opacity", 300, K(0, 1), K(750, 0, EaseIn(2)));
             Add(outro, Credit, "Opacity", 300, K(0, 1), K(300, 0));
             Add(outro, Rays, "Opacity", 300, K(0, 1), K(300, 0));
             Add(outro, Flash, "Opacity", 680, K(0, 0), K(160, 0.85), K(900, 0, EaseOut(2)));

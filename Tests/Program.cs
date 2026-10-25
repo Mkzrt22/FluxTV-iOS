@@ -462,6 +462,7 @@ namespace FluxTV.Tests
             var repo = new Repository(Source.Demo, Path.GetTempPath());
             var live = await repo.LiveAsync();
             Assert.Equal(3, live.Channels.Count);
+            Assert.True(live.Channels.TrueForAll(c => !c.Url.Contains("apple.com")), "démo sans flux Apple");
             var cats = await repo.VodCategoriesAsync();
             var movies = await repo.MoviesAsync(cats[0].Id);
             Assert.Equal(2, movies.Count);

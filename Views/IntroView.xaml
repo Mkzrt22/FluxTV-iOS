@@ -21,7 +21,7 @@
 
         <canvas:CanvasAnimatedControl x:Name="Fx" ClearColor="#00000000" IsHitTestVisible="False" />
 
-        <StackPanel x:Name="Core" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.3"
+        <StackPanel x:Name="SplashCore" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.3"
                     IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform x:Name="CoreZoom" />
@@ -67,7 +67,7 @@
                                         </LinearGradientBrush>
                                     </Rectangle.Fill>
                                 </Rectangle>
-                                <Path x:Name="Play" Fill="White"
+                                <Path x:Name="PlayGlyph" Fill="White"
                                       Data="M11,15.2C11,13.6 12.7,12.7 14,13.5L26.6,22.2C27.7,23 27.7,24.9 26.6,25.7L14,34.5C12.7,35.3 11,34.4 11,32.8Z">
                                     <Path.RenderTransform>
                                         <CompositeTransform x:Name="PlayPop" CenterX="19" CenterY="24" ScaleX="0" ScaleY="0" Rotation="-40" />
@@ -99,7 +99,7 @@
             <!-- « FluxTV » : lettres créées dans le code -->
             <StackPanel x:Name="Word" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,22,0,0" />
 
-            <TextBlock x:Name="Tag" Text="LECTEUR IPTV" HorizontalAlignment="Center" Margin="0,8,0,0" Opacity="0"
+            <TextBlock x:Name="Tagline" Text="LECTEUR IPTV" HorizontalAlignment="Center" Margin="0,8,0,0" Opacity="0"
                        FontFamily="{StaticResource FontBold}" FontWeight="Bold" FontSize="12" CharacterSpacing="320"
                        Foreground="{StaticResource AccentBrightBrush}" IsTextScaleFactorEnabled="False" RenderTransformOrigin="0.5,0.5">
                 <TextBlock.RenderTransform>

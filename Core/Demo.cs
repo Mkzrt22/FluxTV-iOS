@@ -5,8 +5,8 @@ using System.Linq;
 namespace FluxTV.Core
 {
     /// <summary>
-    /// Contenu de démonstration : flux de test publics et films libres de droits (Blender Foundation,
-    /// licence Creative Commons BY). Il permet d'essayer FluxTV sans abonnement.
+    /// Contenu de démonstration : mire de test publique (Unified Streaming) et films libres de droits
+    /// (Blender Foundation, licence Creative Commons BY 3.0). Il permet d'essayer FluxTV sans abonnement.
     /// Les visuels « ms-appx:/// » sont fournis avec l'app.
     /// </summary>
     public static class Demo
@@ -19,12 +19,12 @@ namespace FluxTV.Core
 
         public static readonly List<LiveChannel> Channels = new List<LiveChannel>
         {
-            new LiveChannel("demo:live1", null, "Direct de test", Img + "DemoLive1.png", LiveCategory.Id, "demo.live1", 1,
-                url: "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"),
-            new LiveChannel("demo:live2", null, "Mire Apple", Img + "DemoLive2.png", LiveCategory.Id, "demo.live2", 2,
-                url: "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8"),
-            new LiveChannel("demo:live3", null, "Mire Apple · multi-débit", Img + "DemoLive3.png", LiveCategory.Id, "demo.live3", 3,
-                url: "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8"),
+            new LiveChannel("demo:live1", null, "Mire en direct", Img + "DemoLive1.png", LiveCategory.Id, "demo.live1", 1,
+                url: "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.m3u8"),
+            new LiveChannel("demo:live2", null, "Ciné libre", Img + "DemoLive2.png", LiveCategory.Id, "demo.live2", 2,
+                url: "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8"),
+            new LiveChannel("demo:live3", null, "Animation libre", Img + "DemoLive3.png", LiveCategory.Id, "demo.live3", 3,
+                url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"),
         };
 
         public static readonly List<Movie> Movies = new List<Movie>
@@ -77,9 +77,9 @@ namespace FluxTV.Core
 
         static readonly Dictionary<string, string[]> Titles = new Dictionary<string, string[]>
         {
-            ["demo:live1"] = new[] { "Direct de test", "Flux continu", "Mesure de latence" },
-            ["demo:live2"] = new[] { "Mire BipBop", "Test d'image", "Test du son" },
-            ["demo:live3"] = new[] { "Mire haute définition", "Test HDR", "Test de débit" },
+            ["demo:live1"] = new[] { "Mire de test", "Horloge en direct", "Signal de référence" },
+            ["demo:live2"] = new[] { "Tears of Steel", "Court métrage libre", "Science-fiction" },
+            ["demo:live3"] = new[] { "Big Buck Bunny", "Court métrage libre", "Animation" },
         };
 
         /// <summary>Guide des chaînes de démonstration (créneaux d'une heure autour de maintenant).</summary>
