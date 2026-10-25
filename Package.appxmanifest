@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  IgnorableNamespaces="uap">
+  IgnorableNamespaces="uap mp">
 
   <!-- L'éditeur doit être identique au sujet du certificat de signature (Signature\FluxTV-test.cer) -->
   <Identity Name="FluxTV" Publisher="CN=FluxTV" Version="1.0.0.0" />
+  <mp:PhoneIdentity PhoneProductId="6f1c2d3e-8a9b-4c5d-9e7f-1a2b3c4d5e6f" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
 
   <Properties>
     <DisplayName>FluxTV</DisplayName>
