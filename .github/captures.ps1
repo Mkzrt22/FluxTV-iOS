@@ -1,4 +1,4 @@
-# Captures d'écran de l'app installée sur le serveur Windows de GitHub : l'app est lancée en mode
+﻿# Captures d'écran de l'app installée sur le serveur Windows de GitHub : l'app est lancée en mode
 # « essai » (démonstration, rien n'est enregistré) sur chaque écran, puis l'écran est photographié.
 # Résultat : build\captures\*.jpg et captures.log.
 $ErrorActionPreference = 'Continue'

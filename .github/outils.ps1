@@ -1,4 +1,4 @@
-# Outils communs des essais sur le serveur Windows : journal, lancement de l'app avec des arguments,
+﻿# Outils communs des essais sur le serveur Windows : journal, lancement de l'app avec des arguments,
 # capture de l'écran. À charger avec « . .github/outils.ps1 » après avoir défini $dossier et $journal.
 function Note([string]$texte) { Add-Content -Path $journal -Value $texte -Encoding UTF8; Write-Host $texte }
 

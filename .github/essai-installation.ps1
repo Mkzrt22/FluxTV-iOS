@@ -1,4 +1,4 @@
-# Essai : installe le paquet sur le serveur Windows de GitHub. S'il s'installe, le paquet, sa
+﻿# Essai : installe le paquet sur le serveur Windows de GitHub. S'il s'installe, le paquet, sa
 # signature et ses dépendances sont valides (même installation que sur la Xbox).
 # $args[0] : paquet à essayer (par défaut build\paquet\FluxTV.msix).
 $ErrorActionPreference = 'Stop'

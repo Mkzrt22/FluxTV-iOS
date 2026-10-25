@@ -1,11 +1,14 @@
-# Kit de certification des applications Windows (le même contrôle que le Store) sur l'app installée.
+﻿# Kit de certification des applications Windows (le même contrôle que le Store) sur l'app installée.
 # Résultat : build\wack\rapport.xml et build\wack\wack.txt (résumé, tests en échec).
 $ErrorActionPreference = 'Continue'
 Set-Location (Split-Path $PSScriptRoot -Parent)
 $dossier = 'build\wack'
 New-Item -ItemType Directory -Force $dossier | Out-Null
 $resume = Join-Path $dossier 'wack.txt'
-function Note([string]$t) { $t | Tee-Object -FilePath $resume -Append | Write-Host }
+function Note([string]$t) {
+  Add-Content -Path $resume -Value $t -Encoding UTF8
+  Write-Host $t
+}
 
 $appcert = Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\App Certification Kit\appcert.exe' -ErrorAction SilentlyContinue |
   Select-Object -First 1

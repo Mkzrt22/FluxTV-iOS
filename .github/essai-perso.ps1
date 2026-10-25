@@ -1,4 +1,4 @@
-# Essai de la copie personnelle : un compte FICTIF est ajouté au paquet tout juste compilé (même outil
+﻿# Essai de la copie personnelle : un compte FICTIF est ajouté au paquet tout juste compilé (même outil
 # que pour la vraie copie personnelle, faite hors de GitHub), puis le paquet est installé et lancé.
 # Windows refuse un paquet mal formé ou mal signé : s'il s'installe, la méthode est bonne.
 $ErrorActionPreference = 'Continue'

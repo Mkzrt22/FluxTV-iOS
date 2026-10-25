@@ -48,7 +48,12 @@ namespace FluxTV.Views
             var show = Credits.Visibility != Visibility.Visible;
             Credits.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
             CreditsLabel.Text = show ? "Masquer les crédits" : "Crédits et licences";
-            Tv.Later(() => Scroller.ChangeView(null, Scroller.ScrollableHeight, null));
+            Tv.Later(() =>
+            {
+                // Hauteur à jour avant de défiler jusqu'en bas
+                Scroller.UpdateLayout();
+                Scroller.ChangeView(null, Scroller.ScrollableHeight, null);
+            });
         }
 
         /// <summary>Captures automatiques : crédits affichés.</summary>
