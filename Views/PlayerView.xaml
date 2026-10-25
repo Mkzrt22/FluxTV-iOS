@@ -61,8 +61,25 @@
 
         <!-- Commandes et informations -->
         <Grid x:Name="Controls" Visibility="Collapsed" Opacity="0">
-            <Rectangle VerticalAlignment="Top" Height="150" Fill="{StaticResource ShadeTop}" IsHitTestVisible="False" />
-            <Rectangle VerticalAlignment="Bottom" Height="270" Fill="{StaticResource ShadeBottomStrong}" IsHitTestVisible="False" />
+            <!-- Voiles : titre et commandes lisibles même sur une image claire -->
+            <Rectangle VerticalAlignment="Top" Height="180" IsHitTestVisible="False">
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#E604040D" Offset="0" />
+                        <GradientStop Color="#8C04040D" Offset="0.55" />
+                        <GradientStop Color="#0004040D" Offset="1" />
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle VerticalAlignment="Bottom" Height="300" IsHitTestVisible="False">
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#0004040D" Offset="0" />
+                        <GradientStop Color="#B304040D" Offset="0.45" />
+                        <GradientStop Color="#F204040D" Offset="1" />
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
 
             <Grid VerticalAlignment="Top" Margin="48,27,48,0">
                 <StackPanel Margin="0,0,90,0">

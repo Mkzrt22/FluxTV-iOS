@@ -8,3 +8,6 @@ BundleArtifacts/
 # Copies personnelles avec un compte intégré : jamais sur GitHub
 compte.flux
 *-perso.msix
+# Livraisons (dont la copie personnelle avec identifiants) : jamais sur GitHub
+livraison/
+*-perso.zip
