@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using FluxTV.Core;
 using FluxTV.Services;
 using FluxTV.UI;
@@ -43,17 +44,15 @@ namespace FluxTV.Views
 
         void OnBottomFocus(object sender, RoutedEventArgs e) => Scroller.ChangeView(null, Scroller.ScrollableHeight, null);
 
-        void OnCredits(object sender, RoutedEventArgs e)
+        async void OnCredits(object sender, RoutedEventArgs e)
         {
             var show = Credits.Visibility != Visibility.Visible;
             Credits.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
             CreditsLabel.Text = show ? "Masquer les crédits" : "Crédits et licences";
-            Tv.Later(() =>
-            {
-                // Hauteur à jour avant de défiler jusqu'en bas
-                Scroller.UpdateLayout();
-                Scroller.ChangeView(null, Scroller.ScrollableHeight, null);
-            });
+            if (!show) return;
+            // Après le défilement dû au focus : les crédits remontent en entier dans l'écran
+            await Task.Delay(200);
+            Credits.StartBringIntoView(new BringIntoViewOptions { VerticalAlignmentRatio = 1, AnimationDesired = true });
         }
 
         /// <summary>Captures automatiques : crédits affichés.</summary>
