@@ -201,11 +201,13 @@ namespace FluxTV.Views
             // Éclair : une vague de lumière sur tout l'écran plutôt qu'un disque
             Add(outro, Flash, "Opacity", 680, K(0, 0), K(200, 0.7, EaseOut(2)), K(1000, 0, EaseOut(2)));
             Add(outro, Backdrop, "Opacity", 680, K(0, 1), K(700, 0, EaseOut(2)));
-            Add(outro, Fx, "Opacity", 1180, K(0, 1), K(600, 0));
+            // Comme sur PC : à l'éclair, les étoiles se figent et s'effacent en 0,6 s
+            Add(outro, Fx, "Opacity", 680, K(0, 1), K(600, 0));
             outro.Begin();
             await Task.Delay(300);
             field.Outro();
             await Task.Delay(380);
+            Fx.Paused = true;
             Revealing?.Invoke();
             await Task.Delay(140);
             // Emblème effacé : plus rien à dessiner (évite de redessiner le texte agrandi)
