@@ -146,6 +146,12 @@
                    Opacity="0" FontFamily="{StaticResource FontBold}" FontWeight="Bold" FontSize="11" CharacterSpacing="200"
                    Foreground="{StaticResource TextFaintBrush}" IsTextScaleFactorEnabled="False" />
 
-        <Image x:Name="Flash" Source="ms-appx:///Assets/Intro/Eclair.png" Stretch="Fill" Opacity="0" IsHitTestVisible="False" />
+        <!-- Agrandi : le bord du halo sort de l'écran, l'éclair baigne tout l'écran -->
+        <Image x:Name="Flash" Source="ms-appx:///Assets/Intro/Eclair.png" Stretch="Fill" Opacity="0" IsHitTestVisible="False"
+               RenderTransformOrigin="0.5,0.5">
+            <Image.RenderTransform>
+                <ScaleTransform ScaleX="1.6" ScaleY="1.6" />
+            </Image.RenderTransform>
+        </Image>
     </Grid>
 </UserControl>

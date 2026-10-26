@@ -78,13 +78,22 @@ namespace FluxTV.Views
 
         void PlayIntro(bool hold)
         {
+            // L'app reste affichée derrière le fond opaque de l'intro : elle est déjà dessinée (images
+            // comprises) quand elle apparaît, sans à-coup
             introBlocking = true;
-            Main.Opacity = 0;
             intro = new IntroView();
             intro.Revealing += OnIntroRevealing;
             intro.Finished += OnIntroFinished;
             IntroHost.Children.Add(intro);
-            intro.Play(() => app.Source == null || !app.LiveLoading, IntroStatus, hold);
+            intro.Play(IntroReady, IntroStatus, hold);
+        }
+
+        /// <summary>Chaînes chargées et page prête à recevoir le focus (l'intro attend 6 s au plus).</summary>
+        bool IntroReady()
+        {
+            if (app.Source == null) return true;
+            if (app.LiveLoading) return false;
+            return !(ContentFrame.Content is TvPage page) || page.CanTakeFocus;
         }
 
         string IntroStatus()
@@ -110,6 +119,14 @@ namespace FluxTV.Views
             if (v == null) return;
             v.Revealing -= OnIntroRevealing;
             v.Finished -= OnIntroFinished;
+            // Focus encore sur l'intro (page pas prête à temps) : il va sur la page, et si le système le
+            // replace sur le menu en retirant l'intro, le menu reste fermé
+            var focused = FocusManager.GetFocusedElement() as DependencyObject;
+            if (focused == null || Tv.IsInside(focused, v))
+            {
+                railQuietUntil = DateTime.UtcNow.AddMilliseconds(1500);
+                (ContentFrame.Content as TvPage)?.FocusDefault();
+            }
             v.Release();
             IntroHost.Children.Remove(v);
         }
@@ -404,10 +421,11 @@ namespace FluxTV.Views
         /// </summary>
         public async void StartTest(string screen)
         {
-            if (screen == "intro")
+            if (screen == "intro" || screen == "intro-sortie")
             {
+                // « intro-sortie » : animation complète jusqu'à l'accueil (photographiée en rafale)
                 app.UseForTest(Source.Demo);
-                PlayIntro(true);
+                PlayIntro(screen == "intro");
                 ShowApp("home");
                 return;
             }

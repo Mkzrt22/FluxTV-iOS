@@ -28,6 +28,7 @@ namespace FluxTV.Views
 
         readonly Starfield field = new Starfield();
         readonly List<Grid> letters = new List<Grid>();
+        readonly List<Grid> glows = new List<Grid>();
         readonly TaskCompletionSource<bool> shown = new TaskCompletionSource<bool>();
 
         public IntroView()
@@ -81,6 +82,7 @@ namespace FluxTV.Views
                 };
                 cell.Children.Add(glow);
                 cell.Children.Add(letter);
+                glows.Add(glow);
                 letter.SizeChanged += (s, e) => AttachGlow(glow, letter);
                 Word.Children.Add(cell);
                 letters.Add(cell);
@@ -170,25 +172,34 @@ namespace FluxTV.Views
             field.Burst(1);
             await Task.Delay(2050);
 
+            // Bascule et chute terminées : plus de rendu 3D (allège la plongée finale)
+            Mark.Projection = null;
+            foreach (var cell in letters) cell.Projection = null;
+
             // Attente : l'app charge ses chaînes pendant l'animation
             var waitStart = DateTime.UtcNow;
             while (true)
             {
-                Status.Text = (status() ?? "").ToUpperInvariant();
+                var text = (status() ?? "").ToUpperInvariant();
+                if (Status.Text != text) Status.Text = text;
                 if (hold) { await Task.Delay(250); continue; }
                 if (isReady() || (DateTime.UtcNow - waitStart).TotalSeconds > 6) break;
                 await Task.Delay(120);
             }
 
-            // Sortie : la barre se remplit, plongée à travers l'emblème, éclair, l'app apparaît
+            // Sortie : la barre se remplit, plongée à travers l'emblème, éclair, l'app apparaît.
+            // Sur PC l'emblème se floute en grossissant ; ici il s'efface avant d'être grand, pour ne pas
+            // laisser passer de grande forme blanche nette.
             var outro = new Storyboard();
             Add(outro, BarScale, "ScaleX", 0, K(0, 0.85), K(350, 1, EaseOut(2)));
-            Add(outro, CoreZoom, "ScaleX", 300, K(0, 1), K(750, 5, EaseIn(3)));
-            Add(outro, CoreZoom, "ScaleY", 300, K(0, 1), K(750, 5, EaseIn(3)));
-            Add(outro, SplashCore, "Opacity", 300, K(0, 1), K(750, 0, EaseIn(2)));
+            foreach (var glow in glows) Add(outro, glow, "Opacity", 300, K(0, 1), K(200, 0));
+            Add(outro, CoreZoom, "ScaleX", 300, K(0, 1), K(480, 2.4, EaseIn(2)));
+            Add(outro, CoreZoom, "ScaleY", 300, K(0, 1), K(480, 2.4, EaseIn(2)));
+            Add(outro, SplashCore, "Opacity", 300, K(0, 1), K(480, 0, EaseOut(2)));
             Add(outro, Credit, "Opacity", 300, K(0, 1), K(300, 0));
             Add(outro, Rays, "Opacity", 300, K(0, 1), K(300, 0));
-            Add(outro, Flash, "Opacity", 680, K(0, 0), K(160, 0.85), K(900, 0, EaseOut(2)));
+            // Éclair : une vague de lumière sur tout l'écran plutôt qu'un disque
+            Add(outro, Flash, "Opacity", 680, K(0, 0), K(200, 0.7, EaseOut(2)), K(1000, 0, EaseOut(2)));
             Add(outro, Backdrop, "Opacity", 680, K(0, 1), K(700, 0, EaseOut(2)));
             Add(outro, Fx, "Opacity", 1180, K(0, 1), K(600, 0));
             outro.Begin();
@@ -196,7 +207,10 @@ namespace FluxTV.Views
             field.Outro();
             await Task.Delay(380);
             Revealing?.Invoke();
-            await Task.Delay(1150);
+            await Task.Delay(140);
+            // Emblème effacé : plus rien à dessiner (évite de redessiner le texte agrandi)
+            SplashCore.Visibility = Visibility.Collapsed;
+            await Task.Delay(1050);
             loops.Stop();
             Finished?.Invoke();
         }

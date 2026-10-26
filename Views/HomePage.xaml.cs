@@ -84,6 +84,10 @@ namespace FluxTV.Views
 
         // ───────────────────────────── Focus ─────────────────────────────
 
+        public override bool CanTakeFocus =>
+            Hero.Visibility == Visibility.Visible || RetryButton.Visibility == Visibility.Visible
+            || Rows.Any(r => r.Visibility == Visibility.Visible && r.Items.Count > 0);
+
         public override void FocusDefault()
         {
             if (focusMemory.HasValue)

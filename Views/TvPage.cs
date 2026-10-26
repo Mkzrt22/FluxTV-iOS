@@ -58,6 +58,9 @@ namespace FluxTV.Views
             else focusOnLoad = true;
         }
 
+        /// <summary>La page a de quoi recevoir le focus (contenu chargé) : l'intro peut s'effacer.</summary>
+        public virtual bool CanTakeFocus => true;
+
         /// <summary>Élément qui prend le focus à l'arrivée sur la page.</summary>
         public virtual void FocusDefault() => Tv.FocusFirst(this);
 
