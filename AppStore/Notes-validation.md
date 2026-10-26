@@ -9,7 +9,7 @@ FluxTV is a media player for the user's OWN playlists (M3U links or Xtream Codes
 
 HOW TO TEST WITHOUT AN ACCOUNT
 On the first screen, tap "Essayer la démo" (Try the demo). The demo mode loads:
-- 3 public test live streams (Akamai and Apple HLS test streams),
+- 3 public test channels: a live test card (Unified Streaming demo) and two free open movies streamed as channels (Mux test streams),
 - 2 free movies and 1 demo series from the Blender Foundation (Creative Commons BY): Big Buck Bunny, Tears of Steel.
 No login is required.
 

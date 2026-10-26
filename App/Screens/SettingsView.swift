@@ -147,7 +147,7 @@ struct LegalView: View {
                 """)
                 block("Contenus", """
                 FluxTV est un lecteur multimédia. Il ne fournit, n'héberge et ne vend aucune chaîne, aucun film ni aucune série. Tu es responsable des sources que tu ajoutes : utilise uniquement des contenus auxquels tu as légalement accès.
-                La démonstration utilise des flux de test publics et des films libres de droits de la Blender Foundation (Creative Commons BY).
+                La démonstration utilise une mire de test publique (Unified Streaming), des flux de test hébergés par Mux et des films libres de droits de la Blender Foundation : Big Buck Bunny (2008) et Tears of Steel (2012), © Blender Foundation, blender.org, licence Creative Commons Attribution 3.0.
                 """)
                 block("Lecture vidéo : VLCKit", """
                 Lecture assurée par VLCKit (MobileVLCKit / TVVLCKit), © VideoLAN et les auteurs de VLC, distribué sous licence GNU LGPL 2.1. Code source : https://code.videolan.org/videolan/VLCKit

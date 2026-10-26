@@ -1,8 +1,8 @@
 import Foundation
 
 /**
- Contenu de démonstration : flux de test publics et films libres de droits (Blender
- Foundation, licence Creative Commons BY). Il permet d'essayer FluxTV sans abonnement — et à
+ Contenu de démonstration : mire de test publique (Unified Streaming) et films libres de droits
+ (Blender Foundation, licence Creative Commons BY). Même contenu que sur Xbox et Android. Il permet d'essayer FluxTV sans abonnement — et à
  l'équipe de validation d'Apple de tester l'app.
 
  Les visuels « asset:… » sont des images fournies avec l'app.
@@ -13,15 +13,15 @@ enum Demo {
     static let seriesCategory = Category(id: "demo-series", rawName: "Démo · Séries")
 
     static let channels: [LiveChannel] = [
-        LiveChannel(id: "demo:live1", streamId: nil, rawName: "Direct de test", logo: "asset:DemoLive1",
+        LiveChannel(id: "demo:live1", streamId: nil, rawName: "Mire en direct", logo: "asset:DemoLive1",
                     categoryId: liveCategory.id, tvgId: "demo.live1", num: 1,
-                    url: "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8"),
-        LiveChannel(id: "demo:live2", streamId: nil, rawName: "Mire Apple", logo: "asset:DemoLive2",
+                    url: "https://demo.unified-streaming.com/k8s/live/stable/live.isml/.m3u8"),
+        LiveChannel(id: "demo:live2", streamId: nil, rawName: "Ciné libre", logo: "asset:DemoLive2",
                     categoryId: liveCategory.id, tvgId: "demo.live2", num: 2,
-                    url: "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8"),
-        LiveChannel(id: "demo:live3", streamId: nil, rawName: "Mire Apple · multi-débit", logo: "asset:DemoLive3",
+                    url: "https://test-streams.mux.dev/tos_ismc/main.m3u8"),
+        LiveChannel(id: "demo:live3", streamId: nil, rawName: "Animation libre", logo: "asset:DemoLive3",
                     categoryId: liveCategory.id, tvgId: "demo.live3", num: 3,
-                    url: "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8"),
+                    url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"),
     ]
 
     static let movies: [Movie] = [
@@ -74,9 +74,9 @@ enum Demo {
     /// Guide des chaînes de démonstration (créneaux d'une heure autour de maintenant).
     static func programmes(for channelId: String, now: Date = Date()) -> [Programme] {
         let titles: [String: [String]] = [
-            "demo:live1": ["Direct de test", "Flux continu", "Mesure de latence"],
-            "demo:live2": ["Mire BipBop", "Test d'image", "Test du son"],
-            "demo:live3": ["Mire haute définition", "Test HDR", "Test de débit"],
+            "demo:live1": ["Mire de test", "Horloge en direct", "Signal de référence"],
+            "demo:live2": ["Tears of Steel", "Court métrage libre", "Science-fiction"],
+            "demo:live3": ["Big Buck Bunny", "Court métrage libre", "Animation"],
         ]
         guard let names = titles[channelId] else { return [] }
         let hour = floor(now.timeIntervalSince1970 / 3600) * 3600
