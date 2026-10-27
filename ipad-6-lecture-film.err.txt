@@ -1,0 +1,8 @@
+2026-10-27 08:07:36.630 FluxTV[37318:105633] creating player instance using shared library
+[h264 @ 0x117197800] get_buffer() failed
+[h264 @ 0x117197800] thread_get_buffer() failed
+[h264 @ 0x117197800] no frame!
+[h264 @ 0x117196d80] get_buffer() failed
+[h264 @ 0x117196d80] thread_get_buffer() failed
+[h264 @ 0x117196d80] no frame!
+[h264 @ 0x11bc59180] co located POCs unavailable

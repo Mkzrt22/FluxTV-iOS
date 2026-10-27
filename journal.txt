@@ -1,0 +1,67 @@
+Xcode 26.6
+✔ compilation ios
+→ iPhone 17 Pro (Shutdown) 
+  capture iphone-0-langue
+  capture iphone-1-bienvenue
+  capture iphone-1-bienvenue-en
+  capture iphone-2-accueil
+  capture iphone-3-tv
+  capture iphone-4-films
+  capture iphone-5-series
+  capture iphone-8-recherche
+  capture iphone-11-reglages
+  capture iphone-6-lecture-film
+  capture iphone-7-lecture-direct
+  capture iphone-9-fiche-film
+  capture iphone-10-fiche-serie
+  capture iphone-2-accueil-en
+  capture iphone-3-tv-en
+  capture iphone-4-films-en
+  capture iphone-5-series-en
+  capture iphone-8-recherche-en
+  capture iphone-11-reglages-en
+  capture iphone-6-lecture-film-en
+  capture iphone-7-lecture-direct-en
+  capture iphone-9-fiche-film-en
+  capture iphone-10-fiche-serie-en
+→ iPad Pro 11-inch (M5) (Shutdown) 
+  capture ipad-0-langue
+  capture ipad-1-bienvenue
+  capture ipad-1-bienvenue-en
+  capture ipad-2-accueil
+  capture ipad-3-tv
+  capture ipad-4-films
+  capture ipad-5-series
+  capture ipad-8-recherche
+  capture ipad-11-reglages
+  capture ipad-6-lecture-film
+  capture ipad-7-lecture-direct
+  capture ipad-9-fiche-film
+  capture ipad-10-fiche-serie
+  capture ipad-2-accueil-en
+  capture ipad-3-tv-en
+  capture ipad-4-films-en
+  capture ipad-5-series-en
+  capture ipad-8-recherche-en
+  capture ipad-11-reglages-en
+  capture ipad-6-lecture-film-en
+  capture ipad-7-lecture-direct-en
+  capture ipad-9-fiche-film-en
+  capture ipad-10-fiche-serie-en
+✔ compilation tvos
+→ Apple TV 4K (3rd generation) (at 1080p) (Shutdown) 
+  capture tv-0-langue
+  capture tv-1-bienvenue
+  capture tv-2-accueil
+  capture tv-3-direct
+  capture tv-4-films
+  capture tv-6-reglages
+  capture tv-5-lecture-film
+  capture tv-7-fiche-film
+  capture tv-2-accueil-en
+  capture tv-3-direct-en
+  capture tv-4-films-en
+  capture tv-6-reglages-en
+  capture tv-5-lecture-film-en
+  capture tv-7-fiche-film-en
+Plantages enregistrés : 0

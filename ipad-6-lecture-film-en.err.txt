@@ -1,0 +1,4 @@
+2026-10-27 08:11:23.942 FluxTV[44671:123777] creating player instance using shared library
+[h264 @ 0x108c33480] get_buffer() failed
+[h264 @ 0x108c33480] thread_get_buffer() failed
+[h264 @ 0x108c33480] no frame!
