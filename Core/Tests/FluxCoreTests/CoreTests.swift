@@ -366,3 +366,30 @@ final class ResolverTests: XCTestCase {
         XCTAssertEqual(restored.name, "Dark")
     }
 }
+
+/// Textes en anglais (choix de la langue au premier lancement ou dans les réglages).
+final class EnglishTests: XCTestCase {
+    override func tearDown() {
+        Tr.english = false
+        super.tearDown()
+    }
+
+    func testEnglishTexts() throws {
+        Tr.english = true
+        XCTAssertEqual(Demo.channels[0].name, "Live test pattern")
+        XCTAssertEqual(Demo.channels[0].logo, "asset:DemoLive1En")
+        XCTAssertEqual(Demo.channels[2].logo, "asset:DemoLive3")
+        XCTAssertEqual(Demo.liveCategory.name, "Demo · Live")
+        XCTAssertEqual(Demo.programmes(for: "demo:live1").first?.desc, "Demo program.")
+        XCTAssertEqual(FluxError.offline.errorDescription, "No internet connection.")
+        XCTAssertEqual(FluxError.http(404).errorDescription, "Address not found on the server (code 404).")
+        XCTAssertEqual(M3U.parse("#EXTM3U\n#EXTINF:-1,Chaîne\nhttp://h/1.ts\n").entries.first?.group, "Other")
+        XCTAssertEqual(Source.demo.displayName, "Demo")
+
+        Tr.english = false
+        XCTAssertEqual(Demo.channels[0].name, "Mire en direct")
+        XCTAssertEqual(Demo.channels[0].logo, "asset:DemoLive1")
+        XCTAssertEqual(FluxError.offline.errorDescription, "Pas de connexion internet.")
+        XCTAssertEqual(M3U.parse("#EXTM3U\n#EXTINF:-1,Chaîne\nhttp://h/1.ts\n").entries.first?.group, "Autres")
+    }
+}

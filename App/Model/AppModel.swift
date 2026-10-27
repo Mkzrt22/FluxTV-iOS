@@ -27,6 +27,8 @@ final class AppModel: ObservableObject {
     @Published private(set) var liveError: String?
     @Published var player: PlayerRequest?
     @Published var toast: String?
+    /// Langue de l'interface : quand elle change, toute l'interface est refaite (voir `RootView`).
+    @Published private(set) var language = Lang.current
     /// Programmes déjà connus (chaîne → liste), pour l'affichage immédiat.
     @Published private(set) var programmes: [String: [Programme]] = [:]
 
@@ -36,6 +38,8 @@ final class AppModel: ObservableObject {
     private var toastTask: Task<Void, Never>?
     private var epgRequested = Set<String>()
     private var forwards: [AnyCancellable] = []
+    /// Réglages rouverts après un changement de langue (l'interface repart de l'accueil).
+    private var reopenSettings = false
 
     init() {
         // Favoris, reprises et réglages : tous les écrans se mettent à jour
@@ -66,6 +70,36 @@ final class AppModel: ObservableObject {
         } else {
             phase = .needsSetup
         }
+    }
+
+    // ───────────────────────────── Langue ─────────────────────────────
+
+    /// Premier lancement : langue choisie, l'app démarre.
+    func chooseLanguage(_ code: String) {
+        Lang.save(code)
+        language = code
+        start()
+    }
+
+    /// Changement dans les réglages : les listes sont relues (noms fabriqués par l'app : démo,
+    /// « Autres »…), puis toute l'interface est refaite dans la nouvelle langue.
+    func changeLanguage(_ code: String) {
+        guard code != Lang.current else { return }
+        Lang.save(code)
+        if let s = source {
+            let a = account
+            use(s)
+            account = a
+            Task { await loadLive() }
+        }
+        reopenSettings = true
+        language = code
+    }
+
+    /// Interface refaite après un changement de langue : faut-il rouvrir les réglages ?
+    func takeReopenSettings() -> Bool {
+        defer { reopenSettings = false }
+        return reopenSettings
     }
 
     #if DEBUG
@@ -155,7 +189,7 @@ final class AppModel: ObservableObject {
         programmes = [:]
         epgRequested = []
         await loadLive(force: true)
-        showToast("Listes actualisées")
+        showToast(T("Listes actualisées", "Lists refreshed"))
     }
 
     // ───────────────────────────── Direct ─────────────────────────────
@@ -238,7 +272,7 @@ final class AppModel: ObservableObject {
     }
 
     func play(channel: LiveChannel, in list: [LiveChannel]) {
-        guard let item = playItem(for: channel) else { return showToast("Adresse de lecture introuvable") }
+        guard let item = playItem(for: channel) else { return showToast(T("Adresse de lecture introuvable", "Playback address not found")) }
         library.addHistory(item.ref)
         player = PlayerRequest(item: item, channels: list, channelIndex: list.firstIndex { $0.id == channel.id })
     }
@@ -246,7 +280,7 @@ final class AppModel: ObservableObject {
     func play(movie: Movie, group: String?, fromStart: Bool = false) {
         var ref = movie.ref(group: group)
         if ref.image == nil { ref.image = movie.poster }
-        guard let u = url(for: ref) else { return showToast("Adresse de lecture introuvable") }
+        guard let u = url(for: ref) else { return showToast(T("Adresse de lecture introuvable", "Playback address not found")) }
         let start = fromStart ? nil : library.resume(ref.id)?.position
         library.addHistory(ref)
         player = PlayerRequest(item: PlayItem(ref: ref, url: u, title: movie.name, subtitle: movie.yearText,
@@ -255,7 +289,7 @@ final class AppModel: ObservableObject {
 
     func play(episode: Episode, of series: Series, episodes: [Episode], cover: String?, fromStart: Bool = false) {
         let ref = episode.ref(series: series.seriesId, seriesName: series.name, image: cover ?? series.cover)
-        guard let u = url(for: ref) else { return showToast("Adresse de lecture introuvable") }
+        guard let u = url(for: ref) else { return showToast(T("Adresse de lecture introuvable", "Playback address not found")) }
         let start = fromStart ? nil : library.resume(ref.id)?.position
         library.addHistory(ref)
         player = PlayerRequest(item: PlayItem(ref: ref, url: u, title: series.name, subtitle: "\(episode.label) · \(episode.title)",
@@ -271,7 +305,7 @@ final class AppModel: ObservableObject {
             play(channel: ch, in: list.isEmpty ? [ch] : list)
             return
         }
-        guard let u = url(for: ref) else { return showToast("Ce contenu n'est plus disponible") }
+        guard let u = url(for: ref) else { return showToast(T("Ce contenu n'est plus disponible", "This content is no longer available")) }
         library.addHistory(ref)
         let start = library.resume(ref.id)?.position
         let title = ref.kind == .episode ? (ref.seriesName ?? ref.name) : ref.name
@@ -294,6 +328,6 @@ final class AppModel: ObservableObject {
 
     func toggleFavorite(_ ref: ContentRef) {
         let added = library.toggleFavorite(ref)
-        showToast(added ? "Ajouté aux favoris" : "Retiré des favoris")
+        showToast(added ? T("Ajouté aux favoris", "Added to favorites") : T("Retiré des favoris", "Removed from favorites"))
     }
 }

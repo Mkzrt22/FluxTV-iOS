@@ -31,7 +31,7 @@ enum M3U {
     static func parse(_ text: String) -> (entries: [M3UEntry], epgURL: String?) {
         var entries: [M3UEntry] = []
         var epg: String?
-        var name = "", logo: String?, group = "Autres", tvgId: String?, ua: String?, num = 0
+        var name = "", logo: String?, group = T("Autres", "Other"), tvgId: String?, ua: String?, num = 0
         var pending = false
 
         text.enumerateLines { raw, _ in
@@ -48,10 +48,10 @@ enum M3U {
                     let a = attributes(line)
                     tvgId = a["tvg-id"].flatMap { $0.isEmpty ? nil : $0 }
                     logo = a["tvg-logo"].flatMap { $0.isEmpty ? nil : $0 }
-                    group = a["group-title"].flatMap { $0.isEmpty ? nil : $0 } ?? "Autres"
+                    group = a["group-title"].flatMap { $0.isEmpty ? nil : $0 } ?? T("Autres", "Other")
                     num = a["tvg-chno"].flatMap { Int($0.trimmingCharacters(in: .whitespaces)) } ?? 0
                     let n = extinfName(line)
-                    name = n.isEmpty ? (a["tvg-name"] ?? "Sans nom") : n
+                    name = n.isEmpty ? (a["tvg-name"] ?? T("Sans nom", "Untitled")) : n
                 } else if upper.hasPrefix("#EXTGRP") {
                     if let colon = line.firstIndex(of: ":") {
                         let g = line[line.index(after: colon)...].trimmingCharacters(in: .whitespaces)
@@ -66,10 +66,10 @@ enum M3U {
                 return
             }
             if pending {
-                entries.append(M3UEntry(name: name.isEmpty ? "Sans nom" : name, url: line, logo: logo, group: group,
+                entries.append(M3UEntry(name: name.isEmpty ? T("Sans nom", "Untitled") : name, url: line, logo: logo, group: group,
                                         tvgId: tvgId, num: num, userAgent: ua))
             }
-            pending = false; name = ""; logo = nil; tvgId = nil; ua = nil; group = "Autres"; num = 0
+            pending = false; name = ""; logo = nil; tvgId = nil; ua = nil; group = T("Autres", "Other"); num = 0
         }
         return (entries, epg)
     }
@@ -182,7 +182,7 @@ enum M3U {
                 let ext = (e.url.split(separator: "?").first.map(String.init) ?? e.url).split(separator: ".").last.map(String.init) ?? "mkv"
                 shows[key]!.episodes.append(Episode(
                     id: id, episodeId: Ids.numericPart(id) ?? id,
-                    title: marker?.title ?? "Épisode \(number)",
+                    title: marker?.title ?? T("Épisode \(number)", "Episode \(number)"),
                     season: season, number: number, ext: ext.count <= 4 ? ext : "mkv",
                     plot: nil, image: e.logo, durationSecs: nil, url: e.url))
             }

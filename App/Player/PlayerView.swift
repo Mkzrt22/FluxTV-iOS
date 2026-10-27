@@ -158,14 +158,15 @@ struct PlayerView: View {
 
     @ViewBuilder private var statusLayer: some View {
         if showsError {
-            ErrorCard(message: engine.status == .ended ? "Le direct s'est interrompu." :
-                        (item.isLive ? "Cette chaîne ne répond pas pour le moment." : "Lecture impossible : le serveur ne renvoie pas cette vidéo."),
+            ErrorCard(message: engine.status == .ended ? T("Le direct s'est interrompu.", "The live stream stopped.") :
+                        (item.isLive ? T("Cette chaîne ne répond pas pour le moment.", "This channel isn't responding right now.")
+                         : T("Lecture impossible : le serveur ne renvoie pas cette vidéo.", "Can't play: the server doesn't send this video.")),
                       onRetry: { retries = 0; retry() }, onClose: { close() })
         } else if [.opening, .buffering, .idle, .failed].contains(engine.status) || (engine.status == .ended && item.isLive) {
             VStack(spacing: Theme.s(14)) {
                 ProgressView().tint(.white).scaleEffect(1.4 * Theme.scale)
                 if engine.status == .opening {
-                    Text(item.isLive ? "Ouverture de \(item.title)…" : "Chargement…")
+                    Text(item.isLive ? T("Ouverture de \(item.title)…", "Opening \(item.title)…") : T("Chargement…", "Loading…"))
                         .font(Theme.label(14)).foregroundStyle(.white.opacity(0.85))
                 }
             }
@@ -206,7 +207,7 @@ struct PlayerView: View {
     private var topBar: some View {
         HStack(alignment: .top, spacing: Theme.s(14)) {
             #if os(iOS)
-            RoundIconButton(systemImage: "xmark", label: "Fermer") { close() }
+            RoundIconButton(systemImage: "xmark", label: T("Fermer", "Close")) { close() }
             #endif
             VStack(alignment: .leading, spacing: Theme.s(3)) {
                 Text(item.title).font(Theme.title(20)).foregroundStyle(.white).lineLimit(1)
@@ -226,10 +227,10 @@ struct PlayerView: View {
     private var centerButtons: some View {
         HStack(spacing: Theme.s(44)) {
             if item.isLive {
-                RoundIconButton(systemImage: "chevron.up", label: "Chaîne précédente") { zap(by: -1) }
+                RoundIconButton(systemImage: "chevron.up", label: T("Chaîne précédente", "Previous channel")) { zap(by: -1) }
                     .opacity(request.channels.count > 1 ? 1 : 0)
             } else {
-                RoundIconButton(systemImage: "gobackward.10", label: "Reculer de 10 secondes") { jump(-10) }
+                RoundIconButton(systemImage: "gobackward.10", label: T("Reculer de 10 secondes", "Back 10 seconds")) { jump(-10) }
             }
             Button {
                 engine.togglePause()
@@ -242,12 +243,12 @@ struct PlayerView: View {
                     .background(Circle().fill(.ultraThinMaterial))
             }
             .buttonStyle(FluxButtonStyle(cornerRadius: 40, showsRing: false))
-            .accessibilityLabel(engine.status == .paused ? "Lecture" : "Pause")
+            .accessibilityLabel(engine.status == .paused ? T("Lecture", "Play") : "Pause")
             if item.isLive {
-                RoundIconButton(systemImage: "chevron.down", label: "Chaîne suivante") { zap(by: 1) }
+                RoundIconButton(systemImage: "chevron.down", label: T("Chaîne suivante", "Next channel")) { zap(by: 1) }
                     .opacity(request.channels.count > 1 ? 1 : 0)
             } else {
-                RoundIconButton(systemImage: "goforward.10", label: "Avancer de 10 secondes") { jump(10) }
+                RoundIconButton(systemImage: "goforward.10", label: T("Avancer de 10 secondes", "Forward 10 seconds")) { jump(10) }
             }
         }
     }
@@ -256,7 +257,7 @@ struct PlayerView: View {
     private var optionsMenus: some View {
         HStack(spacing: Theme.s(10)) {
             if item.isLive && request.channels.count > 1 {
-                RoundIconButton(systemImage: "list.bullet", label: "Liste des chaînes") { openPanel(.channels) }
+                RoundIconButton(systemImage: "list.bullet", label: T("Liste des chaînes", "Channel list")) { openPanel(.channels) }
             }
             Menu {
                 if !engine.audioTracks.isEmpty {
@@ -269,7 +270,7 @@ struct PlayerView: View {
                     }
                 }
                 if !engine.subtitleTracks.isEmpty {
-                    Section("Sous-titres") {
+                    Section(T("Sous-titres", "Subtitles")) {
                         ForEach(engine.subtitleTracks) { t in
                             Button { engine.selectSubtitle(t.id) } label: {
                                 if t.id == engine.currentSubtitle { Label(t.name, systemImage: "checkmark") } else { Text(t.name) }
@@ -277,7 +278,7 @@ struct PlayerView: View {
                         }
                     }
                 }
-                Section("Image") {
+                Section(T("Image", "Picture")) {
                     ForEach(AspectMode.allCases, id: \.self) { m in
                         Button { engine.setAspect(m) } label: {
                             if m == engine.aspect { Label(m.label, systemImage: "checkmark") } else { Text(m.label) }
@@ -291,9 +292,9 @@ struct PlayerView: View {
                     .frame(width: 46, height: 46)
                     .background(Circle().fill(Theme.glassStrong))
             }
-            .accessibilityLabel("Options : audio, sous-titres, image")
+            .accessibilityLabel(T("Options : audio, sous-titres, image", "Options: audio, subtitles, picture"))
             if nextEpisode != nil {
-                RoundIconButton(systemImage: "forward.end.fill", label: "Épisode suivant") { playNext() }
+                RoundIconButton(systemImage: "forward.end.fill", label: T("Épisode suivant", "Next episode")) { playNext() }
             }
         }
     }
@@ -315,7 +316,7 @@ struct PlayerView: View {
                             .padding(.horizontal, Theme.s(7)).padding(.vertical, Theme.s(2))
                             .background(RoundedRectangle(cornerRadius: Theme.s(6)).fill(Theme.accent.opacity(0.35)))
                     }
-                    Badge(text: "Direct", style: .live)
+                    Badge(text: T("Direct", "Live"), style: .live)
                     ForEach(ch?.badges ?? [], id: \.self) { Badge(text: $0) }
                 }
                 Text(nn.now?.title ?? item.title)
@@ -329,11 +330,13 @@ struct PlayerView: View {
                     .frame(maxWidth: Theme.s(520))
                 }
                 if let next = nn.next {
-                    Text("Ensuite  \(Format.hour.string(from: next.start))  \(next.title)")
+                    Text(T("Ensuite  ", "Next  ") + "\(Format.hour.string(from: next.start))  \(next.title)")
                         .font(Theme.body(13)).foregroundStyle(.white.opacity(0.7)).lineLimit(1)
                 }
                 #if os(tvOS)
-                Text(request.channels.count > 1 ? "⬆︎ ⬇︎ chaînes   ·   OK liste des chaînes   ·   ⏯ audio et sous-titres" : "⏯ audio et sous-titres")
+                Text(request.channels.count > 1
+                     ? T("⬆︎ ⬇︎ chaînes   ·   OK liste des chaînes   ·   ⏯ audio et sous-titres", "⬆︎ ⬇︎ channels   ·   OK channel list   ·   ⏯ audio and subtitles")
+                     : T("⏯ audio et sous-titres", "⏯ audio and subtitles"))
                     .font(Theme.body(11)).foregroundStyle(.white.opacity(0.55)).padding(.top, Theme.s(4))
                 #endif
             }
@@ -369,7 +372,7 @@ struct PlayerView: View {
                 Text(Format.clock(shown)).font(Theme.mono(13)).foregroundStyle(.white.opacity(0.9))
                 Spacer()
                 #if os(tvOS)
-                Text("◀︎ ▶︎ ±10 s   ·   OK pause   ·   ⬇︎ audio et sous-titres").font(Theme.body(11)).foregroundStyle(.white.opacity(0.55))
+                Text(T("◀︎ ▶︎ ±10 s   ·   OK pause   ·   ⬇︎ audio et sous-titres", "◀︎ ▶︎ ±10 s   ·   OK pause   ·   ⬇︎ audio and subtitles")).font(Theme.body(11)).foregroundStyle(.white.opacity(0.55))
                 Spacer()
                 #endif
                 Text(engine.duration > 0 ? "−" + Format.clock(max(0, engine.duration - shown)) : "")
@@ -644,11 +647,11 @@ private struct ErrorCard: View {
         VStack(spacing: Theme.s(12)) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: Theme.s(30))).foregroundStyle(Theme.onAir)
-            Text("Lecture interrompue").font(Theme.title(20)).foregroundStyle(.white)
+            Text(T("Lecture interrompue", "Playback interrupted")).font(Theme.title(20)).foregroundStyle(.white)
             Text(message).font(Theme.bodyRegular(14)).foregroundStyle(Theme.textDim).multilineTextAlignment(.center)
             HStack(spacing: Theme.s(12)) {
-                PillButton(title: "Réessayer", systemImage: "arrow.clockwise", action: onRetry)
-                PillButton(title: "Fermer", primary: false, action: onClose)
+                PillButton(title: T("Réessayer", "Retry"), systemImage: "arrow.clockwise", action: onRetry)
+                PillButton(title: T("Fermer", "Close"), primary: false, action: onClose)
             }
             .padding(.top, Theme.s(6))
         }
@@ -673,12 +676,12 @@ private struct UpNextCard: View {
             HStack {
                 Spacer()
                 VStack(alignment: .leading, spacing: Theme.s(8)) {
-                    Eyebrow(text: "Épisode suivant")
+                    Eyebrow(text: T("Épisode suivant", "Next episode"))
                     Text("\(episode.label) · \(episode.title)").font(Theme.title(18)).foregroundStyle(.white).lineLimit(2)
-                    Text("Lecture dans \(countdown) s").font(Theme.body(13)).foregroundStyle(Theme.textDim)
+                    Text(T("Lecture dans \(countdown) s", "Playing in \(countdown) s")).font(Theme.body(13)).foregroundStyle(Theme.textDim)
                     HStack(spacing: Theme.s(10)) {
-                        PillButton(title: "Lire", systemImage: "play.fill", action: onPlay)
-                        PillButton(title: "Annuler", primary: false, action: onCancel)
+                        PillButton(title: T("Lire", "Play"), systemImage: "play.fill", action: onPlay)
+                        PillButton(title: T("Annuler", "Cancel"), primary: false, action: onCancel)
                     }
                     .padding(.top, Theme.s(4))
                 }
@@ -706,10 +709,10 @@ private struct ChannelPanel: View {
         HStack(spacing: 0) {
             VStack(alignment: .leading, spacing: Theme.s(10)) {
                 HStack {
-                    Text("Chaînes").font(Theme.title(20)).foregroundStyle(.white)
+                    Text(T("Chaînes", "Channels")).font(Theme.title(20)).foregroundStyle(.white)
                     Spacer()
                     #if os(iOS)
-                    RoundIconButton(systemImage: "xmark", label: "Fermer la liste", action: onClose)
+                    RoundIconButton(systemImage: "xmark", label: T("Fermer la liste", "Close the list"), action: onClose)
                     #endif
                 }
                 ScrollViewReader { proxy in
@@ -762,7 +765,7 @@ private struct ChannelPanel: View {
                 }
             }
             Spacer(minLength: 0)
-            if playing { Badge(text: "En cours", style: .live) }
+            if playing { Badge(text: T("En cours", "Now playing"), style: .live) }
         }
         .padding(.horizontal, Theme.s(10))
         .padding(.vertical, Theme.s(8))
@@ -790,12 +793,12 @@ private struct OptionsPanel: View {
                         }
                     }
                     if !engine.subtitleTracks.isEmpty {
-                        section("Sous-titres")
+                        section(T("Sous-titres", "Subtitles"))
                         ForEach(engine.subtitleTracks) { t in
                             option(t.name, selected: t.id == engine.currentSubtitle) { engine.selectSubtitle(t.id) }
                         }
                     }
-                    section("Image")
+                    section(T("Image", "Picture"))
                     ForEach(AspectMode.allCases, id: \.self) { m in
                         option(m.label, selected: m == engine.aspect) { engine.setAspect(m) }
                     }

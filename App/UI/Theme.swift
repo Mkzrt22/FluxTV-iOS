@@ -290,7 +290,7 @@ struct StateMessage: View {
 
 /// Indicateur de chargement de la charte.
 struct LoadingView: View {
-    var text = "Chargement…"
+    var text = T("Chargement…", "Loading…")
     var body: some View {
         VStack(spacing: Theme.s(14)) {
             ProgressView().tint(Theme.accentBright).scaleEffect(Theme.scale)
@@ -328,17 +328,29 @@ extension View {
     }
 }
 
-/// Durée lisible : « 1 h 58 », « 42 min ».
+/// Durées, heures et dates lisibles, dans la langue de l'app (voir `Tr`).
 enum Format {
+    /// « 1 h 58 », « 42 min » ; en anglais « 1h 58 ».
     static func duration(_ seconds: Double) -> String {
         let s = Int(max(0, seconds))
         let h = s / 3600, m = (s % 3600) / 60
-        return h > 0 ? String(format: "%d h %02d", h, m) : "\(m) min"
+        return h > 0 ? String(format: T("%d h %02d", "%dh %02d"), h, m) : "\(m) min"
     }
 
     /// Bouton de reprise : « Reprendre à 42 min », ou « Reprendre » avant la première minute.
     static func resume(_ seconds: Double) -> String {
-        seconds < 60 ? "Reprendre" : "Reprendre à \(duration(seconds))"
+        seconds < 60 ? T("Reprendre", "Resume") : T("Reprendre à \(duration(seconds))", "Resume at \(duration(seconds))")
+    }
+
+    /// Temps restant : « Reste 42 min » ; en anglais « 42 min left ».
+    static func remaining(_ seconds: Double) -> String {
+        T("Reste \(duration(seconds))", "\(duration(seconds)) left")
+    }
+
+    /// Nombre et nom accordé : « 1 chaîne », « 2 chaînes » ; en anglais « 1 channel », « 0 channels »
+    /// (le français garde le singulier pour 0 et 1, l'anglais seulement pour 1).
+    static func count(_ n: Int, _ frOne: String, _ frMany: String, _ enOne: String, _ enMany: String) -> String {
+        "\(n) " + (Tr.english ? (n == 1 ? enOne : enMany) : (n > 1 ? frMany : frOne))
     }
 
     /// Horloge « 1:02:03 » / « 12:34 ».
@@ -348,17 +360,24 @@ enum Format {
         return h > 0 ? String(format: "%d:%02d:%02d", h, m, sec) : String(format: "%d:%02d", m, sec)
     }
 
-    static let hour: DateFormatter = {
-        let f = DateFormatter()
-        f.locale = Locale(identifier: "fr_FR")
-        f.dateFormat = "HH:mm"
-        return f
-    }()
+    /// « 20:05 » ; en anglais selon l'horloge de l'appareil : « 8:05 PM » ou « 20:05 ».
+    static var hour: DateFormatter {
+        !Tr.english ? hourFr : (Tr.clock24 ? hourEn24 : hourEn12)
+    }
 
-    static let day: DateFormatter = {
+    /// « jeudi 2 octobre » ; en anglais « Thursday, October 2 ».
+    static var day: DateFormatter { Tr.english ? dayEn : dayFr }
+
+    private static let hourFr = formatter("fr_FR", "HH:mm")
+    private static let hourEn24 = formatter("en_US", "HH:mm")
+    private static let hourEn12 = formatter("en_US", "h:mm a")
+    private static let dayFr = formatter("fr_FR", "EEEE d MMMM")
+    private static let dayEn = formatter("en_US", "EEEE, MMMM d")
+
+    private static func formatter(_ locale: String, _ format: String) -> DateFormatter {
         let f = DateFormatter()
-        f.locale = Locale(identifier: "fr_FR")
-        f.dateFormat = "EEEE d MMMM"
+        f.locale = Locale(identifier: locale)
+        f.dateFormat = format
         return f
-    }()
+    }
 }

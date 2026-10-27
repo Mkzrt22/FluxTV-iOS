@@ -84,17 +84,24 @@ if compiler FluxTV "iOS Simulator" ios; then
     xcrun simctl status_bar "$UDID" override --time 9:41 --batteryState charged --batteryLevel 100 > /dev/null 2>&1
     xcrun simctl install "$UDID" "$APP" || { log "✘ installation ($type)"; continue; }
     p="$(echo "$type" | tr '[:upper:]' '[:lower:]')"
-    essai "$UDID" 8 "$p-1-bienvenue"
-    essai "$UDID" 12 "$p-2-accueil" -FluxTVDemo YES -lastTab home
-    essai "$UDID" 8 "$p-3-tv" -lastTab live
-    essai "$UDID" 8 "$p-4-films" -lastTab movies
-    essai "$UDID" 8 "$p-5-series" -lastTab series
-    essai "$UDID" 8 "$p-8-recherche" -lastTab search
-    essai "$UDID" 30 "$p-6-lecture-film" -FluxTVDemo YES -FluxTVPlay demo:bbb
-    essai "$UDID" 30 "$p-7-lecture-direct" -FluxTVDemo YES -FluxTVPlay demo:live2
-    # Fiches (après la lecture : le film a une reprise, comme sur un vrai appareil)
-    essai "$UDID" 10 "$p-9-fiche-film" -FluxTVDemo YES -lastTab home -FluxTVOpen demo:bbb
-    essai "$UDID" 10 "$p-10-fiche-serie" -FluxTVDemo YES -lastTab home -FluxTVOpen m3us:demo-open-movies
+    # Premier lancement : choix de la langue. Ensuite, langue imposée par « -FluxTVLang » (rien n'est enregistré)
+    essai "$UDID" 8 "$p-0-langue"
+    essai "$UDID" 8 "$p-1-bienvenue" -FluxTVLang fr
+    essai "$UDID" 8 "$p-1-bienvenue-en" -FluxTVLang en
+    for lang in fr en; do
+      s=""; [ "$lang" = en ] && s="-en"
+      essai "$UDID" 12 "$p-2-accueil$s" -FluxTVLang $lang -FluxTVDemo YES -lastTab home
+      essai "$UDID" 8 "$p-3-tv$s" -FluxTVLang $lang -lastTab live
+      essai "$UDID" 8 "$p-4-films$s" -FluxTVLang $lang -lastTab movies
+      essai "$UDID" 8 "$p-5-series$s" -FluxTVLang $lang -lastTab series
+      essai "$UDID" 8 "$p-8-recherche$s" -FluxTVLang $lang -lastTab search
+      essai "$UDID" 8 "$p-11-reglages$s" -FluxTVLang $lang -lastTab home -FluxTVSettings YES
+      essai "$UDID" 30 "$p-6-lecture-film$s" -FluxTVLang $lang -FluxTVDemo YES -FluxTVPlay demo:bbb
+      essai "$UDID" 30 "$p-7-lecture-direct$s" -FluxTVLang $lang -FluxTVDemo YES -FluxTVPlay demo:live2
+      # Fiches (après la lecture : le film a une reprise, comme sur un vrai appareil)
+      essai "$UDID" 10 "$p-9-fiche-film$s" -FluxTVLang $lang -FluxTVDemo YES -lastTab home -FluxTVOpen demo:bbb
+      essai "$UDID" 10 "$p-10-fiche-serie$s" -FluxTVLang $lang -FluxTVDemo YES -lastTab home -FluxTVOpen m3us:demo-open-movies
+    done
     xcrun simctl shutdown "$UDID" > /dev/null 2>&1
   done
 fi
@@ -103,13 +110,17 @@ if compiler "FluxTV TV" "tvOS Simulator" tvos; then
   APP=build/Sim/Build/Products/Debug-appletvsimulator/FluxTV.app
   if demarrer "Apple TV"; then
     if xcrun simctl install "$UDID" "$APP"; then
-      essai "$UDID" 8 "tv-1-bienvenue"
-      essai "$UDID" 12 "tv-2-accueil" -FluxTVDemo YES -lastTab home
-      essai "$UDID" 8 "tv-3-direct" -lastTab live
-      essai "$UDID" 8 "tv-4-films" -lastTab movies
-      essai "$UDID" 8 "tv-6-reglages" -lastTab settings
-      essai "$UDID" 30 "tv-5-lecture-film" -FluxTVDemo YES -FluxTVPlay demo:bbb
-      essai "$UDID" 10 "tv-7-fiche-film" -FluxTVDemo YES -lastTab home -FluxTVOpen demo:bbb
+      essai "$UDID" 8 "tv-0-langue"
+      essai "$UDID" 8 "tv-1-bienvenue" -FluxTVLang fr
+      for lang in fr en; do
+        s=""; [ "$lang" = en ] && s="-en"
+        essai "$UDID" 12 "tv-2-accueil$s" -FluxTVLang $lang -FluxTVDemo YES -lastTab home
+        essai "$UDID" 8 "tv-3-direct$s" -FluxTVLang $lang -lastTab live
+        essai "$UDID" 8 "tv-4-films$s" -FluxTVLang $lang -lastTab movies
+        essai "$UDID" 8 "tv-6-reglages$s" -FluxTVLang $lang -lastTab settings
+        essai "$UDID" 30 "tv-5-lecture-film$s" -FluxTVLang $lang -FluxTVDemo YES -FluxTVPlay demo:bbb
+        essai "$UDID" 10 "tv-7-fiche-film$s" -FluxTVLang $lang -FluxTVDemo YES -lastTab home -FluxTVOpen demo:bbb
+      done
     else
       log "✘ installation (Apple TV)"
     fi

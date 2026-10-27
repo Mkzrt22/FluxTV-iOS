@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>fr</string>
+	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>FluxTV</string>
 	<key>CFBundleExecutable</key>
@@ -20,8 +20,10 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<!-- Anglais et français (textes dans le code : T("…", "…")) ; langue choisie au premier lancement -->
 	<key>CFBundleLocalizations</key>
 	<array>
+		<string>en</string>
 		<string>fr</string>
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>

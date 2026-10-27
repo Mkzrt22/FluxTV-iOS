@@ -21,15 +21,16 @@ struct SetupView: View {
                 BrandLogo(size: 44)
                     .padding(.bottom, Theme.s(4))
                 VStack(alignment: .leading, spacing: Theme.s(6)) {
-                    Text("Bienvenue").font(Theme.display(30)).foregroundStyle(Theme.text)
-                    Text("Ajoute ton abonnement : FluxTV affiche tes chaînes, ton guide TV, tes films et tes séries.")
+                    Text(T("Bienvenue", "Welcome")).font(Theme.display(30)).foregroundStyle(Theme.text)
+                    Text(T("Ajoute ton abonnement : FluxTV affiche tes chaînes, ton guide TV, tes films et tes séries.",
+                           "Add your subscription: FluxTV shows your channels, TV guide, movies and series."))
                         .font(Theme.bodyRegular(15)).foregroundStyle(Theme.textDim)
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
-                Picker("Type de source", selection: $mode) {
-                    Text("Compte Xtream").tag(Mode.xtream)
-                    Text("Lien M3U").tag(Mode.playlist)
+                Picker(T("Type de source", "Source type"), selection: $mode) {
+                    Text(T("Compte Xtream", "Xtream account")).tag(Mode.xtream)
+                    Text(T("Lien M3U", "M3U link")).tag(Mode.playlist)
                 }
                 .pickerStyle(.segmented)
 
@@ -54,7 +55,8 @@ struct SetupView: View {
                 }
                 .padding(.top, Theme.s(4))
 
-                Text("FluxTV est un lecteur : il ne fournit aucune chaîne ni aucun contenu. Utilise uniquement des sources auxquelles tu as légalement accès. Tes identifiants restent chiffrés sur cet appareil.")
+                Text(T("FluxTV est un lecteur : il ne fournit aucune chaîne ni aucun contenu. Utilise uniquement des sources auxquelles tu as légalement accès. Tes identifiants restent chiffrés sur cet appareil.",
+                       "FluxTV is a player: it provides no channels or content. Only use sources you have legal access to. Your login details stay encrypted on this device."))
                     .font(Theme.bodyRegular(12))
                     .foregroundStyle(Theme.textFaint)
                     .fixedSize(horizontal: false, vertical: true)
@@ -75,12 +77,12 @@ struct SetupView: View {
 
     @ViewBuilder private var actionButtons: some View {
         if let embedded = EmbeddedAccount.load() {
-            PillButton(title: "Mon compte", systemImage: "person.fill") { error = nil; run(embedded) }
+            PillButton(title: T("Mon compte", "My account"), systemImage: "person.fill") { error = nil; run(embedded) }
                 .disabled(busy)
         }
-        PillButton(title: busy ? "Connexion…" : "Se connecter", systemImage: busy ? nil : "arrow.right") { connect() }
+        PillButton(title: busy ? T("Connexion…", "Connecting…") : T("Se connecter", "Sign in"), systemImage: busy ? nil : "arrow.right") { connect() }
             .disabled(busy)
-        PillButton(title: "Essayer la démo", systemImage: "sparkles", primary: false) { tryDemo() }
+        PillButton(title: T("Essayer la démo", "Try the demo"), systemImage: "sparkles", primary: false) { tryDemo() }
             .disabled(busy)
         if busy { ProgressView().tint(Theme.accentBright) }
     }
@@ -88,25 +90,26 @@ struct SetupView: View {
     private var xtreamFields: some View {
         VStack(alignment: .leading, spacing: Theme.s(14)) {
             #if os(iOS)
-            FluxField(label: "Serveur", text: $server, placeholder: "http://mon-serveur.com:8080", keyboard: .URL)
+            FluxField(label: T("Serveur", "Server"), text: $server, placeholder: T("http://mon-serveur.com:8080", "http://my-server.com:8080"), keyboard: .URL)
             #else
-            FluxField(label: "Serveur", text: $server, placeholder: "http://mon-serveur.com:8080")
+            FluxField(label: T("Serveur", "Server"), text: $server, placeholder: T("http://mon-serveur.com:8080", "http://my-server.com:8080"))
             #endif
-            FluxField(label: "Nom d'utilisateur", text: $username, placeholder: "Nom d'utilisateur")
-            FluxField(label: "Mot de passe", text: $password, placeholder: "Mot de passe", secure: true)
+            FluxField(label: T("Nom d'utilisateur", "Username"), text: $username, placeholder: T("Nom d'utilisateur", "Username"))
+            FluxField(label: T("Mot de passe", "Password"), text: $password, placeholder: T("Mot de passe", "Password"), secure: true)
         }
     }
 
     private var playlistFields: some View {
         VStack(alignment: .leading, spacing: Theme.s(14)) {
             #if os(iOS)
-            FluxField(label: "Adresse de la playlist", text: $playlistURL, placeholder: "http://…/playlist.m3u", keyboard: .URL)
-            FluxField(label: "Guide TV (facultatif)", text: $epgURL, placeholder: "http://…/guide.xml", keyboard: .URL)
+            FluxField(label: T("Adresse de la playlist", "Playlist URL"), text: $playlistURL, placeholder: "http://…/playlist.m3u", keyboard: .URL)
+            FluxField(label: T("Guide TV (facultatif)", "TV guide (optional)"), text: $epgURL, placeholder: "http://…/guide.xml", keyboard: .URL)
             #else
-            FluxField(label: "Adresse de la playlist", text: $playlistURL, placeholder: "http://…/playlist.m3u")
-            FluxField(label: "Guide TV (facultatif)", text: $epgURL, placeholder: "http://…/guide.xml")
+            FluxField(label: T("Adresse de la playlist", "Playlist URL"), text: $playlistURL, placeholder: "http://…/playlist.m3u")
+            FluxField(label: T("Guide TV (facultatif)", "TV guide (optional)"), text: $epgURL, placeholder: "http://…/guide.xml")
             #endif
-            Text("Un lien « get.php?username=…&password=… » est reconnu automatiquement comme un compte Xtream (affiches, résumés et guide TV en plus).")
+            Text(T("Un lien « get.php?username=…&password=… » est reconnu automatiquement comme un compte Xtream (affiches, résumés et guide TV en plus).",
+                   "A “get.php?username=…&password=…” link is recognized automatically as an Xtream account (with posters, summaries and TV guide)."))
                 .font(Theme.bodyRegular(12)).foregroundStyle(Theme.textFaint)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -123,7 +126,7 @@ struct SetupView: View {
             } else {
                 let a = XtreamAccount(server: server, username: username, password: password)
                 guard a.isComplete else {
-                    error = "Remplis le serveur, le nom d'utilisateur et le mot de passe."
+                    error = T("Remplis le serveur, le nom d'utilisateur et le mot de passe.", "Fill in the server, username and password.")
                     return
                 }
                 source = .xtream(a)
@@ -131,7 +134,7 @@ struct SetupView: View {
         case .playlist:
             let url = playlistURL.trimmingCharacters(in: .whitespacesAndNewlines)
             guard url.lowercased().hasPrefix("http") else {
-                error = "Colle l'adresse complète de ta playlist (elle commence par http)."
+                error = T("Colle l'adresse complète de ta playlist (elle commence par http).", "Paste the full address of your playlist (it starts with http).")
                 return
             }
             if let a = XtreamAccount.fromPlaylistURL(url) {

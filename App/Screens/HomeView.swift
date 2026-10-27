@@ -18,9 +18,9 @@ struct HomeView: View {
                 header
                 hero
                 resumeRow
-                channelsRow(title: "Mes chaînes", channels: app.favoriteChannels)
-                channelsRow(title: "Dernières chaînes", channels: recentNotFavorite)
-                channelsRow(title: "Chaînes en direct", channels: discoverChannels)
+                channelsRow(title: T("Mes chaînes", "My channels"), channels: app.favoriteChannels)
+                channelsRow(title: T("Dernières chaînes", "Recent channels"), channels: recentNotFavorite)
+                channelsRow(title: T("Chaînes en direct", "Live channels"), channels: discoverChannels)
                 moviesRow
                 seriesRow
                 favoriteMoviesRow
@@ -32,6 +32,7 @@ struct HomeView: View {
         .fluxScreen()
         .detailDestinations()
         #if os(iOS)
+        .navigationDestination(for: AppRoute.self) { _ in SettingsView() }
         .toolbar(.hidden, for: .navigationBar)
         #endif
         .task(id: app.source) { await loadRows() }
@@ -56,7 +57,7 @@ struct HomeView: View {
 
     @ViewBuilder private var resumeRow: some View {
         if !resume.isEmpty {
-            CardRow(title: "Continuer à regarder", items: resume) { ref in
+            CardRow(title: T("Continuer à regarder", "Continue watching"), items: resume) { ref in
                 resumeCard(ref)
             }
         }
@@ -72,14 +73,14 @@ struct HomeView: View {
         .buttonStyle(FluxButtonStyle())
         .contextMenu {
             Button(role: .destructive) { app.library.removeHistory(ref.id) } label: {
-                Label("Retirer de la liste", systemImage: "xmark.circle")
+                Label(T("Retirer de la liste", "Remove from list"), systemImage: "xmark.circle")
             }
         }
     }
 
     @ViewBuilder private var moviesRow: some View {
         if !latestMovies.isEmpty {
-            CardRow(title: moviesGroup ?? "Films", items: latestMovies) { m in
+            CardRow(title: moviesGroup ?? T("Films", "Movies"), items: latestMovies) { m in
                 movieCard(m)
             }
         }
@@ -96,7 +97,7 @@ struct HomeView: View {
 
     @ViewBuilder private var seriesRow: some View {
         if !featuredSeries.isEmpty {
-            CardRow(title: "Séries", items: featuredSeries) { s in
+            CardRow(title: T("Séries", "Series"), items: featuredSeries) { s in
                 seriesCard(s)
             }
         }
@@ -111,7 +112,7 @@ struct HomeView: View {
 
     @ViewBuilder private var favoriteMoviesRow: some View {
         if !favoriteMovies.isEmpty {
-            CardRow(title: "Films favoris", items: favoriteMovies) { ref in
+            CardRow(title: T("Films favoris", "Favorite movies"), items: favoriteMovies) { ref in
                 movieCard(Movie(ref: ref))
             }
         }
@@ -119,7 +120,7 @@ struct HomeView: View {
 
     @ViewBuilder private var favoriteSeriesRow: some View {
         if !favoriteSeries.isEmpty {
-            CardRow(title: "Séries favorites", items: favoriteSeries) { ref in
+            CardRow(title: T("Séries favorites", "Favorite series"), items: favoriteSeries) { ref in
                 seriesCard(Series(ref: ref))
             }
         }
@@ -127,10 +128,10 @@ struct HomeView: View {
 
     @ViewBuilder private var liveState: some View {
         if app.liveLoading && app.live == nil {
-            LoadingView(text: "Chargement des chaînes…").frame(height: Theme.s(160))
+            LoadingView(text: T("Chargement des chaînes…", "Loading channels…")).frame(height: Theme.s(160))
         } else if let err = app.liveError, app.live == nil {
-            StateMessage(systemImage: "wifi.exclamationmark", title: "Impossible de charger tes chaînes", message: err,
-                         actionTitle: "Réessayer") { Task { await app.loadLive(force: true) } }
+            StateMessage(systemImage: "wifi.exclamationmark", title: T("Impossible de charger tes chaînes", "Couldn't load your channels"), message: err,
+                         actionTitle: T("Réessayer", "Retry")) { Task { await app.loadLive(force: true) } }
         }
     }
 
@@ -142,7 +143,8 @@ struct HomeView: View {
             Text(greeting).font(Theme.body(14)).foregroundStyle(Theme.textDim)
             Spacer()
             if let days = app.account?.daysLeft(), days <= 30 {
-                Text(days == 0 ? "Abonnement expiré" : "Abonnement : \(days) j")
+                Text(days == 0 ? T("Abonnement expiré", "Subscription expired")
+                     : T("Abonnement : \(days) j", "Subscription: \(days) " + (days == 1 ? "day" : "days")))
                     .font(Theme.label(12))
                     .foregroundStyle(days <= 7 ? Theme.gold : Theme.textDim)
                     .padding(.horizontal, Theme.s(10)).padding(.vertical, Theme.s(5))
@@ -151,9 +153,7 @@ struct HomeView: View {
             #if os(tvOS)
             ClockLabel()
             #else
-            NavigationLink {
-                SettingsView()
-            } label: {
+            NavigationLink(value: AppRoute.settings) {
                 Image(systemName: "gearshape.fill")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(Theme.text)
@@ -161,7 +161,7 @@ struct HomeView: View {
                     .background(Circle().fill(Theme.glassStrong))
             }
             .buttonStyle(FluxButtonStyle(cornerRadius: 40))
-            .accessibilityLabel("Réglages")
+            .accessibilityLabel(T("Réglages", "Settings"))
             #endif
         }
         .padding(.horizontal, Theme.pagePadding)
@@ -170,32 +170,32 @@ struct HomeView: View {
     private var greeting: String {
         let h = Calendar.current.component(.hour, from: Date())
         switch h {
-        case 5..<12: return "Bonjour"
-        case 12..<18: return "Bon après-midi"
-        default: return "Bonsoir"
+        case 5..<12: return T("Bonjour", "Good morning")
+        case 12..<18: return T("Bon après-midi", "Good afternoon")
+        default: return T("Bonsoir", "Good evening")
         }
     }
 
     @ViewBuilder private var hero: some View {
         if let ref = resume.first {
-            HeroCard(eyebrow: ref.kind == .episode ? "Reprendre la série" : "Reprendre",
+            HeroCard(eyebrow: ref.kind == .episode ? T("Reprendre la série", "Resume series") : T("Reprendre", "Resume"),
                      title: ref.kind == .episode ? (ref.seriesName ?? ref.name) : ref.name,
                      subtitle: subtitle(for: ref),
                      image: ref.image,
                      progress: app.library.resume(ref.id)?.fraction,
-                     buttonTitle: "Reprendre") { app.play(ref: ref) }
+                     buttonTitle: T("Reprendre", "Resume")) { app.play(ref: ref) }
         } else if let ch = app.favoriteChannels.first ?? app.recentChannels.first {
             let now = app.nowNext(ch).now
-            HeroCard(eyebrow: "En direct", title: now?.title ?? ch.name, subtitle: now == nil ? nil : ch.name,
+            HeroCard(eyebrow: T("En direct", "Live"), title: now?.title ?? ch.name, subtitle: now == nil ? nil : ch.name,
                      image: ch.logo, fitImage: true, progress: now?.progress(), progressColor: Theme.onAir,
-                     buttonTitle: "Regarder") {
+                     buttonTitle: T("Regarder", "Watch")) {
                 app.play(channel: ch, in: app.visibleChannels(in: ch.categoryId))
             }
             .onAppear { app.requestProgrammes(for: ch) }
         } else if let m = latestMovies.first(where: { $0.poster != nil }) {
             NavigationLink(value: m) {
-                HeroCardBody(eyebrow: moviesGroup ?? "À voir", title: m.name, subtitle: m.yearText,
-                             image: m.poster, buttonTitle: "Voir la fiche")
+                HeroCardBody(eyebrow: moviesGroup ?? T("À voir", "Featured"), title: m.name, subtitle: m.yearText,
+                             image: m.poster, buttonTitle: T("Voir la fiche", "View details"))
             }
             .buttonStyle(FluxButtonStyle(focusScale: 1.02, cornerRadius: 26))
             .padding(.horizontal, Theme.pagePadding)
@@ -224,7 +224,7 @@ struct HomeView: View {
         guard let p = app.library.resume(ref.id) else { return ref.group }
         let left = max(0, p.duration - p.position)
         let base = ref.kind == .episode ? ref.name : nil
-        let remain = p.duration > 0 ? "Reste \(Format.duration(left))" : Format.resume(p.position)
+        let remain = p.duration > 0 ? Format.remaining(left) : Format.resume(p.position)
         return [base, remain].compactMap { $0 }.joined(separator: " · ")
     }
 

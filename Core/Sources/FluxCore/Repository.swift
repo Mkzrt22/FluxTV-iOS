@@ -10,7 +10,7 @@ enum Source: Codable, Equatable, Hashable, Sendable {
         switch self {
         case .xtream(let a): return URLComponents(string: a.server)?.host ?? a.server
         case .playlist(let url, _): return URLComponents(string: url)?.host ?? "Playlist"
-        case .demo: return "Démonstration"
+        case .demo: return T("Démonstration", "Demo")
         }
     }
 
@@ -200,7 +200,7 @@ actor Repository {
             // Chaînes sans catégorie connue : regroupées dans « Autres »
             let known = Set(cats.map(\.id))
             if channels.contains(where: { !known.contains($0.categoryId) }) {
-                cats.append(Category(id: "", rawName: "Autres"))
+                cats.append(Category(id: "", rawName: T("Autres", "Other")))
             }
             let l = LiveCatalog(categories: cats, channels: channels)
             liveCache = l

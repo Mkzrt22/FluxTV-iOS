@@ -11,7 +11,7 @@ permissions:
 jobs:
   essai:
     runs-on: macos-latest
-    timeout-minutes: 50
+    timeout-minutes: 80
     steps:
       - uses: actions/checkout@v4
       - name: Essai sur simulateurs

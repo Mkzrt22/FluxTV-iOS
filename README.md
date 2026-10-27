@@ -1,4 +1,4 @@
-# FluxTV pour iPhone, iPad et Apple TV — version 1.0
+# FluxTV pour iPhone, iPad et Apple TV — version 1.2
 
 *Made by Kevin G*
 
@@ -9,6 +9,11 @@ que FluxTV sur Android : nuit profonde, indigo et violet, polices Sora et Manrop
 > des sources auxquelles tu as légalement accès.
 
 ## Ce que fait l'app
+
+- **Français et anglais** : la langue est demandée au premier lancement (celle de l'appareil
+  est proposée d'office), et se change à tout moment dans les réglages (« Langue · Language ») ;
+  l'interface est refaite aussitôt. Les deux versions de chaque texte sont côte à côte dans le
+  code : `T("Réglages", "Settings")` (fichier `Core/Sources/FluxCore/Tr.swift`).
 
 - **Sources** :
   - un compte Xtream (serveur, utilisateur, mot de passe) ;

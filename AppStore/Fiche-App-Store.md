@@ -57,8 +57,8 @@ lecteur,m3u,xtream,tv,direct,guide,epg,films,séries,playlist,stream,replay,play
 (ton site de vente, ou une page de contact)
 
 ## URL de la politique de confidentialité
-Mets en ligne `confidentialite.html` (sur ton VPS : copie-le dans le dossier `ota/` et
-l'adresse sera http://IP_DU_VPS:8080/confidentialite.html).
+`https://mkzrt22.github.io/FluxTV-iOS/confidentialite/` (page du site, valable pour toutes les
+versions de FluxTV ; un visiteur anglophone arrive sur la version anglaise, `…/en/privacy/`).
 
 ## Confidentialité de l'app (questionnaire)
 « Données non collectées » — FluxTV ne collecte aucune donnée.
@@ -85,3 +85,67 @@ européenne, DSA).
 - Apple TV (1920 × 1080 ou 3840 × 2160) : 1 à 10 captures
 Prends-les avec le mode **Démonstration** (aucune chaîne protégée à l'écran) :
 dans le simulateur de Xcode, Cmd+S enregistre une capture.
+
+---
+
+# Fiche en anglais (English — U.S.)
+
+Depuis la version 1.2, l'app est en français et en anglais (langue demandée au premier
+lancement, modifiable dans les réglages). Dans App Store Connect, ajoute la langue « English
+(U.S.) » (menu des langues en haut à droite de la fiche) et recopie ces textes.
+
+## Name
+FluxTV
+
+## Subtitle (30 characters max)
+Your TV lists, movies & series
+
+## Promotional text
+New: English and French interface, redesigned for iPhone, iPad and Apple TV, auto-resume for movies and episodes, instant search.
+
+## Description
+FluxTV is an elegant player to watch YOUR own playlists: live channels, movies and series, on iPhone, iPad and Apple TV.
+
+ADD YOUR SOURCE
+• Xtream account (server, username, password) or M3U playlist link
+• Optional XMLTV program guide
+• Demo mode to explore the app without a subscription
+
+LIVE TV
+• Clear categories, favorite and recent channels
+• Current and next program, with a progress bar
+• Fast channel surfing and the channel list during playback
+
+MOVIES AND SERIES
+• Big posters, detailed pages, sort by newest, title or rating
+• Automatically resumes where you left off
+• Seasons and episodes, next episode plays automatically
+
+A COMPLETE PLAYER
+• Plays the most common formats: HLS, MPEG-TS, MP4, MKV, AVI
+• AC3, E-AC3 and DTS audio, choice of audio track and subtitles
+• Picture fit, fill or stretched
+
+DESIGNED FOR EVERY SCREEN
+• Apple TV: everything works with the Siri Remote
+• iPad: categories in a sidebar
+• iPhone: one-handed navigation
+
+IN ENGLISH AND FRENCH
+• Language asked at first launch, changeable anytime in Settings
+
+YOUR DATA STAYS WITH YOU
+• No data collection, no tracking, no ads
+• Your login details stay encrypted on your device (secure keychain)
+
+IMPORTANT: FluxTV is a media player. It does not provide, host or sell any content, channels or subscriptions. You must have your own sources and the rights needed to watch them.
+
+## Keywords (100 characters, comma-separated, no spaces)
+iptv,player,m3u,xtream,live,tv,guide,epg,movies,series,playlist,stream,replay,channels
+
+## What's New in This Version
+FluxTV now speaks English and French: the language is asked at first launch and can be changed anytime in Settings.
+
+## Screenshots
+Same sizes as the French listing, taken in English: the GitHub simulators produce them
+(files ending in « -en » on the « ci-simulateurs » branch).

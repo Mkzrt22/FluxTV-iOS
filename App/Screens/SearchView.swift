@@ -22,19 +22,21 @@ struct SearchView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.s(24)) {
                 if query.trimmingCharacters(in: .whitespaces).count < 2 {
-                    StateMessage(systemImage: "magnifyingglass", title: "Rechercher",
-                                 message: "Une chaîne, un film, une série… Les accents et les majuscules n'ont pas d'importance.")
+                    StateMessage(systemImage: "magnifyingglass", title: T("Rechercher", "Search"),
+                                 message: T("Une chaîne, un film, une série… Les accents et les majuscules n'ont pas d'importance.",
+                                            "A channel, a movie, a series… Accents and capital letters don't matter."))
                         .frame(height: Theme.s(320))
                 } else if results.isEmpty {
                     if loadingCatalogs {
-                        LoadingView(text: "Recherche dans tout le catalogue…").frame(height: Theme.s(260))
+                        LoadingView(text: T("Recherche dans tout le catalogue…", "Searching the whole catalog…")).frame(height: Theme.s(260))
                     } else {
-                        StateMessage(systemImage: "questionmark.circle", title: "Aucun résultat", message: "Essaie avec un autre mot.")
+                        StateMessage(systemImage: "questionmark.circle", title: T("Aucun résultat", "No results"),
+                                     message: T("Essaie avec un autre mot.", "Try another word."))
                             .frame(height: Theme.s(300))
                     }
                 } else {
                     if !results.channels.isEmpty {
-                        CardRow(title: "Chaînes", items: results.channels) { ch in
+                        CardRow(title: T("Chaînes", "Channels"), items: results.channels) { ch in
                             Button { app.play(channel: ch, in: results.channels) } label: {
                                 WideCard(title: ch.name, image: ch.logo, subtitle: app.categoryName(ch.categoryId),
                                          number: ch.num, fitImage: true, width: 190)
@@ -43,7 +45,7 @@ struct SearchView: View {
                         }
                     }
                     if !results.movies.isEmpty {
-                        CardRow(title: "Films", items: results.movies) { m in
+                        CardRow(title: T("Films", "Movies"), items: results.movies) { m in
                             NavigationLink(value: m) {
                                 PosterCard(title: m.name, image: m.poster, subtitle: m.yearText, rating: m.rating,
                                            badges: m.badges, progress: app.library.resume(m.id)?.fraction)
@@ -52,7 +54,7 @@ struct SearchView: View {
                         }
                     }
                     if !results.series.isEmpty {
-                        CardRow(title: "Séries", items: results.series) { s in
+                        CardRow(title: T("Séries", "Series"), items: results.series) { s in
                             NavigationLink(value: s) {
                                 PosterCard(title: s.name, image: s.cover, subtitle: s.yearText, rating: s.rating)
                             }
@@ -62,7 +64,7 @@ struct SearchView: View {
                     if loadingCatalogs {
                         HStack(spacing: Theme.s(8)) {
                             ProgressView().tint(Theme.accentBright)
-                            Text("Recherche dans les films et les séries…").font(Theme.label(13)).foregroundStyle(Theme.textDim)
+                            Text(T("Recherche dans les films et les séries…", "Searching movies and series…")).font(Theme.label(13)).foregroundStyle(Theme.textDim)
                         }
                         .padding(.horizontal, Theme.pagePadding)
                     }
@@ -72,8 +74,8 @@ struct SearchView: View {
         }
         .fluxScreen()
         .detailDestinations()
-        .navigationTitle("Recherche")
-        .searchable(text: $query, prompt: "Chaînes, films, séries")
+        .navigationTitle(T("Recherche", "Search"))
+        .searchable(text: $query, prompt: T("Chaînes, films, séries", "Channels, movies, series"))
         .onChange(of: query) { _, _ in scheduleSearch() }
         .onChange(of: catalogsLoaded) { _, _ in scheduleSearch() }
     }

@@ -12,9 +12,9 @@ struct LiveView: View {
 
     private var chips: [CategoryChips.Chip] {
         var out: [CategoryChips.Chip] = []
-        if !app.favoriteChannels.isEmpty { out.append(CategoryChips.Chip(id: Self.favoritesId, title: "Favoris", icon: "star.fill")) }
-        if !app.recentChannels.isEmpty { out.append(CategoryChips.Chip(id: Self.recentId, title: "Récentes", icon: "clock.arrow.circlepath")) }
-        out.append(CategoryChips.Chip(id: Self.allId, title: "Toutes", icon: "square.grid.2x2"))
+        if !app.favoriteChannels.isEmpty { out.append(CategoryChips.Chip(id: Self.favoritesId, title: T("Favoris", "Favorites"), icon: "star.fill")) }
+        if !app.recentChannels.isEmpty { out.append(CategoryChips.Chip(id: Self.recentId, title: T("Récentes", "Recent"), icon: "clock.arrow.circlepath")) }
+        out.append(CategoryChips.Chip(id: Self.allId, title: T("Toutes", "All"), icon: "square.grid.2x2"))
         if let live = app.live {
             out += app.visible(live.categories).map { CategoryChips.Chip(id: $0.id, title: $0.name) }
         }
@@ -31,7 +31,7 @@ struct LiveView: View {
     }
 
     private var title: String {
-        chips.first { $0.id == selection }?.title ?? "Chaînes"
+        chips.first { $0.id == selection }?.title ?? T("Chaînes", "Channels")
     }
 
     private var useSidebar: Bool {
@@ -45,12 +45,13 @@ struct LiveView: View {
     var body: some View {
         Group {
             if app.live == nil && app.liveLoading {
-                LoadingView(text: "Chargement des chaînes…")
+                LoadingView(text: T("Chargement des chaînes…", "Loading channels…"))
             } else if app.live == nil, let err = app.liveError {
-                StateMessage(systemImage: "wifi.exclamationmark", title: "Impossible de charger les chaînes", message: err,
-                             actionTitle: "Réessayer") { Task { await app.loadLive(force: true) } }
+                StateMessage(systemImage: "wifi.exclamationmark", title: T("Impossible de charger les chaînes", "Couldn't load channels"), message: err,
+                             actionTitle: T("Réessayer", "Retry")) { Task { await app.loadLive(force: true) } }
             } else if app.live?.channels.isEmpty ?? true {
-                StateMessage(systemImage: "tv", title: "Aucune chaîne", message: "Ta source ne contient pas de chaînes en direct.")
+                StateMessage(systemImage: "tv", title: T("Aucune chaîne", "No channels"),
+                             message: T("Ta source ne contient pas de chaînes en direct.", "Your source has no live channels."))
             } else if useSidebar {
                 HStack(alignment: .top, spacing: Theme.s(18)) {
                     sidebar
@@ -66,7 +67,7 @@ struct LiveView: View {
         }
         .fluxScreen()
         .detailDestinations()
-        .navigationTitle("TV en direct")
+        .navigationTitle(T("TV en direct", "Live TV"))
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
@@ -123,12 +124,14 @@ struct LiveView: View {
                 HStack(alignment: .firstTextBaseline) {
                     Text(title).font(Theme.title(20)).foregroundStyle(Theme.text)
                     Spacer()
-                    Text("\(list.count) chaîne\(list.count > 1 ? "s" : "")")
+                    Text(Format.count(list.count, "chaîne", "chaînes", "channel", "channels"))
                         .font(Theme.label(12)).foregroundStyle(Theme.textFaint)
                 }
                 .padding(.bottom, Theme.s(4))
                 if list.isEmpty {
-                    Text(selection == Self.favoritesId ? "Appui long sur une chaîne pour l'ajouter à tes favoris." : "Aucune chaîne dans cette catégorie.")
+                    Text(selection == Self.favoritesId
+                         ? T("Appui long sur une chaîne pour l'ajouter à tes favoris.", "Press and hold a channel to add it to your favorites.")
+                         : T("Aucune chaîne dans cette catégorie.", "No channels in this category."))
                         .font(Theme.body(14)).foregroundStyle(Theme.textDim)
                         .padding(.vertical, Theme.s(30))
                 }
@@ -140,7 +143,8 @@ struct LiveView: View {
                     .contextMenu {
                         let fav = app.library.isFavorite(ch.id)
                         Button { app.toggleFavorite(ch.ref(group: app.categoryName(ch.categoryId))) } label: {
-                            Label(fav ? "Retirer des favoris" : "Ajouter aux favoris", systemImage: fav ? "star.slash" : "star")
+                            Label(fav ? T("Retirer des favoris", "Remove from favorites") : T("Ajouter aux favoris", "Add to favorites"),
+                                  systemImage: fav ? "star.slash" : "star")
                         }
                     }
                 }

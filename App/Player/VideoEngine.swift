@@ -20,9 +20,9 @@ enum AspectMode: String, CaseIterable {
 
     var label: String {
         switch self {
-        case .fit: return "Adapté"
-        case .fill: return "Remplir l'écran"
-        case .stretch: return "Étiré"
+        case .fit: return T("Adapté", "Fit")
+        case .fill: return T("Remplir l'écran", "Fill screen")
+        case .stretch: return T("Étiré", "Stretched")
         }
     }
 }
@@ -223,12 +223,12 @@ final class VideoEngine: NSObject, ObservableObject, VLCMediaPlayerDelegate {
         zip(names, indexes).compactMap { name, index in
             let id: Int32
             if let n = index as? NSNumber { id = n.int32Value } else if let i = index as? Int { id = Int32(i) } else { return nil }
-            let label = (name as? String).map(Self.trackLabel) ?? "Piste \(id)"
-            return MediaTrack(id: id, name: id < 0 ? "Désactivés" : label)
+            let label = (name as? String).map(Self.trackLabel) ?? T("Piste \(id)", "Track \(id)")
+            return MediaTrack(id: id, name: id < 0 ? T("Désactivés", "Off") : label)
         }
     }
 
-    /// « Track 1 - [French] » → « French », langues courantes en français.
+    /// « Track 1 - [French] » → « Français » (ou « French » en anglais) pour les langues courantes.
     static func trackLabel(_ raw: String) -> String {
         var s = raw
         if let open = s.lastIndex(of: "["), let close = s.lastIndex(of: "]"), open < close {
@@ -236,10 +236,12 @@ final class VideoEngine: NSObject, ObservableObject, VLCMediaPlayerDelegate {
         } else if let dash = s.range(of: " - ") {
             s = String(s[dash.upperBound...])
         }
-        let names = ["french": "Français", "english": "Anglais", "german": "Allemand", "spanish": "Espagnol",
-                     "italian": "Italien", "arabic": "Arabe", "portuguese": "Portugais", "dutch": "Néerlandais",
-                     "fre": "Français", "fra": "Français", "eng": "Anglais", "ger": "Allemand", "deu": "Allemand",
-                     "spa": "Espagnol", "ita": "Italien", "ara": "Arabe", "disable": "Désactivés"]
+        let fr = T("Français", "French"), en = T("Anglais", "English"), de = T("Allemand", "German"),
+            es = T("Espagnol", "Spanish"), it = T("Italien", "Italian"), ar = T("Arabe", "Arabic")
+        let names = ["french": fr, "english": en, "german": de, "spanish": es,
+                     "italian": it, "arabic": ar, "portuguese": T("Portugais", "Portuguese"), "dutch": T("Néerlandais", "Dutch"),
+                     "fre": fr, "fra": fr, "eng": en, "ger": de, "deu": de,
+                     "spa": es, "ita": it, "ara": ar, "disable": T("Désactivés", "Off")]
         let key = s.trimmingCharacters(in: .whitespaces).lowercased()
         return names[key] ?? s.trimmingCharacters(in: .whitespaces)
     }

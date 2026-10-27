@@ -3,7 +3,7 @@ import Foundation
 import FoundationNetworking
 #endif
 
-/// Erreurs affichées à l'utilisateur, en français.
+/// Erreurs affichées à l'utilisateur, dans la langue de l'app.
 enum FluxError: LocalizedError, Equatable {
     case badAddress
     case http(Int)
@@ -17,21 +17,25 @@ enum FluxError: LocalizedError, Equatable {
 
     var errorDescription: String? {
         switch self {
-        case .badAddress: return "Adresse invalide. Vérifie le serveur (exemple : http://mon-serveur.com:8080)."
+        case .badAddress: return T("Adresse invalide. Vérifie le serveur (exemple : http://mon-serveur.com:8080).",
+                                   "Invalid address. Check the server (example: http://my-server.com:8080).")
         case .http(let code):
             switch code {
-            case 401, 403: return "Accès refusé par le serveur (code \(code)). Vérifie tes identifiants."
-            case 404: return "Adresse introuvable sur le serveur (code 404)."
-            case 500...599: return "Le serveur du fournisseur ne répond pas correctement (code \(code)). Réessaie plus tard."
-            default: return "Le serveur a répondu avec le code \(code)."
+            case 401, 403: return T("Accès refusé par le serveur (code \(code)). Vérifie tes identifiants.",
+                                    "Access denied by the server (code \(code)). Check your login details.")
+            case 404: return T("Adresse introuvable sur le serveur (code 404).", "Address not found on the server (code 404).")
+            case 500...599: return T("Le serveur du fournisseur ne répond pas correctement (code \(code)). Réessaie plus tard.",
+                                     "The provider's server isn't responding properly (code \(code)). Try again later.")
+            default: return T("Le serveur a répondu avec le code \(code).", "The server responded with code \(code).")
             }
-        case .offline: return "Pas de connexion internet."
-        case .timeout: return "Le serveur met trop de temps à répondre."
-        case .network(let m): return "Connexion impossible : \(m)"
-        case .authRefused: return "Identifiants refusés par le serveur."
-        case .accountInactive(let s): return "Compte \(s) chez le fournisseur."
-        case .unexpectedResponse: return "Réponse inattendue du serveur. Vérifie l'adresse du serveur."
-        case .emptyPlaylist: return "Cette playlist ne contient aucune chaîne ni aucun film."
+        case .offline: return T("Pas de connexion internet.", "No internet connection.")
+        case .timeout: return T("Le serveur met trop de temps à répondre.", "The server is taking too long to respond.")
+        case .network(let m): return T("Connexion impossible : \(m)", "Couldn't connect: \(m)")
+        case .authRefused: return T("Identifiants refusés par le serveur.", "The server rejected the login details.")
+        case .accountInactive(let s): return T("Compte \(s) chez le fournisseur.", "Account \(s) with the provider.")
+        case .unexpectedResponse: return T("Réponse inattendue du serveur. Vérifie l'adresse du serveur.",
+                                           "Unexpected response from the server. Check the server address.")
+        case .emptyPlaylist: return T("Cette playlist ne contient aucune chaîne ni aucun film.", "This playlist contains no channels and no movies.")
         }
     }
 }
@@ -84,12 +88,12 @@ final class HTTPClient: @unchecked Sendable {
         case NSURLErrorNotConnectedToInternet, NSURLErrorNetworkConnectionLost, NSURLErrorDataNotAllowed: return .offline
         case NSURLErrorTimedOut: return .timeout
         case NSURLErrorBadURL, NSURLErrorUnsupportedURL: return .badAddress
-        case NSURLErrorCannotFindHost, NSURLErrorDNSLookupFailed: return .network("serveur introuvable")
-        case NSURLErrorCannotConnectToHost: return .network("le serveur refuse la connexion")
+        case NSURLErrorCannotFindHost, NSURLErrorDNSLookupFailed: return .network(T("serveur introuvable", "server not found"))
+        case NSURLErrorCannotConnectToHost: return .network(T("le serveur refuse la connexion", "the server refuses the connection"))
         case NSURLErrorSecureConnectionFailed, NSURLErrorServerCertificateUntrusted, NSURLErrorServerCertificateHasBadDate:
-            return .network("connexion sécurisée impossible (essaie avec http://)")
+            return .network(T("connexion sécurisée impossible (essaie avec http://)", "secure connection impossible (try with http://)"))
         case -1022: // NSURLErrorAppTransportSecurityRequiresSecureConnection
-            return .network("le système refuse les connexions http de l'app")
+            return .network(T("le système refuse les connexions http de l'app", "the system blocks the app's http connections"))
         default: return .network(ns.localizedDescription)
         }
     }

@@ -25,7 +25,7 @@ struct MovieDetailView: View {
                             .overlay(RoundedRectangle(cornerRadius: Theme.s(12), style: .continuous).strokeBorder(Theme.stroke, lineWidth: 1))
                             .shadow(color: .black.opacity(0.5), radius: 18, y: 10)
                         VStack(alignment: .leading, spacing: Theme.s(8)) {
-                            Eyebrow(text: "Film")
+                            Eyebrow(text: T("Film", "Movie"))
                             Text(movie.name).font(Theme.display(28)).foregroundStyle(.white).lineLimit(3)
                                 .fixedSize(horizontal: false, vertical: true)
                             chips
@@ -40,7 +40,7 @@ struct MovieDetailView: View {
                     if let r = resume, r.duration > 0 {
                         VStack(alignment: .leading, spacing: Theme.s(6)) {
                             ProgressLine(value: r.fraction, color: Theme.accent, height: 4).frame(maxWidth: Theme.s(320))
-                            Text("Reste \(Format.duration(r.duration - r.position))").font(Theme.label(12)).foregroundStyle(Theme.textDim)
+                            Text(Format.remaining(r.duration - r.position)).font(Theme.label(12)).foregroundStyle(Theme.textDim)
                         }
                     }
                     if let plot = info?.plot {
@@ -88,25 +88,25 @@ struct MovieDetailView: View {
                 PillButton(title: Format.resume(r.position), systemImage: "play.fill") {
                     app.play(movie: movie, group: info?.genre)
                 }
-                RoundIconButton(systemImage: "arrow.counterclockwise", label: "Lire depuis le début") {
+                RoundIconButton(systemImage: "arrow.counterclockwise", label: T("Lire depuis le début", "Play from the start")) {
                     app.play(movie: movie, group: info?.genre, fromStart: true)
                 }
             } else {
-                PillButton(title: "Lecture", systemImage: "play.fill") { app.play(movie: movie, group: info?.genre) }
+                PillButton(title: T("Lecture", "Play"), systemImage: "play.fill") { app.play(movie: movie, group: info?.genre) }
             }
             let fav = app.library.isFavorite(movie.id)
             RoundIconButton(systemImage: fav ? "star.fill" : "star", tint: fav ? Theme.gold : Theme.text,
-                            label: fav ? "Retirer des favoris" : "Ajouter aux favoris") {
+                            label: fav ? T("Retirer des favoris", "Remove from favorites") : T("Ajouter aux favoris", "Add to favorites")) {
                 var ref = movie.ref(group: nil)
                 ref.image = movie.poster ?? info?.cover
                 app.toggleFavorite(ref)
             }
             if app.library.isWatched(movie.id) {
-                Badge(text: "Vu", style: .accent)
+                Badge(text: T("Vu", "Watched"), style: .accent)
             }
             #if os(iOS)
             if let t = info?.trailer, let url = URL(string: "https://www.youtube.com/watch?v=\(t)") {
-                RoundIconButton(systemImage: "play.rectangle", label: "Bande-annonce") { openURL(url) }
+                RoundIconButton(systemImage: "play.rectangle", label: T("Bande-annonce", "Trailer")) { openURL(url) }
             }
             #endif
         }
@@ -114,10 +114,10 @@ struct MovieDetailView: View {
 
     @ViewBuilder private var credits: some View {
         if let d = info?.director {
-            credit("Réalisation", d)
+            credit(T("Réalisation", "Director"), d)
         }
         if let c = info?.cast {
-            credit("Avec", c)
+            credit(T("Avec", "Starring"), c)
         }
     }
 

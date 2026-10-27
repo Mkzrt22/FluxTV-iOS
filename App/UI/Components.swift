@@ -26,7 +26,7 @@ struct PosterCard: View {
             }
             .overlay(alignment: .topLeading) {
                 HStack(spacing: Theme.s(4)) {
-                    if watched { Badge(text: "Vu", style: .accent) }
+                    if watched { Badge(text: T("Vu", "Watched"), style: .accent) }
                     ForEach(badges.prefix(2), id: \.self) { Badge(text: $0) }
                 }
                 .padding(Theme.s(6))
@@ -86,7 +86,7 @@ struct WideCard: View {
                             .padding(.horizontal, Theme.s(6)).padding(.vertical, Theme.s(2))
                             .background(RoundedRectangle(cornerRadius: Theme.s(5)).fill(Color.black.opacity(0.45)))
                     }
-                    if live { Badge(text: "Direct", style: .live) }
+                    if live { Badge(text: T("Direct", "Live"), style: .live) }
                 }
                 .padding(Theme.s(8))
             }
@@ -136,7 +136,7 @@ struct ChannelRow: View {
                     }
                     ProgressLine(value: now.progress(), color: Theme.accent, height: 3)
                 } else if let next = nn.next {
-                    Text("À \(Format.hour.string(from: next.start)) · \(next.title)").font(Theme.body(12)).foregroundStyle(Theme.textFaint).lineLimit(1)
+                    Text(T("À ", "At ") + "\(Format.hour.string(from: next.start)) · \(next.title)").font(Theme.body(12)).foregroundStyle(Theme.textFaint).lineLimit(1)
                 }
             }
             Spacer(minLength: 0)

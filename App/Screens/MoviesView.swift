@@ -6,10 +6,10 @@ enum CatalogSort: String, CaseIterable {
 
     var label: String {
         switch self {
-        case .provider: return "Ordre du fournisseur"
-        case .recent: return "Ajouts récents"
-        case .title: return "Titre (A → Z)"
-        case .rating: return "Mieux notés"
+        case .provider: return T("Ordre du fournisseur", "Provider order")
+        case .recent: return T("Ajouts récents", "Recently added")
+        case .title: return T("Titre (A → Z)", "Title (A → Z)")
+        case .rating: return T("Mieux notés", "Top rated")
         }
     }
 }
@@ -29,7 +29,7 @@ struct MoviesView: View {
 
     private var chips: [CategoryChips.Chip] {
         var out: [CategoryChips.Chip] = []
-        if !app.library.data.favorites(of: .movie).isEmpty { out.append(CategoryChips.Chip(id: Self.favoritesId, title: "Favoris", icon: "star.fill")) }
+        if !app.library.data.favorites(of: .movie).isEmpty { out.append(CategoryChips.Chip(id: Self.favoritesId, title: T("Favoris", "Favorites"), icon: "star.fill")) }
         out += app.visible(categories).map { CategoryChips.Chip(id: $0.id, title: $0.name) }
         return out
     }
@@ -49,20 +49,20 @@ struct MoviesView: View {
             VStack(alignment: .leading, spacing: Theme.s(12)) {
                 if !chips.isEmpty { CategoryChips(chips: chips, selection: $selection) }
                 HStack {
-                    Text(chips.first { $0.id == selection }?.title ?? "Films").font(Theme.title(20)).foregroundStyle(Theme.text)
+                    Text(chips.first { $0.id == selection }?.title ?? T("Films", "Movies")).font(Theme.title(20)).foregroundStyle(Theme.text)
                     Spacer()
                     SortMenu(sort: $sort)
                 }
                 .padding(.horizontal, Theme.pagePadding)
 
                 if loading && movies.isEmpty {
-                    LoadingView(text: "Chargement des films…").frame(height: Theme.s(260))
+                    LoadingView(text: T("Chargement des films…", "Loading movies…")).frame(height: Theme.s(260))
                 } else if let error, movies.isEmpty {
-                    StateMessage(systemImage: "wifi.exclamationmark", title: "Impossible de charger les films", message: error,
-                                 actionTitle: "Réessayer") { Task { await load(force: true) } }
+                    StateMessage(systemImage: "wifi.exclamationmark", title: T("Impossible de charger les films", "Couldn't load movies"), message: error,
+                                 actionTitle: T("Réessayer", "Retry")) { Task { await load(force: true) } }
                 } else if shown.isEmpty && !loading {
-                    StateMessage(systemImage: "film", title: categories.isEmpty ? "Aucun film" : "Catégorie vide",
-                                 message: categories.isEmpty ? "Ta source ne propose pas de films." : nil)
+                    StateMessage(systemImage: "film", title: categories.isEmpty ? T("Aucun film", "No movies") : T("Catégorie vide", "Empty category"),
+                                 message: categories.isEmpty ? T("Ta source ne propose pas de films.", "Your source has no movies.") : nil)
                         .frame(height: Theme.s(300))
                 } else {
                     PosterGrid(items: shown, minWidth: PosterLayout.minWidth(sizeClass)) { m in
@@ -79,7 +79,7 @@ struct MoviesView: View {
         }
         .fluxScreen()
         .detailDestinations()
-        .navigationTitle("Films")
+        .navigationTitle(T("Films", "Movies"))
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
@@ -129,7 +129,7 @@ struct SeriesListView: View {
 
     private var chips: [CategoryChips.Chip] {
         var out: [CategoryChips.Chip] = []
-        if !app.library.data.favorites(of: .series).isEmpty { out.append(CategoryChips.Chip(id: Self.favoritesId, title: "Favoris", icon: "star.fill")) }
+        if !app.library.data.favorites(of: .series).isEmpty { out.append(CategoryChips.Chip(id: Self.favoritesId, title: T("Favoris", "Favorites"), icon: "star.fill")) }
         out += app.visible(categories).map { CategoryChips.Chip(id: $0.id, title: $0.name) }
         return out
     }
@@ -149,20 +149,20 @@ struct SeriesListView: View {
             VStack(alignment: .leading, spacing: Theme.s(12)) {
                 if !chips.isEmpty { CategoryChips(chips: chips, selection: $selection) }
                 HStack {
-                    Text(chips.first { $0.id == selection }?.title ?? "Séries").font(Theme.title(20)).foregroundStyle(Theme.text)
+                    Text(chips.first { $0.id == selection }?.title ?? T("Séries", "Series")).font(Theme.title(20)).foregroundStyle(Theme.text)
                     Spacer()
                     SortMenu(sort: $sort)
                 }
                 .padding(.horizontal, Theme.pagePadding)
 
                 if loading && series.isEmpty {
-                    LoadingView(text: "Chargement des séries…").frame(height: Theme.s(260))
+                    LoadingView(text: T("Chargement des séries…", "Loading series…")).frame(height: Theme.s(260))
                 } else if let error, series.isEmpty {
-                    StateMessage(systemImage: "wifi.exclamationmark", title: "Impossible de charger les séries", message: error,
-                                 actionTitle: "Réessayer") { Task { await load(force: true) } }
+                    StateMessage(systemImage: "wifi.exclamationmark", title: T("Impossible de charger les séries", "Couldn't load series"), message: error,
+                                 actionTitle: T("Réessayer", "Retry")) { Task { await load(force: true) } }
                 } else if shown.isEmpty && !loading {
-                    StateMessage(systemImage: "rectangle.stack", title: categories.isEmpty ? "Aucune série" : "Catégorie vide",
-                                 message: categories.isEmpty ? "Ta source ne propose pas de séries." : nil)
+                    StateMessage(systemImage: "rectangle.stack", title: categories.isEmpty ? T("Aucune série", "No series") : T("Catégorie vide", "Empty category"),
+                                 message: categories.isEmpty ? T("Ta source ne propose pas de séries.", "Your source has no series.") : nil)
                         .frame(height: Theme.s(300))
                 } else {
                     PosterGrid(items: shown, minWidth: PosterLayout.minWidth(sizeClass)) { s in
@@ -178,7 +178,7 @@ struct SeriesListView: View {
         }
         .fluxScreen()
         .detailDestinations()
-        .navigationTitle("Séries")
+        .navigationTitle(T("Séries", "Series"))
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
@@ -229,11 +229,11 @@ struct SortMenu: View {
         .buttonStyle(FluxButtonStyle(focusScale: 1.08, cornerRadius: 40))
         #else
         Menu {
-            Picker("Trier", selection: $sort) {
+            Picker(T("Trier", "Sort"), selection: $sort) {
                 ForEach(CatalogSort.allCases, id: \.self) { Text($0.label).tag($0) }
             }
         } label: {
-            label(sort == .provider ? "Trier" : sort.label)
+            label(sort == .provider ? T("Trier", "Sort") : sort.label)
         }
         #endif
     }

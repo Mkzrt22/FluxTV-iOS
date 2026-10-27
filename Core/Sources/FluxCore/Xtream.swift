@@ -177,7 +177,7 @@ enum XtreamParse {
             let archive = o.flag("tv_archive")
             out.append(LiveChannel(
                 id: Ids.live(sid), streamId: sid,
-                rawName: o.str("name") ?? "Sans nom",
+                rawName: o.str("name") ?? T("Sans nom", "Untitled"),
                 logo: o.str("stream_icon").flatMap(validImage),
                 categoryId: o.str("category_id") ?? "",
                 tvgId: o.str("epg_channel_id"),
@@ -196,7 +196,7 @@ enum XtreamParse {
             guard let o = item as? JSONObject, let sid = o.str("stream_id") else { continue }
             out.append(Movie(
                 id: Ids.vod(sid), streamId: sid,
-                rawName: o.str("name") ?? o.str("title") ?? "Sans titre",
+                rawName: o.str("name") ?? o.str("title") ?? T("Sans titre", "Untitled"),
                 poster: o.str("stream_icon").flatMap(validImage) ?? o.str("cover").flatMap(validImage),
                 rating: o.rating("rating"),
                 added: o.unixDate("added"),
@@ -217,7 +217,7 @@ enum XtreamParse {
             let release = o.str("releaseDate") ?? o.str("release_date") ?? o.str("year")
             out.append(Series(
                 seriesId: sid,
-                rawName: o.str("name") ?? o.str("title") ?? "Sans titre",
+                rawName: o.str("name") ?? o.str("title") ?? T("Sans titre", "Untitled"),
                 cover: o.str("cover").flatMap(validImage),
                 plot: o.str("plot"),
                 genre: o.str("genre"),
@@ -244,7 +244,7 @@ enum XtreamParse {
             let season = o.int("season") ?? fallbackSeason
             let ep = Episode(
                 id: Ids.episode(epId), episodeId: epId,
-                title: cleanEpisodeTitle(o.str("title") ?? "Épisode \(index + 1)"),
+                title: cleanEpisodeTitle(o.str("title") ?? T("Épisode \(index + 1)", "Episode \(index + 1)")),
                 season: season,
                 number: o.int("episode_num") ?? (index + 1),
                 ext: o.str("container_extension") ?? "mkv",

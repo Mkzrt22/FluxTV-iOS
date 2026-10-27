@@ -7,6 +7,8 @@ struct FluxTVApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        // Langue choisie au premier lancement (ou celle de l'appareil) : textes et dates
+        Lang.apply()
         #if os(iOS)
         // Barres de navigation et d'onglets sombres, aux couleurs de l'app
         let tab = UITabBarAppearance()
@@ -34,7 +36,6 @@ struct FluxTVApp: App {
                 .environmentObject(app)
                 .preferredColorScheme(.dark)
                 .tint(Theme.accentBright)
-                .onAppear { app.start() }
         }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { app.library.flush() }
@@ -42,24 +43,37 @@ struct FluxTVApp: App {
     }
 }
 
-/// Aiguillage : accueil de bienvenue, configuration ou app.
+/// Aiguillage : choix de la langue (premier lancement), configuration ou app.
 struct RootView: View {
     @EnvironmentObject private var app: AppModel
+    @State private var askLanguage = Lang.chosen == nil
 
     var body: some View {
         ZStack {
             AppBackground()
-            switch app.phase {
-            case .launching:
-                BrandLogo(size: 64)
-            case .needsSetup:
-                SetupView()
-                    .transition(.opacity)
-            case .ready:
-                MainTabs()
-                    .transition(.opacity)
+            if askLanguage {
+                LanguageView { code in
+                    askLanguage = false
+                    app.chooseLanguage(code)
+                }
+                .transition(.opacity)
+            } else {
+                switch app.phase {
+                case .launching:
+                    BrandLogo(size: 64)
+                case .needsSetup:
+                    SetupView()
+                        .transition(.opacity)
+                case .ready:
+                    // Langue changée dans les réglages : toute l'interface est refaite
+                    MainTabs()
+                        .id(app.language)
+                        .transition(.opacity)
+                }
             }
         }
+        .onAppear { if !askLanguage { app.start() } }
+        .animation(.easeInOut(duration: 0.35), value: askLanguage)
         .animation(.easeInOut(duration: 0.35), value: app.phase)
         .overlay(alignment: .top) {
             if let text = app.toast {
@@ -75,35 +89,55 @@ struct RootView: View {
     }
 }
 
+/// Écrans ouverts depuis l'accueil (en plus des fiches).
+enum AppRoute: Hashable { case settings }
+
 /// Onglets de l'app.
 struct MainTabs: View {
     @EnvironmentObject private var app: AppModel
     @State private var tab = "home"
+    @State private var homePath = NavigationPath()
 
     var body: some View {
         TabView(selection: $tab) {
-            NavigationStack { HomeView() }
-                .tabItem { Label("Accueil", systemImage: "house.fill") }
+            NavigationStack(path: $homePath) { HomeView() }
+                .tabItem { Label(T("Accueil", "Home"), systemImage: "house.fill") }
                 .tag("home")
             NavigationStack { LiveView() }
-                .tabItem { Label("TV", systemImage: "tv") }
+                .tabItem { Label(T("TV", "Live TV"), systemImage: "tv") }
                 .tag("live")
             NavigationStack { MoviesView() }
-                .tabItem { Label("Films", systemImage: "film") }
+                .tabItem { Label(T("Films", "Movies"), systemImage: "film") }
                 .tag("movies")
             NavigationStack { SeriesListView() }
-                .tabItem { Label("Séries", systemImage: "rectangle.stack.fill") }
+                .tabItem { Label(T("Séries", "Series"), systemImage: "rectangle.stack.fill") }
                 .tag("series")
             NavigationStack { SearchView() }
-                .tabItem { Label("Recherche", systemImage: "magnifyingglass") }
+                .tabItem { Label(T("Recherche", "Search"), systemImage: "magnifyingglass") }
                 .tag("search")
             #if os(tvOS)
             NavigationStack { SettingsView() }
-                .tabItem { Label("Réglages", systemImage: "gearshape.fill") }
+                .tabItem { Label(T("Réglages", "Settings"), systemImage: "gearshape.fill") }
                 .tag("settings")
             #endif
         }
-        .onAppear { tab = app.settings.lastTab }
+        .onAppear {
+            tab = app.settings.lastTab
+            // Langue changée dans les réglages : on y revient (Apple TV : c'est déjà l'onglet en cours)
+            if app.takeReopenSettings() {
+                #if os(iOS)
+                tab = "home"
+                homePath.append(AppRoute.settings)
+                #endif
+            }
+            #if DEBUG && os(iOS)
+            // Essais sur simulateur : « -FluxTVSettings YES » ouvre les réglages
+            if UserDefaults.standard.bool(forKey: "FluxTVSettings") {
+                tab = "home"
+                homePath.append(AppRoute.settings)
+            }
+            #endif
+        }
         .onChange(of: tab) { _, t in app.settings.lastTab = t }
     }
 }
