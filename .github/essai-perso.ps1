@@ -36,6 +36,10 @@ $aumid = "$($paquet.PackageFamilyName)!App"
 try {
     $pid2 = [Lanceur]::Lancer($aumid, '')
     Note "perso : lancée (processus $pid2)"
+    # Premier lancement : choix de la langue, validé avec Entrée (comme avec Ⓐ)
+    Start-Sleep -Seconds 5
+    Capturer 'perso-langue'
+    [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
     Start-Sleep -Seconds 10
     Capturer 'perso'
     $etat = Join-Path $env:LOCALAPPDATA "Packages\$($paquet.PackageFamilyName)\LocalState\journal.txt"

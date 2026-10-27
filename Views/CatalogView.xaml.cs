@@ -16,7 +16,7 @@ namespace FluxTV.Views
     {
         const string FavoritesId = "\u0001fav";
         const string AllId = "\u0001all";
-        static readonly string[] SortNames = { "Ajouts récents", "A → Z", "Mieux notés" };
+        static string[] SortNames => new[] { Tr.T("Ajouts récents", "Recently added"), "A → Z", Tr.T("Mieux notés", "Top rated") };
 
         readonly AppState app = AppState.Current;
         readonly DispatcherTimer categoryTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(420) };
@@ -52,15 +52,13 @@ namespace FluxTV.Views
             Loaded += (s, e) =>
             {
                 shown = true;
-                TitleText.Text = IsSeries ? "Séries" : "Films";
+                TitleText.Text = IsSeries ? Tr.T("Séries", "Series") : Tr.T("Films", "Movies");
                 if (loadedFor != app.Source?.CacheKey) _ = LoadAsync();
             };
             Unloaded += (s, e) => shown = false;
         }
 
-        string Noun => IsSeries ? "séries" : "films";
-
-        string Count(int n) => n + " " + (n > 1 ? Noun : IsSeries ? "série" : "film");
+        string Count(int n) => IsSeries ? Format.Count(n, "série", "séries", "series", "series") : Format.Count(n, "film", "films", "movie", "movies");
 
         public void FocusDefault()
         {
@@ -94,7 +92,7 @@ namespace FluxTV.Views
             Categories.ItemsSource = null;
             PosterGrid.ItemsSource = null;
             CountText.Text = "";
-            ShowLoading("Chargement des catégories…");
+            ShowLoading(Tr.T("Chargement des catégories…", "Loading categories…"));
             try
             {
                 var all = IsSeries ? await repo.SeriesCategoriesAsync() : await repo.VodCategoriesAsync();
@@ -111,7 +109,9 @@ namespace FluxTV.Views
                 }) ?? categories.FirstOrDefault(c => c.Id != FavoritesId && c.Id != AllId) ?? categories.FirstOrDefault();
                 if (start == null)
                 {
-                    ShowMessage("Aucun contenu", IsSeries ? "Ta source ne propose pas de séries." : "Ta source ne propose pas de films.", false);
+                    ShowMessage(Tr.T("Aucun contenu", "No content"), IsSeries
+                        ? Tr.T("Ta source ne propose pas de séries.", "Your source has no series.")
+                        : Tr.T("Ta source ne propose pas de films.", "Your source has no movies."), false);
                     return;
                 }
                 await ShowCategoryAsync(start);
@@ -119,7 +119,8 @@ namespace FluxTV.Views
             catch (Exception e)
             {
                 loadedFor = null;
-                ShowMessage("Impossible de charger les " + Noun, FluxException.MessageOf(e), true);
+                ShowMessage(IsSeries ? Tr.T("Impossible de charger les séries", "Couldn't load series") : Tr.T("Impossible de charger les films", "Couldn't load movies"),
+                    FluxException.MessageOf(e), true);
             }
         }
 
@@ -127,8 +128,8 @@ namespace FluxTV.Views
         {
             var list = new List<CategoryItem>();
             var favorites = app.Library.Data.FavoritesOf(IsSeries ? ContentKind.Series : ContentKind.Movie).Count;
-            if (favorites > 0) list.Add(new CategoryItem { Id = FavoritesId, Name = "Favoris", Count = favorites.ToString() });
-            list.Add(new CategoryItem { Id = AllId, Name = IsSeries ? "Toutes les séries" : "Tous les films" });
+            if (favorites > 0) list.Add(new CategoryItem { Id = FavoritesId, Name = Tr.T("Favoris", "Favorites"), Count = favorites.ToString() });
+            list.Add(new CategoryItem { Id = AllId, Name = IsSeries ? Tr.T("Toutes les séries", "All series") : Tr.T("Tous les films", "All movies") });
             list.AddRange(visible.Select(c => new CategoryItem { Id = c.Id, Name = c.Name }));
             return list;
         }
@@ -141,7 +142,7 @@ namespace FluxTV.Views
             var token = ++loadToken;
             var repo = app.Repo;
             var keepFocus = Tv.IsInside(FocusManager.GetFocusedElement() as DependencyObject, PosterGrid);
-            ShowLoading("Chargement…");
+            ShowLoading(Tr.T("Chargement…", "Loading…"));
             PosterGrid.ItemsSource = null;
             try
             {
@@ -173,7 +174,7 @@ namespace FluxTV.Views
                 PosterGrid.ItemsSource = cards;
                 if (c.Count == null) c.Count = cards.Count.ToString();
                 CountText.Text = c.Name + " · " + Count(cards.Count);
-                if (cards.Count == 0) ShowMessage("Rien ici", "Cette catégorie est vide.", false);
+                if (cards.Count == 0) ShowMessage(Tr.T("Rien ici", "Nothing here"), Tr.T("Cette catégorie est vide.", "This category is empty."), false);
                 else HideState();
                 if (wantFocus || keepFocus)
                 {
@@ -184,7 +185,7 @@ namespace FluxTV.Views
             catch (Exception e)
             {
                 if (token != loadToken) return;
-                ShowMessage("Impossible de charger cette catégorie", FluxException.MessageOf(e), true);
+                ShowMessage(Tr.T("Impossible de charger cette catégorie", "Couldn't load this category"), FluxException.MessageOf(e), true);
             }
         }
 

@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace FluxTV.Views
 {
-    /// <summary>Réglages : source, lecture, contenus, aide de la manette, version.</summary>
+    /// <summary>Réglages : source, langue, lecture, contenus, aide de la manette, version.</summary>
     public sealed partial class SettingsPage : TvPage
     {
         static readonly string[] Formats = { "auto", "m3u8", "ts" };
@@ -17,12 +17,16 @@ namespace FluxTV.Views
         readonly AppState app = AppState.Current;
         bool loading;
         bool confirmChange;
+        bool focusLanguage;
 
         public SettingsPage()
         {
             InitializeComponent();
             NavigationCacheMode = NavigationCacheMode.Required;
-            VersionText.Text = "FluxTV Player pour Xbox · version " + AppInfo.Version;
+            VersionText.Text = Tr.T("FluxTV Player pour Xbox · version ", "FluxTV Player for Xbox · version ") + AppInfo.Version;
+            var english = Lang.Current == Lang.En;
+            FrenchMark.Visibility = english ? Visibility.Collapsed : Visibility.Visible;
+            EnglishMark.Visibility = english ? Visibility.Visible : Visibility.Collapsed;
             app.AccountChanged += () => { if (IsLoaded) Fill(); };
             app.SourceChanged += () => { if (IsLoaded) Fill(); };
             Loaded += (s, e) =>
@@ -38,7 +42,27 @@ namespace FluxTV.Views
             };
         }
 
-        public override void FocusDefault() => RefreshButton.Focus(FocusState.Keyboard);
+        public override void FocusDefault()
+        {
+            if (focusLanguage)
+            {
+                focusLanguage = false;
+                (Lang.Current == Lang.En ? EnglishButton : FrenchButton).Focus(FocusState.Keyboard);
+                return;
+            }
+            RefreshButton.Focus(FocusState.Keyboard);
+        }
+
+        /// <summary>Retour sur les réglages après un changement de langue : le focus revient sur le choix de langue.</summary>
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            focusLanguage = e.Parameter as string == "language";
+        }
+
+        void OnFrench(object sender, RoutedEventArgs e) => App.ChangeLanguage(Lang.Fr);
+
+        void OnEnglish(object sender, RoutedEventArgs e) => App.ChangeLanguage(Lang.En);
 
         void OnTopFocus(object sender, RoutedEventArgs e) => Scroller.ChangeView(null, 0, null);
 
@@ -48,7 +72,7 @@ namespace FluxTV.Views
         {
             var show = Credits.Visibility != Visibility.Visible;
             Credits.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
-            CreditsLabel.Text = show ? "Masquer les crédits" : "Crédits et licences";
+            CreditsLabel.Text = show ? Tr.T("Masquer les crédits", "Hide credits") : Tr.T("Crédits et licences", "Credits and licenses");
             if (!show) return;
             // Après le défilement dû au focus : les crédits remontent en entier dans l'écran
             await Task.Delay(200);
@@ -68,7 +92,7 @@ namespace FluxTV.Views
             var s = app.Source;
             if (s == null)
             {
-                SourceTitle.Text = "Aucune source";
+                SourceTitle.Text = Tr.T("Aucune source", "No source");
                 SourceDetail.Text = "";
                 AccountDetail.Text = "";
             }
@@ -78,18 +102,18 @@ namespace FluxTV.Views
                 {
                     case SourceKind.Xtream:
                         SourceGlyph.Text = "";
-                        SourceTitle.Text = ReferenceEquals(s, app.Embedded) || s.Equals(app.Embedded) ? "Mon compte" : "Compte Xtream";
-                        SourceDetail.Text = "Serveur : " + s.DisplayName;
+                        SourceTitle.Text = ReferenceEquals(s, app.Embedded) || s.Equals(app.Embedded) ? Tr.T("Mon compte", "My account") : Tr.T("Compte Xtream", "Xtream account");
+                        SourceDetail.Text = Tr.T("Serveur : ", "Server: ") + s.DisplayName;
                         break;
                     case SourceKind.Playlist:
                         SourceGlyph.Text = "";
-                        SourceTitle.Text = "Playlist M3U";
-                        SourceDetail.Text = "Adresse : " + s.DisplayName + (s.EpgUrl != null ? " · guide TV ajouté" : "");
+                        SourceTitle.Text = Tr.T("Playlist M3U", "M3U playlist");
+                        SourceDetail.Text = Tr.T("Adresse : ", "Address: ") + s.DisplayName + (s.EpgUrl != null ? Tr.T(" · guide TV ajouté", " · TV guide added") : "");
                         break;
                     default:
                         SourceGlyph.Text = "";
-                        SourceTitle.Text = "Démonstration";
-                        SourceDetail.Text = "Chaînes et films libres de droits, pour essayer l'app.";
+                        SourceTitle.Text = Tr.T("Démonstration", "Demo");
+                        SourceDetail.Text = Tr.T("Chaînes et films libres de droits, pour essayer l'app.", "Free-licensed channels and movies, to try the app.");
                         break;
                 }
                 AccountDetail.Text = AccountLine();
@@ -112,14 +136,15 @@ namespace FluxTV.Views
             if (a.Expiry is DateTimeOffset exp)
             {
                 var days = a.DaysLeft(DateTimeOffset.UtcNow) ?? 0;
-                parts.Add("Abonnement jusqu'au " + exp.ToLocalTime().ToString("d MMMM yyyy", Format.French) + " (" + days + " j)");
+                parts.Add(Tr.T("Abonnement jusqu'au " + Format.Date(exp) + " (" + days + " j)",
+                    "Subscription until " + Format.Date(exp) + " (" + days + (days == 1 ? " day" : " days") + " left)"));
             }
             else
             {
-                parts.Add("Abonnement sans date de fin");
+                parts.Add(Tr.T("Abonnement sans date de fin", "Subscription with no end date"));
             }
-            if (a.MaxConnections is int max) parts.Add(max + (max > 1 ? " écrans" : " écran"));
-            if (a.IsTrial) parts.Add("essai");
+            if (a.MaxConnections is int max) parts.Add(Format.Count(max, "écran", "écrans", "screen", "screens"));
+            if (a.IsTrial) parts.Add(Tr.T("essai", "trial"));
             return string.Join(" · ", parts);
         }
 
@@ -129,15 +154,16 @@ namespace FluxTV.Views
             {
                 case "m3u8":
                     FormatText.Text = "HLS (m3u8)";
-                    FormatDetail.Text = "Le plus compatible avec le lecteur de la Xbox.";
+                    FormatDetail.Text = Tr.T("Le plus compatible avec le lecteur de la Xbox.", "The most compatible with the Xbox player.");
                     break;
                 case "ts":
                     FormatText.Text = "MPEG-TS (ts)";
-                    FormatDetail.Text = "À essayer si une chaîne ne démarre pas en HLS.";
+                    FormatDetail.Text = Tr.T("À essayer si une chaîne ne démarre pas en HLS.", "Try this if a channel doesn't start in HLS.");
                     break;
                 default:
-                    FormatText.Text = "Automatique (" + (app.LiveExtension == "ts" ? "TS" : "HLS") + ")";
-                    FormatDetail.Text = "HLS quand le serveur le permet, sinon TS. En cas d'échec, l'autre format est essayé.";
+                    FormatText.Text = Tr.T("Automatique (", "Automatic (") + (app.LiveExtension == "ts" ? "TS" : "HLS") + ")";
+                    FormatDetail.Text = Tr.T("HLS quand le serveur le permet, sinon TS. En cas d'échec, l'autre format est essayé.",
+                        "HLS when the server allows it, otherwise TS. If it fails, the other format is tried.");
                     break;
             }
         }
@@ -169,7 +195,7 @@ namespace FluxTV.Views
             try
             {
                 await app.ConnectAsync(app.Embedded);
-                app.Toast("Ton compte est utilisé");
+                app.Toast(Tr.T("Ton compte est utilisé", "Your account is now in use"));
             }
             catch (Exception ex)
             {

@@ -53,14 +53,14 @@
                 </Grid>
             </Button>
 
-            <ui:CardRow x:Name="ResumeRow" Title="Continuer à regarder" CardTemplate="{StaticResource WideTemplate}" />
-            <ui:CardRow x:Name="FavChannelsRow" Title="Mes chaînes" CardTemplate="{StaticResource WideTemplate}" />
-            <ui:CardRow x:Name="RecentChannelsRow" Title="Dernières chaînes" CardTemplate="{StaticResource WideTemplate}" />
-            <ui:CardRow x:Name="DiscoverRow" Title="Chaînes en direct" CardTemplate="{StaticResource WideTemplate}" />
-            <ui:CardRow x:Name="MoviesRow" Title="Films" CardTemplate="{StaticResource PosterTemplate}" />
-            <ui:CardRow x:Name="SeriesRow" Title="Séries" CardTemplate="{StaticResource PosterTemplate}" />
-            <ui:CardRow x:Name="FavMoviesRow" Title="Films favoris" CardTemplate="{StaticResource PosterTemplate}" />
-            <ui:CardRow x:Name="FavSeriesRow" Title="Séries favorites" CardTemplate="{StaticResource PosterTemplate}" />
+            <ui:CardRow x:Name="ResumeRow" Title="{ui:T Fr='Continuer à regarder', En='Continue watching'}" CardTemplate="{StaticResource WideTemplate}" />
+            <ui:CardRow x:Name="FavChannelsRow" Title="{ui:T Fr='Mes chaînes', En='My channels'}" CardTemplate="{StaticResource WideTemplate}" />
+            <ui:CardRow x:Name="RecentChannelsRow" Title="{ui:T Fr='Dernières chaînes', En='Recent channels'}" CardTemplate="{StaticResource WideTemplate}" />
+            <ui:CardRow x:Name="DiscoverRow" Title="{ui:T Fr='Chaînes en direct', En='Live channels'}" CardTemplate="{StaticResource WideTemplate}" />
+            <ui:CardRow x:Name="MoviesRow" Title="{ui:T Fr='Films', En='Movies'}" CardTemplate="{StaticResource PosterTemplate}" />
+            <ui:CardRow x:Name="SeriesRow" Title="{ui:T Fr='Séries', En='Series'}" CardTemplate="{StaticResource PosterTemplate}" />
+            <ui:CardRow x:Name="FavMoviesRow" Title="{ui:T Fr='Films favoris', En='Favorite movies'}" CardTemplate="{StaticResource PosterTemplate}" />
+            <ui:CardRow x:Name="FavSeriesRow" Title="{ui:T Fr='Séries favorites', En='Favorite series'}" CardTemplate="{StaticResource PosterTemplate}" />
 
             <!-- Chargement ou erreur des chaînes -->
             <StackPanel x:Name="LiveState" Visibility="Collapsed" Margin="0,40,48,0" HorizontalAlignment="Center" MaxWidth="460">
@@ -73,7 +73,7 @@
                         Click="OnRetry" Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE72C;" Style="{StaticResource IconText}" FontSize="14" Foreground="{StaticResource WhiteBrush}" />
-                        <TextBlock Text="Réessayer" Margin="8,0,0,0" VerticalAlignment="Center" />
+                        <TextBlock Text="{ui:T Fr='Réessayer', En='Retry'}" Margin="8,0,0,0" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
             </StackPanel>

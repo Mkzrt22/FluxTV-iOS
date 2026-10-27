@@ -191,7 +191,7 @@ namespace FluxTV.Core
                 var archive = o.Flag("tv_archive");
                 output.Add(new LiveChannel(
                     Ids.Live(sid), sid,
-                    o.Str("name") ?? "Sans nom",
+                    o.Str("name") ?? Tr.T("Sans nom", "Untitled"),
                     ValidImage(o.Str("stream_icon")),
                     o.Str("category_id") ?? "",
                     o.Str("epg_channel_id"),
@@ -211,7 +211,7 @@ namespace FluxTV.Core
                 var year = o.Int("year");
                 output.Add(new Movie(
                     Ids.Vod(sid), sid,
-                    o.Str("name") ?? o.Str("title") ?? "Sans titre",
+                    o.Str("name") ?? o.Str("title") ?? Tr.T("Sans titre", "Untitled"),
                     ValidImage(o.Str("stream_icon")) ?? ValidImage(o.Str("cover")),
                     o.Rating("rating"),
                     o.UnixDate("added"),
@@ -231,7 +231,7 @@ namespace FluxTV.Core
                 if (sid == null) return;
                 output.Add(new Series(
                     sid,
-                    o.Str("name") ?? o.Str("title") ?? "Sans titre",
+                    o.Str("name") ?? o.Str("title") ?? Tr.T("Sans titre", "Untitled"),
                     ValidImage(o.Str("cover")),
                     o.Str("plot"),
                     o.Str("genre"),
@@ -267,7 +267,7 @@ namespace FluxTV.Core
                 var season = o.Int("season") ?? fallbackSeason;
                 var ep = new Episode(
                     Ids.Episode(epId), epId,
-                    CleanEpisodeTitle(o.Str("title") ?? "Épisode " + (index + 1)),
+                    CleanEpisodeTitle(o.Str("title") ?? Tr.T("Épisode ", "Episode ") + (index + 1)),
                     season,
                     o.Int("episode_num") ?? index + 1,
                     o.Str("container_extension") ?? "mkv",

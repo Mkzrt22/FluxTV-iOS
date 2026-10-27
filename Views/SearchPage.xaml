@@ -9,9 +9,9 @@
     <ScrollViewer x:Name="Scroller" Margin="-20,0,0,0" VerticalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
                   HorizontalScrollBarVisibility="Disabled" IsVerticalRailEnabled="False" ZoomMode="Disabled" IsTabStop="False">
         <StackPanel Padding="20,27,0,40">
-            <TextBlock Text="Rechercher" Style="{StaticResource TitleText}" />
+            <TextBlock Text="{ui:T Fr='Rechercher', En='Search'}" Style="{StaticResource TitleText}" />
             <Grid Margin="0,14,48,0" HorizontalAlignment="Left" Width="540">
-                <TextBox x:Name="Query" Style="{StaticResource FieldBox}" PlaceholderText="Chaîne, film, série…" InputScope="Search"
+                <TextBox x:Name="Query" Style="{StaticResource FieldBox}" PlaceholderText="{ui:T Fr='Chaîne, film, série…', En='Channel, movie, series…'}" InputScope="Search"
                          TextChanged="OnQueryChanged" KeyDown="OnQueryKeyDown" GotFocus="OnQueryFocus" Padding="40,9,8,0" />
                 <TextBlock Text="&#xE721;" Style="{StaticResource IconText}" FontSize="15" Foreground="{StaticResource TextFaintBrush}"
                            HorizontalAlignment="Left" Margin="14,0,0,0" IsHitTestVisible="False" />
@@ -20,12 +20,12 @@
             <StackPanel x:Name="StatePanel" Orientation="Horizontal" Margin="0,18,0,0">
                 <ProgressRing x:Name="StateRing" Width="20" Height="20" Foreground="{StaticResource AccentBrightBrush}" Margin="0,0,12,0" />
                 <TextBlock x:Name="StateText" Style="{StaticResource DimText}" VerticalAlignment="Center"
-                           Text="Appuie sur Ⓐ pour écrire avec le clavier de la console." />
+                           Text="{ui:T Fr='Appuie sur Ⓐ pour écrire avec le clavier de la console.', En='Press Ⓐ to type with the console keyboard.'}" />
             </StackPanel>
 
-            <ui:CardRow x:Name="ChannelsRow" Title="Chaînes" CardTemplate="{StaticResource WideTemplate}" ShowCount="True" />
-            <ui:CardRow x:Name="MoviesRow" Title="Films" CardTemplate="{StaticResource PosterTemplate}" ShowCount="True" />
-            <ui:CardRow x:Name="SeriesRow" Title="Séries" CardTemplate="{StaticResource PosterTemplate}" ShowCount="True" />
+            <ui:CardRow x:Name="ChannelsRow" Title="{ui:T Fr='Chaînes', En='Channels'}" CardTemplate="{StaticResource WideTemplate}" ShowCount="True" />
+            <ui:CardRow x:Name="MoviesRow" Title="{ui:T Fr='Films', En='Movies'}" CardTemplate="{StaticResource PosterTemplate}" ShowCount="True" />
+            <ui:CardRow x:Name="SeriesRow" Title="{ui:T Fr='Séries', En='Series'}" CardTemplate="{StaticResource PosterTemplate}" ShowCount="True" />
         </StackPanel>
     </ScrollViewer>
 </local:TvPage>

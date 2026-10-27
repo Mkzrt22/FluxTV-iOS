@@ -22,7 +22,7 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left" MaxWidth="500" Margin="0,0,28,0">
-                <TextBlock x:Name="Eyebrow" Text="FILM" Style="{StaticResource EyebrowText}" />
+                <TextBlock x:Name="Eyebrow" Text="{ui:T Fr='FILM', En='MOVIE'}" Style="{StaticResource EyebrowText}" />
                 <TextBlock x:Name="TitleText" Style="{StaticResource DisplayText}" Margin="0,8,0,0" />
                 <TextBlock x:Name="MetaText" Style="{StaticResource DimText}" Margin="0,8,0,0" TextWrapping="WrapWholeWords" MaxLines="2" />
                 <StackPanel x:Name="BadgePanel" Orientation="Horizontal" Margin="0,10,0,0" />
@@ -41,13 +41,13 @@
                     <Button x:Name="PlayButton" Style="{StaticResource PrimaryButton}" Click="OnPlay">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE768;" Style="{StaticResource IconText}" FontSize="14" Foreground="{StaticResource WhiteBrush}" />
-                            <TextBlock x:Name="PlayText" Text="Lecture" Margin="9,0,0,0" VerticalAlignment="Center" />
+                            <TextBlock x:Name="PlayText" Text="{ui:T Fr='Lecture', En='Play'}" Margin="9,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="RestartButton" Style="{StaticResource FluxButton}" Margin="14,0,0,0" Click="OnRestart" Visibility="Collapsed">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE72C;" Style="{StaticResource IconText}" FontSize="14" />
-                            <TextBlock Text="Depuis le début" Margin="9,0,0,0" VerticalAlignment="Center" />
+                            <TextBlock Text="{ui:T Fr='Depuis le début', En='From the start'}" Margin="9,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="FavoriteButton" Style="{StaticResource IconButton}" Margin="14,0,0,0" Click="OnFavorite">

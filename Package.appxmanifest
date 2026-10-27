@@ -7,7 +7,7 @@
 
   <!-- Identité réservée dans l'Espace partenaires Microsoft (Store) ; le certificat de test des paquets
        à installer soi-même (Signature\FluxTV-test.cer) a le même sujet que l'éditeur. -->
-  <Identity Name="Kevin22.FluxTVPlayer" Publisher="CN=05FD659D-6D1F-4B5B-ADB5-C9C3AED73597" Version="1.0.0.0" />
+  <Identity Name="Kevin22.FluxTVPlayer" Publisher="CN=05FD659D-6D1F-4B5B-ADB5-C9C3AED73597" Version="1.1.0.0" />
   <mp:PhoneIdentity PhoneProductId="6f1c2d3e-8a9b-4c5d-9e7f-1a2b3c4d5e6f" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
 
   <Properties>
@@ -20,6 +20,7 @@
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.22621.0" />
   </Dependencies>
 
+  <!-- Anglais (langue par défaut) et français : d'après Strings\en-US et Strings\fr-FR -->
   <Resources>
     <Resource Language="x-generate" />
   </Resources>
@@ -28,7 +29,7 @@
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="FluxTV.App">
       <uap:VisualElements
         DisplayName="FluxTV Player"
-        Description="Lecteur IPTV : TV en direct, guide des programmes, films et séries."
+        Description="ms-resource:AppDescription"
         BackgroundColor="#080818"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">

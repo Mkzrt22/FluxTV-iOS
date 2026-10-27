@@ -136,6 +136,27 @@ namespace FluxTV.Services
             await LoadLiveAsync();
         }
 
+        /// <summary>
+        /// Langue changée : l'interface est refaite. Les anciens écrans ne reçoivent plus rien, et les listes
+        /// sont relues (depuis le cache) pour que les noms fabriqués par l'app (démo, « Autres »…) suivent.
+        /// </summary>
+        public void Relocalize()
+        {
+            SourceChanged = null;
+            LiveChanged = null;
+            AccountChanged = null;
+            ProgrammesLoaded = null;
+            ToastRequested = null;
+            PlayRequested = null;
+            Library.ClearSubscribers();
+            var s = Source;
+            if (s == null) return;
+            var account = Account;
+            Use(s);
+            Account = account;
+            _ = LoadLiveAsync();
+        }
+
         public void SignOut()
         {
             var old = Repo;
@@ -172,7 +193,7 @@ namespace FluxTV.Services
             channelIndex = null;
             SourceChanged?.Invoke();
             await LoadLiveAsync(true);
-            Toast("Listes actualisées");
+            Toast(Tr.T("Listes actualisées", "Lists refreshed"));
         }
 
         // ───────────────────────────── Direct ─────────────────────────────
@@ -325,7 +346,7 @@ namespace FluxTV.Services
         public void Play(LiveChannel ch, List<LiveChannel> list)
         {
             var item = ItemFor(ch);
-            if (item == null) { Toast("Adresse de lecture introuvable"); return; }
+            if (item == null) { Toast(Tr.T("Adresse de lecture introuvable", "Playback address not found")); return; }
             Library.AddHistory(item.Ref);
             list = list != null && list.Count > 0 ? list : new List<LiveChannel> { ch };
             PlayRequested?.Invoke(new PlayerRequest
@@ -338,7 +359,7 @@ namespace FluxTV.Services
         {
             var r = m.Ref(group);
             var url = UrlOf(r);
-            if (url == null) { Toast("Adresse de lecture introuvable"); return; }
+            if (url == null) { Toast(Tr.T("Adresse de lecture introuvable", "Playback address not found")); return; }
             var start = fromStart ? null : Library.Resume(r.Id)?.Position;
             Library.AddHistory(r);
             PlayRequested?.Invoke(new PlayerRequest
@@ -354,7 +375,7 @@ namespace FluxTV.Services
         {
             var r = e.Ref(s.SeriesId, s.Name, cover ?? s.Cover);
             var url = UrlOf(r);
-            if (url == null) { Toast("Adresse de lecture introuvable"); return; }
+            if (url == null) { Toast(Tr.T("Adresse de lecture introuvable", "Playback address not found")); return; }
             var start = fromStart ? null : Library.Resume(r.Id)?.Position;
             Library.AddHistory(r);
             PlayRequested?.Invoke(new PlayerRequest
@@ -376,12 +397,12 @@ namespace FluxTV.Services
             if (r.Kind == ContentKind.Live)
             {
                 var ch = Channel(r.Id);
-                if (ch == null) { Toast("Cette chaîne n'est plus disponible"); return; }
+                if (ch == null) { Toast(Tr.T("Cette chaîne n'est plus disponible", "This channel is no longer available")); return; }
                 Play(ch, VisibleChannels(ch.CategoryId));
                 return;
             }
             var url = UrlOf(r);
-            if (url == null) { Toast("Ce contenu n'est plus disponible"); return; }
+            if (url == null) { Toast(Tr.T("Ce contenu n'est plus disponible", "This content is no longer available")); return; }
             var request = new PlayerRequest
             {
                 Item = new PlayItem
@@ -436,7 +457,7 @@ namespace FluxTV.Services
         public void ToggleFavorite(ContentRef r)
         {
             var added = Library.ToggleFavorite(r);
-            Toast(added ? "Ajouté aux favoris" : "Retiré des favoris");
+            Toast(added ? Tr.T("Ajouté aux favoris", "Added to favorites") : Tr.T("Retiré des favoris", "Removed from favorites"));
         }
     }
 }

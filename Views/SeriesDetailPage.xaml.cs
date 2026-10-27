@@ -86,7 +86,7 @@ namespace FluxTV.Views
             {
                 StateRing.IsActive = false;
                 StateRing.Visibility = Visibility.Collapsed;
-                StateText.Text = "Aucun épisode disponible pour le moment.";
+                StateText.Text = Tr.T("Aucun épisode disponible pour le moment.", "No episodes available yet.");
                 return;
             }
             StatePanel.Visibility = Visibility.Collapsed;
@@ -95,7 +95,7 @@ namespace FluxTV.Views
             {
                 Id = n.ToString(),
                 Season = n,
-                Name = n == 0 ? "Épisodes spéciaux" : "Saison " + n,
+                Name = n == 0 ? Tr.T("Épisodes spéciaux", "Specials") : Tr.T("Saison ", "Season ") + n,
             }).ToList();
             Seasons.ItemsSource = seasons;
             Seasons.Visibility = seasons.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
@@ -118,7 +118,7 @@ namespace FluxTV.Views
             var year = details?.Year ?? series.Year;
             if (year != null) parts.Add(year.Value.ToString());
             if (details != null && details.Seasons.Count > 0)
-                parts.Add(details.Seasons.Count + (details.Seasons.Count > 1 ? " saisons" : " saison"));
+                parts.Add(Format.Count(details.Seasons.Count, "saison", "saisons", "season", "seasons"));
             var rating = details?.Rating ?? series.Rating;
             if (rating is double r && r > 0) parts.Add(Format.Rating(r));
             var genre = details?.Genre ?? series.Genre;
@@ -128,8 +128,8 @@ namespace FluxTV.Views
             PlotText.Text = plot ?? "";
             PlotText.Visibility = string.IsNullOrWhiteSpace(plot) ? Visibility.Collapsed : Visibility.Visible;
             var credits = new List<string>();
-            if (!string.IsNullOrWhiteSpace(details?.Director)) credits.Add("Création : " + details.Director);
-            if (!string.IsNullOrWhiteSpace(details?.Cast)) credits.Add("Avec : " + details.Cast);
+            if (!string.IsNullOrWhiteSpace(details?.Director)) credits.Add(Tr.T("Création : ", "Created by: ") + details.Director);
+            if (!string.IsNullOrWhiteSpace(details?.Cast)) credits.Add(Tr.T("Avec : ", "Starring: ") + details.Cast);
             CreditsText.Text = string.Join("\n", credits);
             CreditsText.Visibility = credits.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             Poster.Url = Cover;
@@ -146,7 +146,7 @@ namespace FluxTV.Views
             ApplyMarks();
             Episodes.ItemsSource = episodes;
             SeasonTitle.Text = s.Name;
-            SeasonCount.Text = episodes.Count + (episodes.Count > 1 ? " épisodes" : " épisode");
+            SeasonCount.Text = Format.Count(episodes.Count, "épisode", "épisodes", "episode", "episodes");
             var target = next != null ? episodes.FirstOrDefault(x => x.Episode.Id == next.Value.Episode.Id) : null;
             if (target != null) Episodes.ScrollIntoView(target);
             if (focusFirst && episodes.Count > 0) _ = Tv.FocusItemAsync(Episodes, target ?? episodes[0]);
@@ -171,11 +171,11 @@ namespace FluxTV.Views
                 if (next != null)
                 {
                     var (ep, resume) = next.Value;
-                    PlayText.Text = (resume != null ? "Reprendre " : "Lecture ") + ep.Label;
+                    PlayText.Text = (resume != null ? Tr.T("Reprendre ", "Resume ") : Tr.T("Lecture ", "Play ")) + ep.Label;
                 }
                 else
                 {
-                    PlayText.Text = "Revoir depuis le début";
+                    PlayText.Text = Tr.T("Revoir depuis le début", "Watch again from the start");
                 }
             }
             var fav = app.Library.IsFavorite(series.Id);
@@ -225,7 +225,7 @@ namespace FluxTV.Views
             e.Handled = true;
             var watched = !app.Library.IsWatched(item.Episode.Id);
             app.Library.SetWatched(item.Episode.Id, watched);
-            app.Toast((watched ? "Vu : " : "Non vu : ") + item.Label);
+            app.Toast((watched ? Tr.T("Vu : ", "Watched: ") : Tr.T("Non vu : ", "Unwatched: ")) + item.Label);
         }
     }
 }

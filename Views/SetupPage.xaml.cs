@@ -80,7 +80,7 @@ namespace FluxTV.Views
                           ?? new XtreamAccount(ServerBox.Text, UserBox.Text, PassBox.Password);
             if (!account.IsComplete)
             {
-                ShowError("Remplis le serveur, l'identifiant et le mot de passe.");
+                ShowError(Tr.T("Remplis le serveur, l'identifiant et le mot de passe.", "Fill in the server, username and password."));
                 return;
             }
             await ConnectAsync(Source.Xtream(account), XtreamConnect);
@@ -91,7 +91,7 @@ namespace FluxTV.Views
             var url = (PlaylistBox.Text ?? "").Trim();
             if (url.Length == 0)
             {
-                ShowError("Indique l'adresse de la playlist.");
+                ShowError(Tr.T("Indique l'adresse de la playlist.", "Enter the playlist URL."));
                 return;
             }
             if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) && !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
@@ -109,7 +109,7 @@ namespace FluxTV.Views
             ErrorText.Visibility = Visibility.Collapsed;
             BusyPanel.Visibility = Visibility.Visible;
             BusyRing.IsActive = true;
-            BusyText.Text = source.Kind == SourceKind.Playlist ? "Chargement de la playlist…" : "Connexion…";
+            BusyText.Text = source.Kind == SourceKind.Playlist ? Tr.T("Chargement de la playlist…", "Loading playlist…") : Tr.T("Connexion…", "Connecting…");
             try
             {
                 await app.ConnectAsync(source);

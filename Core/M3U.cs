@@ -40,7 +40,7 @@ namespace FluxTV.Core
         {
             var entries = new List<M3UEntry>();
             string epg = null;
-            string name = "", logo = null, group = "Autres", tvgId = null, ua = null;
+            string name = "", logo = null, group = Tr.T("Autres", "Other"), tvgId = null, ua = null;
             int num = 0;
             bool pending = false;
 
@@ -64,10 +64,10 @@ namespace FluxTV.Core
                         var a = Attributes(line);
                         tvgId = NonEmpty(a, "tvg-id");
                         logo = NonEmpty(a, "tvg-logo");
-                        group = NonEmpty(a, "group-title") ?? "Autres";
+                        group = NonEmpty(a, "group-title") ?? Tr.T("Autres", "Other");
                         num = a.TryGetValue("tvg-chno", out var chno) && int.TryParse(chno.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var n) ? n : 0;
                         var extName = ExtinfName(line);
-                        name = extName.Length == 0 ? (a.TryGetValue("tvg-name", out var tn) ? tn : "Sans nom") : extName;
+                        name = extName.Length == 0 ? (a.TryGetValue("tvg-name", out var tn) ? tn : Tr.T("Sans nom", "Untitled")) : extName;
                     }
                     else if (upper.StartsWith("#EXTGRP", StringComparison.Ordinal))
                     {
@@ -92,7 +92,7 @@ namespace FluxTV.Core
                 if (pending)
                     entries.Add(new M3UEntry
                     {
-                        Name = name.Length == 0 ? "Sans nom" : name, Url = line, Logo = logo, Group = group, TvgId = tvgId, Num = num,
+                        Name = name.Length == 0 ? Tr.T("Sans nom", "Untitled") : name, Url = line, Logo = logo, Group = group, TvgId = tvgId, Num = num,
                         UserAgent = ua,
                     });
                 pending = false;
@@ -100,7 +100,7 @@ namespace FluxTV.Core
                 logo = null;
                 tvgId = null;
                 ua = null;
-                group = "Autres";
+                group = Tr.T("Autres", "Other");
                 num = 0;
             }
             return (entries, epg);
@@ -254,7 +254,7 @@ namespace FluxTV.Core
                         }
                         int number = marker?.Episode ?? show.Episodes.Count + 1;
                         show.Episodes.Add(new Episode(
-                            id, Ids.NumericPart(id) ?? id, marker?.Title ?? "Épisode " + number, marker?.Season ?? 1, number,
+                            id, Ids.NumericPart(id) ?? id, marker?.Title ?? Tr.T("Épisode ", "Episode ") + number, marker?.Season ?? 1, number,
                             ExtensionOf(e.Url, "mkv"), null, e.Logo, null, e.Url));
                         break;
                 }

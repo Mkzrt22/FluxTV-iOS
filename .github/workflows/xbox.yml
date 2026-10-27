@@ -31,7 +31,7 @@ jobs:
       - name: Captures d'écran
         if: steps.install.outcome == 'success'
         continue-on-error: true
-        timeout-minutes: 10
+        timeout-minutes: 16
         shell: powershell
         run: ./.github/captures.ps1
       - name: Kit de certification Windows

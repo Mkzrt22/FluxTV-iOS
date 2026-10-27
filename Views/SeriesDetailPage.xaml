@@ -23,7 +23,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel HorizontalAlignment="Left" MaxWidth="520" Margin="0,10,28,0">
-                        <TextBlock Text="SÉRIE" Style="{StaticResource EyebrowText}" />
+                        <TextBlock Text="{ui:T Fr='SÉRIE', En='SERIES'}" Style="{StaticResource EyebrowText}" />
                         <TextBlock x:Name="TitleText" Style="{StaticResource DisplayText}" Margin="0,8,0,0" />
                         <TextBlock x:Name="MetaText" Style="{StaticResource DimText}" Margin="0,8,0,0" TextWrapping="WrapWholeWords" MaxLines="2" />
                         <TextBlock x:Name="PlotText" Style="{StaticResource BodyText}" MaxLines="4" Margin="0,12,0,0" />
@@ -33,7 +33,7 @@
                             <Button x:Name="PlayButton" Style="{StaticResource PrimaryButton}" Click="OnPlay" IsEnabled="False" GotFocus="OnTopFocus">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="&#xE768;" Style="{StaticResource IconText}" FontSize="14" Foreground="{StaticResource WhiteBrush}" />
-                                    <TextBlock x:Name="PlayText" Text="Lecture" Margin="9,0,0,0" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="PlayText" Text="{ui:T Fr='Lecture', En='Play'}" Margin="9,0,0,0" VerticalAlignment="Center" />
                                 </StackPanel>
                             </Button>
                             <Button x:Name="FavoriteButton" Style="{StaticResource IconButton}" Margin="14,0,0,0" Click="OnFavorite" GotFocus="OnTopFocus">
@@ -50,7 +50,7 @@
 
                 <StackPanel x:Name="StatePanel" Orientation="Horizontal" Margin="0,22,0,0">
                     <ProgressRing x:Name="StateRing" Width="22" Height="22" IsActive="True" Foreground="{StaticResource AccentBrightBrush}" Margin="0,0,12,0" />
-                    <TextBlock x:Name="StateText" Style="{StaticResource DimText}" Text="Chargement des épisodes…" VerticalAlignment="Center" />
+                    <TextBlock x:Name="StateText" Style="{StaticResource DimText}" Text="{ui:T Fr='Chargement des épisodes…', En='Loading episodes…'}" VerticalAlignment="Center" />
                 </StackPanel>
 
                 <!-- Saisons -->
@@ -62,7 +62,7 @@
                 <StackPanel x:Name="EpisodesHeader" Orientation="Horizontal" Margin="0,10,0,0" Visibility="Collapsed">
                     <TextBlock x:Name="SeasonTitle" Style="{StaticResource SectionText}" />
                     <TextBlock x:Name="SeasonCount" Style="{StaticResource FaintText}" VerticalAlignment="Bottom" Margin="10,0,0,2" />
-                    <ui:Hint Key="Y" Text="Vu / non vu" Margin="22,0,0,0" />
+                    <ui:Hint Key="Y" Text="{ui:T Fr='Vu / non vu', En='Watched / unwatched'}" Margin="22,0,0,0" />
                 </StackPanel>
                 <ListView x:Name="Episodes" Style="{StaticResource RowListStyle}" ItemContainerStyle="{StaticResource CardItemStyle}"
                           ItemTemplate="{StaticResource EpisodeTemplate}" ItemClick="OnEpisodeClick" KeyDown="OnEpisodeKeyDown"

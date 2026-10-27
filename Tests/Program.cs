@@ -485,5 +485,44 @@ namespace FluxTV.Tests
             Assert.Equal("12:34", Format.Clock(754));
             Assert.Equal("★ 7,5", Format.Rating(7.5));
         }
+
+        /// <summary>App en anglais : formats, messages et démonstration suivent la langue choisie.</summary>
+        public static void TestEnglish()
+        {
+            Tr.English = true;
+            try
+            {
+                Assert.Equal("1h 58", Format.Duration(7080));
+                Assert.Equal("Resume", Format.Resume(20));
+                Assert.Equal("Resume at 4 min", Format.Resume(250));
+                Assert.Equal("★ 7.5", Format.Rating(7.5));
+                Assert.Equal("Thursday, October 2, 2025", Format.Day(new DateTimeOffset(2025, 10, 2, 12, 0, 0, TimeSpan.Zero)));
+                Assert.Equal("Live test pattern", Demo.Channels[0].Name);
+                Assert.True(Demo.Channels[0].Logo.EndsWith("DemoLive1En.png"), "vignette « LIVE »");
+                Assert.Equal("Demo · Live", Demo.LiveCategory.Name);
+                Assert.Equal("No internet connection.", new FluxException(FluxError.Offline).Message);
+                Assert.Equal("Other", M3U.Parse("#EXTM3U\n#EXTINF:-1,Chaîne\nhttp://h/1.ts\n").Entries[0].Group);
+                Assert.Equal("42 min left", Format.Remaining(2520));
+                Assert.Equal("1 channel", Format.Count(1, "chaîne", "chaînes", "channel", "channels"));
+                Assert.Equal("0 channels", Format.Count(0, "chaîne", "chaînes", "channel", "channels"));
+                var evening = new DateTimeOffset(new DateTime(2025, 10, 2, 20, 5, 0, DateTimeKind.Local));
+                Assert.Equal("20:05", Format.Hour(evening));
+                Tr.Clock24 = false;
+                Assert.Equal("8:05 PM", Format.Hour(evening));
+            }
+            finally
+            {
+                Tr.English = false;
+                Tr.Clock24 = true;
+            }
+            Assert.Equal("Mire en direct", Demo.Channels[0].Name);
+            Assert.Equal("Reste 42 min", Format.Remaining(2520));
+            Assert.Equal("0 chaîne", Format.Count(0, "chaîne", "chaînes", "channel", "channels"));
+            Assert.Equal("2 chaînes", Format.Count(2, "chaîne", "chaînes", "channel", "channels"));
+            Tr.Clock24 = false;
+            Assert.Equal("20:05", Format.Hour(new DateTimeOffset(new DateTime(2025, 10, 2, 20, 5, 0, DateTimeKind.Local))));
+            Tr.Clock24 = true;
+            Assert.Equal("Jeudi 2 octobre 2025", Format.Day(new DateTimeOffset(2025, 10, 2, 12, 0, 0, TimeSpan.Zero)));
+        }
     }
 }

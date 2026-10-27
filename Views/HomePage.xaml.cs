@@ -117,9 +117,10 @@ namespace FluxTV.Views
 
         void Tick()
         {
-            Clock.Text = DateTime.Now.ToString("HH:mm");
+            Clock.Text = Format.Hour(DateTimeOffset.Now);
             var h = DateTime.Now.Hour;
-            Greeting.Text = h >= 5 && h < 12 ? "Bonjour" : h >= 12 && h < 18 ? "Bon après-midi" : "Bonsoir";
+            Greeting.Text = h >= 5 && h < 12 ? Tr.T("Bonjour", "Good morning")
+                : h >= 12 && h < 18 ? Tr.T("Bon après-midi", "Good afternoon") : Tr.T("Bonsoir", "Good evening");
             // Avancement des programmes en cours
             foreach (var pair in channelCards)
                 foreach (var card in pair.Value)
@@ -132,7 +133,8 @@ namespace FluxTV.Views
             var days = app.Account?.DaysLeft(DateTimeOffset.UtcNow);
             if (days is int d && d <= 30)
             {
-                SubscriptionText.Text = d == 0 ? "Abonnement expiré" : "Abonnement : " + d + " j";
+                SubscriptionText.Text = d == 0 ? Tr.T("Abonnement expiré", "Subscription expired")
+                    : Tr.T("Abonnement : " + d + " j", "Subscription: " + d + (d == 1 ? " day" : " days"));
                 SubscriptionText.Foreground = d <= 7 ? Palette.Gold : Palette.TextDim;
                 SubscriptionChip.Visibility = Visibility.Visible;
             }
@@ -160,9 +162,9 @@ namespace FluxTV.Views
             var discover = favorites.Count == 0 && recent.Count == 0 ? app.VisibleChannels().Take(16).ToList() : new List<LiveChannel>();
             DiscoverRow.SetItems(discover.Select(c => ChannelCard(c, discover)).ToList());
 
-            MoviesRow.Title = moviesGroup ?? "Films";
+            MoviesRow.Title = moviesGroup ?? Tr.T("Films", "Movies");
             MoviesRow.SetItems(latestMovies.Select(m => MovieCard(m, moviesGroup)).ToList());
-            SeriesRow.Title = seriesGroup ?? "Séries";
+            SeriesRow.Title = seriesGroup ?? Tr.T("Séries", "Series");
             SeriesRow.SetItems(featuredSeries.Select(s => SeriesCard(s, seriesGroup)).ToList());
             FavMoviesRow.SetItems(lib.FavoritesOf(ContentKind.Movie).Select(r => MovieCard(Movie.FromRef(r), r.Group)).ToList());
             FavSeriesRow.SetItems(lib.FavoritesOf(ContentKind.Series).Select(r => SeriesCard(Series.FromRef(r), r.Group)).ToList());
@@ -200,7 +202,7 @@ namespace FluxTV.Views
                 LiveState.Visibility = Visibility.Visible;
                 LiveRing.IsActive = true;
                 LiveRing.Visibility = Visibility.Visible;
-                LiveStateTitle.Text = "Chargement des chaînes…";
+                LiveStateTitle.Text = Tr.T("Chargement des chaînes…", "Loading channels…");
                 LiveStateText.Text = "";
                 RetryButton.Visibility = Visibility.Collapsed;
             }
@@ -209,7 +211,7 @@ namespace FluxTV.Views
                 LiveState.Visibility = Visibility.Visible;
                 LiveRing.IsActive = false;
                 LiveRing.Visibility = Visibility.Collapsed;
-                LiveStateTitle.Text = "Impossible de charger tes chaînes";
+                LiveStateTitle.Text = Tr.T("Impossible de charger tes chaînes", "Couldn't load your channels");
                 LiveStateText.Text = app.LiveError;
                 RetryButton.Visibility = Visibility.Visible;
             }
@@ -245,7 +247,7 @@ namespace FluxTV.Views
             {
                 var r = resume[0];
                 heroTarget = r;
-                HeroEyebrow.Text = r.Kind == ContentKind.Episode ? "REPRENDRE LA SÉRIE" : "REPRENDRE";
+                HeroEyebrow.Text = r.Kind == ContentKind.Episode ? Tr.T("REPRENDRE LA SÉRIE", "RESUME SERIES") : Tr.T("REPRENDRE", "RESUME");
                 HeroTitle.Text = r.Kind == ContentKind.Episode ? (r.SeriesName ?? r.Name) : r.Name;
                 HeroSubtitle.Text = ResumeSubtitle(r) ?? "";
                 HeroImage.Url = r.Image;
@@ -255,7 +257,7 @@ namespace FluxTV.Views
                     HeroProgress.Value = p.Fraction;
                     HeroProgress.Visibility = Visibility.Visible;
                 }
-                HeroAction.Text = "Reprendre";
+                HeroAction.Text = Tr.T("Reprendre", "Resume");
                 Hero.Visibility = Visibility.Visible;
             }
             else if (channels.Count > 0)
@@ -264,7 +266,7 @@ namespace FluxTV.Views
                 heroTarget = ch;
                 app.RequestProgrammes(ch);
                 var now = app.NowNext(ch).Now;
-                HeroEyebrow.Text = "EN DIRECT";
+                HeroEyebrow.Text = Tr.T("EN DIRECT", "LIVE");
                 HeroTitle.Text = now?.Title ?? ch.Name;
                 HeroSubtitle.Text = now == null ? (app.CategoryName(ch.CategoryId) ?? "") : ch.Name + " · " + Format.Hour(now.Start) + " – " + Format.Hour(now.Stop);
                 HeroImage.Url = ch.Logo;
@@ -276,17 +278,17 @@ namespace FluxTV.Views
                     HeroProgress.Foreground = Palette.OnAir;
                     HeroProgress.Visibility = Visibility.Visible;
                 }
-                HeroAction.Text = "Regarder";
+                HeroAction.Text = Tr.T("Regarder", "Watch");
                 Hero.Visibility = Visibility.Visible;
             }
             else if (latestMovies.FirstOrDefault(x => x.Poster != null) is Movie featured)
             {
                 heroTarget = featured;
-                HeroEyebrow.Text = (moviesGroup ?? "À voir").ToUpperInvariant();
+                HeroEyebrow.Text = (moviesGroup ?? Tr.T("À voir", "Featured")).ToUpper(Tr.Culture);
                 HeroTitle.Text = featured.Name;
                 HeroSubtitle.Text = MovieSubtitle(featured);
                 HeroImage.Url = featured.Poster;
-                HeroAction.Text = "Voir la fiche";
+                HeroAction.Text = Tr.T("Voir la fiche", "View details");
                 Hero.Visibility = Visibility.Visible;
             }
             else
@@ -335,7 +337,7 @@ namespace FluxTV.Views
         {
             var p = app.Library.Resume(r.Id);
             if (p == null) return r.Group;
-            var remain = p.Duration > 0 ? "Reste " + Format.Duration(Math.Max(0, p.Duration - p.Position)) : Format.Resume(p.Position);
+            var remain = p.Duration > 0 ? Format.Remaining(Math.Max(0, p.Duration - p.Position)) : Format.Resume(p.Position);
             return r.Kind == ContentKind.Episode ? r.Name + " · " + remain : remain;
         }
 
@@ -446,7 +448,7 @@ namespace FluxTV.Views
             {
                 case ContentRef r:
                     app.Library.RemoveHistory(r.Id);
-                    app.Toast("Retiré de « Continuer à regarder »");
+                    app.Toast(Tr.T("Retiré de « Continuer à regarder »", "Removed from “Continue watching”"));
                     break;
                 case ValueTuple<LiveChannel, List<LiveChannel>> ch:
                     app.ToggleFavorite(ch.Item1.Ref(app.CategoryName(ch.Item1.CategoryId)));

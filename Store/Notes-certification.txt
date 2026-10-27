@@ -5,17 +5,20 @@ NOTES FOR CERTIFICATION
 
 FluxTV Player is a media player for the user's OWN IPTV sources: an M3U playlist link or an Xtream Codes account provided by the user's TV service. The app does not provide, host, sell or link to any channel, movie or subscription.
 
+LANGUAGE
+The app is in English and French. On first launch it asks for the language (the console's language is preselected); it can be changed anytime in Settings › "Language". The steps below use the English interface.
+
 HOW TO TEST WITHOUT AN ACCOUNT
-On the first screen, select "Essayer la démonstration" (Try the demo). No login is required. The demo loads:
-- "Mire en direct": a public live test stream (Unified Streaming demo test card),
-- "Ciné libre" and "Animation libre": free open movies streamed as continuous channels,
+After choosing the language, select "Try the demo". No login is required. The demo loads:
+- "Live test pattern": a public live test stream (Unified Streaming demo test card),
+- "Open Cinema" and "Open Animation": free open movies streamed as continuous channels,
 - 2 movies and 1 series made of free movies from the Blender Foundation (Big Buck Bunny, Tears of Steel, Creative Commons Attribution 3.0).
 
 CONTROLS (Xbox controller)
-- Left menu: Accueil (home), TV en direct (live TV), Films (movies), Séries (series), Rechercher (search), Réglages (settings).
+- Left menu: Home, Live TV, Movies, Series, Search, Settings.
 - Live TV: select a channel to play it. During playback: A = controls, X = channel list, Y = audio and subtitles, up/down or LB/RB = previous/next channel, B = back.
-- Movies / Series: open a title, then "Lecture" (Play). Left/right = seek 10 s, LB/RB = seek 30 s.
-- Resume: stop a movie, it appears in "Continuer à regarder" (Continue watching) on the home screen.
+- Movies / Series: open a title, then "Play". Left/right = seek 10 s, LB/RB = seek 30 s.
+- Resume: stop a movie, it appears in "Continue watching" on the home screen.
 
 CAPABILITIES
 - internetClient: playlists, TV guide (XMLTV), images and video streams from the source chosen by the user.
@@ -25,7 +28,7 @@ PRIVACY
 No personal data is collected. No analytics, no advertising, no account. The server address, username and password entered by the user are stored encrypted on the device (Windows Credential Locker / PasswordVault) and are only sent to the server chosen by the user. Privacy policy: see the URL in the Store listing.
 
 CONTENT
-Adult categories are hidden by default (Settings › "Masquer les contenus pour adultes").
+Adult categories are hidden by default (Settings › "Hide adult content").
 
 THIRD-PARTY COMPONENTS
-Win2D (MIT license) for the launch animation. Fonts Sora and Manrope (SIL Open Font License 1.1). Credits are shown in Settings › À propos › "Crédits et licences".
+Win2D (MIT license) for the launch animation. Fonts Sora and Manrope (SIL Open Font License 1.1). Credits are shown in Settings › About › "Credits and licenses".

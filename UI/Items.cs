@@ -142,7 +142,7 @@ namespace FluxTV.UI
         public EpisodeItem(Episode e, string fallbackImage)
         {
             Episode = e;
-            Title = string.IsNullOrWhiteSpace(e.Title) ? "Épisode " + e.Number : e.Title;
+            Title = string.IsNullOrWhiteSpace(e.Title) ? Tr.T("Épisode ", "Episode ") + e.Number : e.Title;
             Plot = e.Plot ?? "";
             Image = e.Image ?? fallbackImage;
             Duration = e.DurationSecs is int d && d > 0 ? Format.Duration(d) : "";

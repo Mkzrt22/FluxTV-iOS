@@ -86,8 +86,8 @@ namespace FluxTV.Views
             PlotText.Text = info?.Plot ?? "";
             PlotText.Visibility = string.IsNullOrWhiteSpace(info?.Plot) ? Visibility.Collapsed : Visibility.Visible;
             var credits = new List<string>();
-            if (!string.IsNullOrWhiteSpace(info?.Director)) credits.Add("Réalisation : " + info.Director);
-            if (!string.IsNullOrWhiteSpace(info?.Cast)) credits.Add("Avec : " + info.Cast);
+            if (!string.IsNullOrWhiteSpace(info?.Director)) credits.Add(Tr.T("Réalisation : ", "Director: ") + info.Director);
+            if (!string.IsNullOrWhiteSpace(info?.Cast)) credits.Add(Tr.T("Avec : ", "Starring: ") + info.Cast);
             CreditsText.Text = string.Join("\n", credits);
             CreditsText.Visibility = credits.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
 
@@ -125,11 +125,11 @@ namespace FluxTV.Views
                 RestartButton.Visibility = Visibility.Visible;
                 ResumePanel.Visibility = p.Duration > 0 ? Visibility.Visible : Visibility.Collapsed;
                 ResumeBar.Value = p.Fraction;
-                ResumeText.Text = p.Duration > 0 ? "Reste " + Format.Duration(Math.Max(0, p.Duration - p.Position)) : "";
+                ResumeText.Text = p.Duration > 0 ? Format.Remaining(Math.Max(0, p.Duration - p.Position)) : "";
             }
             else
             {
-                PlayText.Text = "Lecture";
+                PlayText.Text = Tr.T("Lecture", "Play");
                 RestartButton.Visibility = Visibility.Collapsed;
                 ResumePanel.Visibility = Visibility.Collapsed;
             }
@@ -145,9 +145,9 @@ namespace FluxTV.Views
         {
             var focused = Windows.UI.Xaml.Input.FocusManager.GetFocusedElement();
             if (ReferenceEquals(focused, FavoriteButton))
-                ActionHint.Text = app.Library.IsFavorite(movie.Id) ? "Retirer des favoris" : "Ajouter aux favoris";
+                ActionHint.Text = app.Library.IsFavorite(movie.Id) ? Tr.T("Retirer des favoris", "Remove from favorites") : Tr.T("Ajouter aux favoris", "Add to favorites");
             else if (ReferenceEquals(focused, WatchedButton))
-                ActionHint.Text = app.Library.IsWatched(movie.Id) ? "Marquer comme non vu" : "Marquer comme vu";
+                ActionHint.Text = app.Library.IsWatched(movie.Id) ? Tr.T("Marquer comme non vu", "Mark as unwatched") : Tr.T("Marquer comme vu", "Mark as watched");
         }
 
         void OnPlay(object sender, RoutedEventArgs e) => app.Play(movie, group);
@@ -160,7 +160,7 @@ namespace FluxTV.Views
         {
             var watched = !app.Library.IsWatched(movie.Id);
             app.Library.SetWatched(movie.Id, watched);
-            app.Toast(watched ? "Marqué comme vu" : "Marqué comme non vu");
+            app.Toast(watched ? Tr.T("Marqué comme vu", "Marked as watched") : Tr.T("Marqué comme non vu", "Marked as unwatched"));
         }
     }
 }

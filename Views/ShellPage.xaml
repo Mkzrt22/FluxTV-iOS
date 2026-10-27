@@ -97,37 +97,37 @@
                     <Button x:Name="NavHome" Tag="home" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE80F;" Style="{StaticResource RailIcon}" />
-                            <TextBlock Text="Accueil" Style="{StaticResource RailLabel}" />
+                            <TextBlock Text="{ui:T Fr='Accueil', En='Home'}" Style="{StaticResource RailLabel}" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="NavLive" Tag="live" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE7F4;" Style="{StaticResource RailIcon}" />
-                            <TextBlock Text="TV en direct" Style="{StaticResource RailLabel}" />
+                            <TextBlock Text="{ui:T Fr='TV en direct', En='Live TV'}" Style="{StaticResource RailLabel}" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="NavMovies" Tag="movies" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE8B2;" Style="{StaticResource RailIcon}" />
-                            <TextBlock Text="Films" Style="{StaticResource RailLabel}" />
+                            <TextBlock Text="{ui:T Fr='Films', En='Movies'}" Style="{StaticResource RailLabel}" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="NavSeries" Tag="series" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE8F1;" Style="{StaticResource RailIcon}" />
-                            <TextBlock Text="Séries" Style="{StaticResource RailLabel}" />
+                            <TextBlock Text="{ui:T Fr='Séries', En='Series'}" Style="{StaticResource RailLabel}" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="NavSearch" Tag="search" Style="{StaticResource RailButton}" Click="OnNavClick" Margin="0,0,0,6">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE721;" Style="{StaticResource RailIcon}" />
-                            <TextBlock Text="Rechercher" Style="{StaticResource RailLabel}" />
+                            <TextBlock Text="{ui:T Fr='Rechercher', En='Search'}" Style="{StaticResource RailLabel}" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="NavSettings" Tag="settings" Style="{StaticResource RailButton}" Click="OnNavClick">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE713;" Style="{StaticResource RailIcon}" />
-                            <TextBlock Text="Réglages" Style="{StaticResource RailLabel}" />
+                            <TextBlock Text="{ui:T Fr='Réglages', En='Settings'}" Style="{StaticResource RailLabel}" />
                         </StackPanel>
                     </Button>
                 </StackPanel>

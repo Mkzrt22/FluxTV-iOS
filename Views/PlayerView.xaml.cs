@@ -158,7 +158,7 @@ namespace FluxTV.Views
             SubtitleText.Text = pi.Subtitle ?? "";
             LoadingArt.Url = pi.Artwork;
             LoadingArt.Visibility = Visibility.Visible;
-            LoadingText.Text = pi.IsLive ? "Connexion à la chaîne…" : "Chargement…";
+            LoadingText.Text = pi.IsLive ? Tr.T("Connexion à la chaîne…", "Connecting to channel…") : Tr.T("Chargement…", "Loading…");
             SetLoading(true);
             NextButton.Visibility = NextEpisode() != null ? Visibility.Visible : Visibility.Collapsed;
             UpdateInfo();
@@ -324,7 +324,7 @@ namespace FluxTV.Views
                     triedAlternate = true;
                     currentUrl = alt;
                 }
-                LoadingText.Text = "Reconnexion…";
+                LoadingText.Text = Tr.T("Reconnexion…", "Reconnecting…");
                 SetLoading(true);
                 _ = RetryLaterAsync(generation, 1200 * failures);
                 return;
@@ -353,7 +353,7 @@ namespace FluxTV.Views
             failedShown = true;
             SetLoading(false);
             HideOverlay();
-            ErrorTitle.Text = current.IsLive ? "Impossible de lire cette chaîne" : "Impossible de lire cette vidéo";
+            ErrorTitle.Text = current.IsLive ? Tr.T("Impossible de lire cette chaîne", "Can't play this channel") : Tr.T("Impossible de lire cette vidéo", "Can't play this video");
             ErrorText.Text = Describe(error, code, httpStatus, current.IsLive);
             ErrorPanel.Visibility = Visibility.Visible;
             RetryButton.Focus(FocusState.Keyboard);
@@ -362,23 +362,29 @@ namespace FluxTV.Views
         static string Describe(MediaPlayerError error, int code, int httpStatus, bool live)
         {
             if (httpStatus == 401 || httpStatus == 403)
-                return "Le serveur refuse l'accès (code " + httpStatus + ") : abonnement expiré, ou trop d'écrans connectés en même temps.";
-            if (httpStatus == 404) return "Ce flux est introuvable sur le serveur (code 404).";
-            if (httpStatus >= 500) return "Le serveur du fournisseur ne répond pas correctement (code " + httpStatus + "). Réessaie dans un instant.";
+                return Tr.T("Le serveur refuse l'accès (code " + httpStatus + ") : abonnement expiré, ou trop d'écrans connectés en même temps.",
+                    "The server denied access (code " + httpStatus + "): subscription expired, or too many screens connected at once.");
+            if (httpStatus == 404) return Tr.T("Ce flux est introuvable sur le serveur (code 404).", "This stream wasn't found on the server (code 404).");
+            if (httpStatus >= 500)
+                return Tr.T("Le serveur du fournisseur ne répond pas correctement (code " + httpStatus + "). Réessaie dans un instant.",
+                    "The provider's server isn't responding properly (code " + httpStatus + "). Try again in a moment.");
             switch (error)
             {
                 case MediaPlayerError.NetworkError:
-                    return "La connexion au flux a échoué. Vérifie la connexion de la console, ou réessaie dans un instant.";
+                    return Tr.T("La connexion au flux a échoué. Vérifie la connexion de la console, ou réessaie dans un instant.",
+                        "Couldn't connect to the stream. Check the console's connection, or try again in a moment.");
                 case MediaPlayerError.DecodingError:
-                    return "Le format de cette vidéo n'est pas pris en charge par le lecteur de la Xbox.";
+                    return Tr.T("Le format de cette vidéo n'est pas pris en charge par le lecteur de la Xbox.", "This video format isn't supported by the Xbox player.");
                 case MediaPlayerError.SourceNotSupported:
                     return live
-                        ? "Ce flux n'est pas lisible par le lecteur de la Xbox. Dans les réglages, essaie l'autre « Format du direct »."
-                        : "Ce fichier n'est pas lisible par le lecteur de la Xbox (format ou codec non pris en charge).";
+                        ? Tr.T("Ce flux n'est pas lisible par le lecteur de la Xbox. Dans les réglages, essaie l'autre « Format du direct ».",
+                            "The Xbox player can't play this stream. In Settings, try the other “Live format”.")
+                        : Tr.T("Ce fichier n'est pas lisible par le lecteur de la Xbox (format ou codec non pris en charge).",
+                            "The Xbox player can't play this file (format or codec not supported).");
                 case MediaPlayerError.Aborted:
-                    return "La lecture a été interrompue.";
+                    return Tr.T("La lecture a été interrompue.", "Playback was interrupted.");
                 default:
-                    return "Erreur de lecture (code 0x" + code.ToString("X8") + ").";
+                    return Tr.T("Erreur de lecture (code 0x", "Playback error (code 0x") + code.ToString("X8") + ").";
             }
         }
 
@@ -518,7 +524,7 @@ namespace FluxTV.Views
         {
             if (closed || current == null) return;
             var now = DateTime.UtcNow;
-            ClockText.Text = DateTime.Now.ToString("HH:mm");
+            ClockText.Text = Format.Hour(DateTimeOffset.Now);
             if (overlay != Overlay.Hidden) UpdateInfo();
             var playing = player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing;
             if (overlay != Overlay.Hidden && playing && SidePanel.Visibility != Visibility.Visible && !holdOverlay)
@@ -545,16 +551,16 @@ namespace FluxTV.Views
         {
             var ch = CurrentChannel;
             LiveLogo.Url = ch?.Logo ?? current.Artwork;
-            LiveNumber.Text = ch != null && ch.Num > 0 ? "N° " + ch.Num : "";
+            LiveNumber.Text = ch != null && ch.Num > 0 ? Tr.T("N° ", "Ch. ") + ch.Num : "";
             TitleText.Text = ch?.Name ?? current.Title;
             SubtitleText.Text = ch != null ? app.CategoryName(ch.CategoryId) ?? "" : current.Subtitle ?? "";
             if (ch != null) app.RequestProgrammes(ch);
             var (now, next) = app.NowNext(ch);
-            LiveNow.Text = now?.Title ?? "Programme non communiqué";
+            LiveNow.Text = now?.Title ?? Tr.T("Programme non communiqué", "No programme info");
             LiveProgress.Visibility = now != null ? Visibility.Visible : Visibility.Collapsed;
             LiveProgress.Value = now?.Progress(DateTimeOffset.UtcNow) ?? 0;
             LiveTimes.Text = now != null ? Format.Hour(now.Start) + " – " + Format.Hour(now.Stop) : "";
-            LiveNext.Text = next != null ? "À suivre · " + Format.Hour(next.Start) + "  " + next.Title : "";
+            LiveNext.Text = next != null ? Tr.T("À suivre · ", "Up next · ") + Format.Hour(next.Start) + "  " + next.Title : "";
             var fav = app.Library.IsFavorite(current.Ref.Id);
             FavoriteGlyph.Text = fav ? "" : "";
             FavoriteGlyph.Foreground = fav ? Palette.Gold : Palette.Text;
@@ -574,7 +580,7 @@ namespace FluxTV.Views
             if (duration > 0 && !double.IsInfinity(duration))
             {
                 var left = Math.Max(0, duration - position);
-                RemainText.Text = "−" + Format.Clock(left) + " · fin à " + DateTime.Now.AddSeconds(left).ToString("HH:mm");
+                RemainText.Text = "−" + Format.Clock(left) + Tr.T(" · fin à ", " · ends at ") + Format.Hour(DateTimeOffset.Now.AddSeconds(left));
                 var width = SeekTrack.ActualWidth;
                 var fill = Math.Max(0, Math.Min(1, position / duration)) * width;
                 SeekFill.Width = fill;
@@ -723,7 +729,7 @@ namespace FluxTV.Views
             upNextEpisode = e;
             upNextLeft = 8;
             UpNextTitle.Text = e.Label + " · " + e.Title;
-            UpNextCountdown.Text = "Dans " + upNextLeft + " s";
+            UpNextCountdown.Text = Tr.T("Dans ", "In ") + upNextLeft + " s";
             UpNext.Visibility = Visibility.Visible;
             HideOverlay();
             UpNextPlay.Focus(FocusState.Keyboard);
@@ -741,7 +747,7 @@ namespace FluxTV.Views
             upNextLeft--;
             if (upNextLeft > 0)
             {
-                UpNextCountdown.Text = "Dans " + upNextLeft + " s";
+                UpNextCountdown.Text = Tr.T("Dans ", "In ") + upNextLeft + " s";
                 return;
             }
             PlayUpNext();
@@ -775,7 +781,7 @@ namespace FluxTV.Views
             if (request == null || !current.IsLive || request.Channels.Count < 2) return;
             HideOverlay();
             HideError();
-            PanelTitle.Text = "Chaînes";
+            PanelTitle.Text = Tr.T("Chaînes", "Channels");
             panelChannels = request.Channels.Select(ch =>
             {
                 var now = app.NowNext(ch).Now;
@@ -815,7 +821,7 @@ namespace FluxTV.Views
         void OpenOptions()
         {
             HideOverlay();
-            PanelTitle.Text = "Audio, sous-titres, image";
+            PanelTitle.Text = Tr.T("Audio, sous-titres, image", "Audio, subtitles, picture");
             AudioList.ItemsSource = AudioOptions();
             SubtitleList.ItemsSource = SubtitleOptions();
             ImageList.ItemsSource = ImageOptions();
@@ -846,7 +852,7 @@ namespace FluxTV.Views
                 {
                     var t = tracks[i];
                     var language = LanguageName(t.Language);
-                    var title = !string.IsNullOrWhiteSpace(t.Label) ? t.Label : language ?? "Piste " + (i + 1);
+                    var title = !string.IsNullOrWhiteSpace(t.Label) ? t.Label : language ?? Tr.T("Piste ", "Track ") + (i + 1);
                     list.Add(new OptionItem
                     {
                         Title = title,
@@ -856,7 +862,7 @@ namespace FluxTV.Views
                     });
                 }
             }
-            if (list.Count == 0) list.Add(new OptionItem { Title = "Piste par défaut", Index = -1, IsCurrent = true });
+            if (list.Count == 0) list.Add(new OptionItem { Title = Tr.T("Piste par défaut", "Default track"), Index = -1, IsCurrent = true });
             return list;
         }
 
@@ -874,7 +880,7 @@ namespace FluxTV.Views
                     var shown = tracks.GetPresentationMode((uint)i) == TimedMetadataTrackPresentationMode.PlatformPresented;
                     anyShown |= shown;
                     var language = LanguageName(t.Language);
-                    var title = !string.IsNullOrWhiteSpace(t.Label) ? t.Label : language ?? "Sous-titres " + (list.Count + 1);
+                    var title = !string.IsNullOrWhiteSpace(t.Label) ? t.Label : language ?? Tr.T("Sous-titres ", "Subtitles ") + (list.Count + 1);
                     list.Add(new OptionItem
                     {
                         Title = title,
@@ -884,7 +890,7 @@ namespace FluxTV.Views
                     });
                 }
             }
-            list.Insert(0, new OptionItem { Title = "Désactivés", Index = -1, IsCurrent = !anyShown });
+            list.Insert(0, new OptionItem { Title = Tr.T("Désactivés", "Off"), Index = -1, IsCurrent = !anyShown });
             return list;
         }
 
@@ -893,9 +899,9 @@ namespace FluxTV.Views
             var s = Video.Stretch;
             return new List<OptionItem>
             {
-                new OptionItem { Title = "Adapter à l'écran", Detail = "Image entière", Index = (int)Stretch.Uniform, IsCurrent = s == Stretch.Uniform },
-                new OptionItem { Title = "Remplir l'écran", Detail = "Sans bandes noires, bords coupés", Index = (int)Stretch.UniformToFill, IsCurrent = s == Stretch.UniformToFill },
-                new OptionItem { Title = "Étirer", Detail = "Image déformée", Index = (int)Stretch.Fill, IsCurrent = s == Stretch.Fill },
+                new OptionItem { Title = Tr.T("Adapter à l'écran", "Fit to screen"), Detail = Tr.T("Image entière", "Whole picture"), Index = (int)Stretch.Uniform, IsCurrent = s == Stretch.Uniform },
+                new OptionItem { Title = Tr.T("Remplir l'écran", "Fill screen"), Detail = Tr.T("Sans bandes noires, bords coupés", "No black bars, edges cropped"), Index = (int)Stretch.UniformToFill, IsCurrent = s == Stretch.UniformToFill },
+                new OptionItem { Title = Tr.T("Étirer", "Stretch"), Detail = Tr.T("Image déformée", "Distorted picture"), Index = (int)Stretch.Fill, IsCurrent = s == Stretch.Fill },
             };
         }
 
@@ -927,23 +933,30 @@ namespace FluxTV.Views
             foreach (var x in (List<OptionItem>)ImageList.ItemsSource) x.IsCurrent = x == o;
         }
 
-        static readonly Dictionary<string, string> Languages = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        // Langues des pistes (codes ISO 639-1 et 639-2) : nom français et nom anglais. Les tableaux sont déclarés
+        // avant le dictionnaire, qui les reprend (ordre d'initialisation des champs statiques)
+        static readonly string[] Fr = { "Français", "French" }, En = { "Anglais", "English" }, De = { "Allemand", "German" },
+            Es = { "Espagnol", "Spanish" }, It = { "Italien", "Italian" }, Pt = { "Portugais", "Portuguese" }, Ar = { "Arabe", "Arabic" },
+            Tu = { "Turc", "Turkish" }, Nl = { "Néerlandais", "Dutch" }, Pl = { "Polonais", "Polish" }, Ru = { "Russe", "Russian" },
+            Ja = { "Japonais", "Japanese" }, Zh = { "Chinois", "Chinese" }, Ko = { "Coréen", "Korean" };
+
+        static readonly Dictionary<string, string[]> Languages = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
         {
-            ["fr"] = "Français", ["fre"] = "Français", ["fra"] = "Français",
-            ["en"] = "Anglais", ["eng"] = "Anglais",
-            ["de"] = "Allemand", ["ger"] = "Allemand", ["deu"] = "Allemand",
-            ["es"] = "Espagnol", ["spa"] = "Espagnol",
-            ["it"] = "Italien", ["ita"] = "Italien",
-            ["pt"] = "Portugais", ["por"] = "Portugais",
-            ["ar"] = "Arabe", ["ara"] = "Arabe",
-            ["tr"] = "Turc", ["tur"] = "Turc",
-            ["nl"] = "Néerlandais", ["dut"] = "Néerlandais", ["nld"] = "Néerlandais",
-            ["pl"] = "Polonais", ["pol"] = "Polonais",
-            ["ru"] = "Russe", ["rus"] = "Russe",
-            ["ja"] = "Japonais", ["jpn"] = "Japonais",
-            ["zh"] = "Chinois", ["chi"] = "Chinois", ["zho"] = "Chinois",
-            ["ko"] = "Coréen", ["kor"] = "Coréen",
-            ["qaa"] = "Version originale", ["mul"] = "Plusieurs langues", ["und"] = null,
+            ["fr"] = Fr, ["fre"] = Fr, ["fra"] = Fr,
+            ["en"] = En, ["eng"] = En,
+            ["de"] = De, ["ger"] = De, ["deu"] = De,
+            ["es"] = Es, ["spa"] = Es,
+            ["it"] = It, ["ita"] = It,
+            ["pt"] = Pt, ["por"] = Pt,
+            ["ar"] = Ar, ["ara"] = Ar,
+            ["tr"] = Tu, ["tur"] = Tu,
+            ["nl"] = Nl, ["dut"] = Nl, ["nld"] = Nl,
+            ["pl"] = Pl, ["pol"] = Pl,
+            ["ru"] = Ru, ["rus"] = Ru,
+            ["ja"] = Ja, ["jpn"] = Ja,
+            ["zh"] = Zh, ["chi"] = Zh, ["zho"] = Zh,
+            ["ko"] = Ko, ["kor"] = Ko,
+            ["qaa"] = new[] { "Version originale", "Original version" }, ["mul"] = new[] { "Plusieurs langues", "Multiple languages" }, ["und"] = null,
         };
 
         static string LanguageName(string code)
@@ -952,7 +965,8 @@ namespace FluxTV.Views
             var key = code.Trim();
             var dash = key.IndexOf('-');
             if (dash > 0) key = key.Substring(0, dash);
-            return Languages.TryGetValue(key, out var name) ? name : code.Trim();
+            if (!Languages.TryGetValue(key, out var name)) return code.Trim();
+            return name == null ? null : Tr.T(name[0], name[1]);
         }
 
         // ───────────────────────────── Manette ─────────────────────────────

@@ -8,8 +8,8 @@ Fichiers fournis :
 | Fichier | Rôle |
 |---|---|
 | `FluxTV-Player-Store.msixupload` | le paquet à déposer (version publique, **sans** ton compte) |
-| `Captures/*.png` | captures d'écran 1920 × 1080 (mode démonstration) |
-| `Images/*.png` | affiche, boîte, icône et visuels Xbox |
+| `Captures/*.png` | captures d'écran 1920 × 1080 (mode démonstration) ; `*-en.png` : les mêmes en anglais |
+| `Images/*.png` | affiche, boîte, icône et visuels Xbox ; `*-en.png` : versions anglaises (slogan traduit) |
 | `Notes-certification.txt` | texte (en anglais) pour l'équipe de certification |
 | `confidentialite.html` | politique de confidentialité à mettre en ligne |
 | `rapport-wack.txt` | résultat du kit de certification Windows (même contrôle que le Store) |
@@ -33,8 +33,8 @@ Ordre conseillé dans l'Espace partenaires (partner.microsoft.com › Apps et je
 - **Catégorie** : Divertissement (sous-catégorie : aucune).
 - **Confidentialité** : « Oui », l'app accède à des informations personnelles (les identifiants de
   l'abonnement, transmis uniquement au serveur choisi) → **URL de la politique de confidentialité** :
-  mets `confidentialite.html` en ligne sur ton VPS (dossier du site), par exemple
-  `http://IP_DU_VPS:8080/confidentialite.html`, puis colle l'adresse.
+  `https://mkzrt22.github.io/FluxTV-iOS/confidentialite/` (page du site, valable pour toutes les
+  versions de FluxTV ; un visiteur anglophone arrive sur la version anglaise, `…/en/privacy/`).
 - **Site web** : ton site (facultatif).
 - **Coordonnées du support** : une adresse e-mail ou une page de contact à toi (elle sera publique).
 - **Configuration requise** : cocher « Manette Xbox » en *minimum*. Rien d'autre.
@@ -60,6 +60,10 @@ Ordre conseillé dans l'Espace partenaires (partner.microsoft.com › Apps et je
 - Le Store signe lui-même le paquet : ne pas utiliser le certificat de test pour cette version.
 
 ## 5. Fiche du Store — Français (France)
+
+Depuis la version 1.1, le paquet déclare **l'anglais et le français** : après le dépôt du paquet,
+l'Espace partenaires affiche deux fiches, « Français (France) » et « Anglais (États-Unis) ». Remplis
+les deux (la fiche anglaise est au point 5 bis). L'app, elle, demande la langue au premier lancement.
 
 ### Description (10 000 caractères max)
 
@@ -95,8 +99,16 @@ IMPORTANT : FluxTV Player est un lecteur multimédia. Il ne fournit, n'héberge 
 
 ### Nouveautés de cette version
 
+Version 1.1 (si la 1.0 a déjà été publiée) :
+
 ```
-Première version de FluxTV Player sur Xbox.
+FluxTV Player parle maintenant français et anglais : la langue est demandée au premier lancement et se change à tout moment dans les réglages.
+```
+
+Si c'est ta toute première soumission (version 1.1 publiée directement) :
+
+```
+Première version de FluxTV Player sur Xbox, en français et en anglais.
 ```
 
 ### Fonctionnalités du produit (une par ligne, 20 max)
@@ -149,6 +161,104 @@ Dépose les fichiers du dossier `Captures` dans cet ordre, avec ces légendes :
 - **Copyright** : © 2026 Kevin22
 - **Développé par** : Kevin22
 - **Configuration matérielle supplémentaire** : « Abonnement ou playlist IPTV personnel requis (non fourni). »
+
+## 5 bis. Fiche du Store — Anglais (English, United States)
+
+Même structure que la fiche française, avec ces textes.
+
+### Description
+
+```
+FluxTV Player is an elegant player designed for the TV, to watch YOUR own sources: live channels, TV guide, movies and series, on your Xbox.
+
+ADD YOUR SOURCE
+• Xtream account (server, username, password) or M3U playlist link
+• XMLTV program guide supported
+• Demo mode to explore the app without a subscription
+
+LIVE TV
+• Clear categories, favorite and recent channels
+• Current and next program, with a progress bar
+• Channel surfing with the controller, and the channel list during playback
+
+MOVIES AND SERIES
+• Big posters, detailed pages, seasons and episodes
+• Automatically resumes where you left off
+• Next episode plays automatically
+
+A PLAYER BUILT FOR THE TV
+• Everything works with the controller, menus readable from the couch
+• Choice of audio track and subtitles
+• TV refresh rate matched to the video (24, 50 or 60 Hz) for smooth motion
+
+IN ENGLISH AND FRENCH
+• Language asked at first launch, changeable anytime in Settings
+
+YOUR DATA STAYS WITH YOU
+• No data collection, no tracking, no ads
+• Your credentials stay encrypted on your console
+
+IMPORTANT: FluxTV Player is a media player. It does not provide, host or sell any content, channels or subscriptions. You must have your own sources and the rights needed to watch them.
+```
+
+### What's new in this version
+
+Version 1.1 (if 1.0 was already published):
+
+```
+FluxTV Player now speaks English and French: the language is asked at first launch and can be changed anytime in Settings.
+```
+
+First submission:
+
+```
+First release of FluxTV Player on Xbox, in English and French.
+```
+
+### Product features
+
+```
+Live TV with program guide
+Movies and series with auto-resume
+Xtream accounts and M3U playlists
+Full controller navigation
+Choice of audio tracks and subtitles
+TV refresh rate matched to the video
+Favorites and recent channels
+Search across channels, movies and series
+Adult content hidden by default
+Demo mode, no subscription needed
+In English and French
+```
+
+### Screenshots (Xbox, PNG 1920 × 1080) — files `Captures/*-en.png`
+
+| File | Caption |
+|---|---|
+| `home-en.png` | All your channels, movies and series in one place |
+| `live-en.png` | Live TV with the program guide |
+| `play-channels-en.png` | Switch channels without leaving playback |
+| `movies-en.png` | Your movies as big posters |
+| `movie-en.png` | Detailed pages and auto-resume |
+| `seriesdetail-en.png` | Seasons and episodes, played back to back |
+| `play-movie-en.png` | A player designed for the TV |
+| `search-en.png` | Instant search |
+| `intro-en.png` | FluxTV Player |
+
+### Store logos and Xbox images
+
+Same files as the French listing, except the two that carry the tagline:
+`Affiche-1440x2160-en.png` (poster art) and `Xbox-Hero-1920x1080-en.png` (or `Xbox-Hero-3840x2160-en.png`,
+titled hero art).
+
+### Additional information
+
+- **Short title**: FluxTV Player
+- **Voice title**: Flux T V Player
+- **Search terms** (7 max): `iptv player`, `m3u`, `xtream`, `live tv`, `tv guide`, `movies`, `series`
+- **Copyright**: © 2026 Kevin22
+- **Developed by**: Kevin22
+- **Additional system requirements**: "Personal IPTV subscription or playlist required (not provided)."
 
 ## 6. Options de soumission
 

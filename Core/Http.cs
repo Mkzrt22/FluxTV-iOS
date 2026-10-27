@@ -28,20 +28,23 @@ namespace FluxTV.Core
         {
             switch (kind)
             {
-                case FluxError.BadAddress: return "Adresse invalide. Vérifie le serveur (exemple : http://mon-serveur.com:8080).";
+                case FluxError.BadAddress: return Tr.T("Adresse invalide. Vérifie le serveur (exemple : http://mon-serveur.com:8080).",
+                    "Invalid address. Check the server (example: http://my-server.com:8080).");
                 case FluxError.Http:
-                    if (code == 401 || code == 403) return $"Accès refusé par le serveur (code {code}). Vérifie tes identifiants.";
-                    if (code == 404) return "Adresse introuvable sur le serveur (code 404).";
-                    if (code >= 500 && code <= 599) return $"Le serveur du fournisseur ne répond pas correctement (code {code}). Réessaie plus tard.";
-                    return $"Le serveur a répondu avec le code {code}.";
-                case FluxError.Offline: return "Pas de connexion internet.";
-                case FluxError.Timeout: return "Le serveur met trop de temps à répondre.";
-                case FluxError.Network: return "Connexion impossible : " + (detail ?? "erreur réseau") + ".";
-                case FluxError.AuthRefused: return "Identifiants refusés par le serveur.";
-                case FluxError.AccountInactive: return "Compte " + (detail ?? "inactif") + " chez le fournisseur.";
-                case FluxError.UnexpectedResponse: return "Réponse inattendue du serveur. Vérifie l'adresse du serveur.";
-                case FluxError.EmptyPlaylist: return "Cette playlist ne contient aucune chaîne ni aucun film.";
-                default: return detail ?? "Erreur";
+                    if (code == 401 || code == 403) return Tr.T($"Accès refusé par le serveur (code {code}). Vérifie tes identifiants.",
+                        $"Access denied by the server (code {code}). Check your login details.");
+                    if (code == 404) return Tr.T("Adresse introuvable sur le serveur (code 404).", "Address not found on the server (code 404).");
+                    if (code >= 500 && code <= 599) return Tr.T($"Le serveur du fournisseur ne répond pas correctement (code {code}). Réessaie plus tard.",
+                        $"The provider's server isn't responding properly (code {code}). Try again later.");
+                    return Tr.T($"Le serveur a répondu avec le code {code}.", $"The server responded with code {code}.");
+                case FluxError.Offline: return Tr.T("Pas de connexion internet.", "No internet connection.");
+                case FluxError.Timeout: return Tr.T("Le serveur met trop de temps à répondre.", "The server is taking too long to respond.");
+                case FluxError.Network: return Tr.T("Connexion impossible : ", "Couldn't connect: ") + (detail ?? Tr.T("erreur réseau", "network error")) + ".";
+                case FluxError.AuthRefused: return Tr.T("Identifiants refusés par le serveur.", "The server rejected the login details.");
+                case FluxError.AccountInactive: return Tr.T("Compte " + (detail ?? "inactif") + " chez le fournisseur.", "Account " + (detail ?? "inactive") + " with the provider.");
+                case FluxError.UnexpectedResponse: return Tr.T("Réponse inattendue du serveur. Vérifie l'adresse du serveur.", "Unexpected response from the server. Check the server address.");
+                case FluxError.EmptyPlaylist: return Tr.T("Cette playlist ne contient aucune chaîne ni aucun film.", "This playlist contains no channels and no movies.");
+                default: return detail ?? Tr.T("Erreur", "Error");
             }
         }
 
@@ -118,11 +121,11 @@ namespace FluxTV.Core
         {
             var msg = (e.InnerException?.Message ?? e.Message ?? "").ToLowerInvariant();
             if (msg.Contains("name") && (msg.Contains("resolve") || msg.Contains("not known") || msg.Contains("introuvable")))
-                return new FluxException(FluxError.Network, "serveur introuvable");
+                return new FluxException(FluxError.Network, Tr.T("serveur introuvable", "server not found"));
             if (msg.Contains("refused") || msg.Contains("refus"))
-                return new FluxException(FluxError.Network, "le serveur refuse la connexion");
+                return new FluxException(FluxError.Network, Tr.T("le serveur refuse la connexion", "the server refuses the connection"));
             if (msg.Contains("certificate") || msg.Contains("ssl") || msg.Contains("tls") || msg.Contains("security"))
-                return new FluxException(FluxError.Network, "connexion sécurisée impossible (essaie avec http://)");
+                return new FluxException(FluxError.Network, Tr.T("connexion sécurisée impossible (essaie avec http://)", "secure connection impossible (try with http://)"));
             return new FluxException(FluxError.Network, e.InnerException?.Message ?? e.Message);
         }
     }

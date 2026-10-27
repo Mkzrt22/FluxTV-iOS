@@ -27,7 +27,7 @@
     <ScrollViewer x:Name="Scroller" Margin="-20,0,0,0" VerticalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
                   HorizontalScrollBarVisibility="Disabled" IsVerticalRailEnabled="False" ZoomMode="Disabled" IsTabStop="False">
         <StackPanel Padding="20,27,48,40" MaxWidth="680" HorizontalAlignment="Left">
-            <TextBlock Text="Réglages" Style="{StaticResource TitleText}" />
+            <TextBlock Text="{ui:T Fr='Réglages', En='Settings'}" Style="{StaticResource TitleText}" />
 
             <!-- Source -->
             <TextBlock Text="SOURCE" Style="{StaticResource EyebrowText}" Margin="0,22,0,0" />
@@ -52,39 +52,65 @@
                         <Button x:Name="RefreshButton" Style="{StaticResource FluxButton}" Click="OnRefresh" GotFocus="OnTopFocus">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="&#xE72C;" Style="{StaticResource IconText}" FontSize="14" />
-                                <TextBlock Text="Actualiser les listes" Margin="9,0,0,0" VerticalAlignment="Center" />
+                                <TextBlock Text="{ui:T Fr='Actualiser les listes', En='Refresh lists'}" Margin="9,0,0,0" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
                         <Button x:Name="EmbeddedButton" Style="{StaticResource FluxButton}" Margin="12,0,0,0" Click="OnUseEmbedded" Visibility="Collapsed" GotFocus="OnTopFocus">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="&#xE77B;" Style="{StaticResource IconText}" FontSize="14" />
-                                <TextBlock Text="Mon compte" Margin="9,0,0,0" VerticalAlignment="Center" />
+                                <TextBlock Text="{ui:T Fr='Mon compte', En='My account'}" Margin="9,0,0,0" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
                         <Button x:Name="ChangeButton" Style="{StaticResource FluxButton}" Margin="12,0,0,0" Click="OnChangeSource" GotFocus="OnTopFocus">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="&#xE8AB;" Style="{StaticResource IconText}" FontSize="14" />
-                                <TextBlock Text="Changer de source" Margin="9,0,0,0" VerticalAlignment="Center" />
+                                <TextBlock Text="{ui:T Fr='Changer de source', En='Change source'}" Margin="9,0,0,0" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
                     </StackPanel>
                     <TextBlock x:Name="ConfirmText" Style="{StaticResource SettingText}" Foreground="{StaticResource GoldBrush}" Visibility="Collapsed"
-                               Margin="0,10,0,0" Text="Appuie encore sur « Changer de source » pour confirmer." />
+                               Margin="0,10,0,0" Text="{ui:T Fr='Appuie encore sur « Changer de source » pour confirmer.', En='Press “Change source” again to confirm.'}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Langue : titre dans les deux langues, pour s'y retrouver même dans l'autre -->
+            <TextBlock Text="LANGUE · LANGUAGE" Style="{StaticResource EyebrowText}" Margin="0,24,0,0" />
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="{ui:T Fr='Langue de l’app', En='App language'}" Style="{StaticResource SettingTitle}" />
+                    <TextBlock Style="{StaticResource SettingText}"
+                               Text="{ui:T Fr='Menus, messages, dates et démonstration. Le changement est immédiat.', En='Menus, messages, dates and demo. The change is immediate.'}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <Button x:Name="FrenchButton" Style="{StaticResource ChipButton}" Click="OnFrench">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="FrenchMark" Text="&#xE73E;" Style="{StaticResource IconText}" FontSize="12"
+                                           Foreground="{StaticResource AccentBrightBrush}" Margin="0,0,8,0" />
+                                <TextBlock Text="Français" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="EnglishButton" Style="{StaticResource ChipButton}" Margin="10,0,0,0" Click="OnEnglish">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="EnglishMark" Text="&#xE73E;" Style="{StaticResource IconText}" FontSize="12"
+                                           Foreground="{StaticResource AccentBrightBrush}" Margin="0,0,8,0" />
+                                <TextBlock Text="English" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
             </Border>
 
             <!-- Lecture -->
-            <TextBlock Text="LECTURE" Style="{StaticResource EyebrowText}" Margin="0,24,0,0" />
+            <TextBlock Text="{ui:T Fr='LECTURE', En='PLAYBACK'}" Style="{StaticResource EyebrowText}" Margin="0,24,0,0" />
             <Border Style="{StaticResource Card}">
                 <StackPanel>
-                    <ToggleSwitch x:Name="AutoplaySwitch" Header="Enchaîner les épisodes" OnContent="Oui" OffContent="Non" Toggled="OnToggled" />
-                    <TextBlock Style="{StaticResource SettingText}" Text="À la fin d'un épisode, le suivant démarre tout seul après un court compte à rebours." />
-                    <ToggleSwitch x:Name="RefreshRateSwitch" Header="Adapter la fréquence de la télé" OnContent="Oui" OffContent="Non"
+                    <ToggleSwitch x:Name="AutoplaySwitch" Header="{ui:T Fr='Enchaîner les épisodes', En='Autoplay next episode'}" OnContent="{ui:T Fr='Oui', En='On'}" OffContent="{ui:T Fr='Non', En='Off'}" Toggled="OnToggled" />
+                    <TextBlock Style="{StaticResource SettingText}" Text="{ui:T Fr='À la fin d’un épisode, le suivant démarre tout seul après un court compte à rebours.', En='When an episode ends, the next one starts by itself after a short countdown.'}" />
+                    <ToggleSwitch x:Name="RefreshRateSwitch" Header="{ui:T Fr='Adapter la fréquence de la télé', En='Match TV refresh rate'}" OnContent="{ui:T Fr='Oui', En='On'}" OffContent="{ui:T Fr='Non', En='Off'}"
                                   Toggled="OnToggled" Margin="0,16,0,0" />
-                    <TextBlock Style="{StaticResource SettingText}" Text="La télé passe en 24, 50 ou 60 Hz selon la vidéo : images plus fluides, sans saccades. Active aussi « Autoriser 24 Hz » et « Autoriser 50 Hz » dans les réglages vidéo de la Xbox." />
+                    <TextBlock Style="{StaticResource SettingText}" Text="{ui:T Fr='La télé passe en 24, 50 ou 60 Hz selon la vidéo : images plus fluides, sans saccades. Active aussi « Autoriser 24 Hz » et « Autoriser 50 Hz » dans les réglages vidéo de la Xbox.', En='The TV switches to 24, 50 or 60 Hz to match the video: smoother motion, no judder. Also turn on “Allow 24 Hz” and “Allow 50 Hz” in the Xbox video settings.'}" />
                     <Grid Margin="0,18,0,0">
                         <StackPanel>
-                            <TextBlock Text="Format du direct" Style="{StaticResource SettingTitle}" />
+                            <TextBlock Text="{ui:T Fr='Format du direct', En='Live format'}" Style="{StaticResource SettingTitle}" />
                             <TextBlock x:Name="FormatDetail" Style="{StaticResource SettingText}" />
                         </StackPanel>
                     </Grid>
@@ -95,57 +121,57 @@
             </Border>
 
             <!-- Contenus -->
-            <TextBlock Text="CONTENUS" Style="{StaticResource EyebrowText}" Margin="0,24,0,0" />
+            <TextBlock Text="{ui:T Fr='CONTENUS', En='CONTENT'}" Style="{StaticResource EyebrowText}" Margin="0,24,0,0" />
             <Border Style="{StaticResource Card}">
                 <StackPanel>
-                    <ToggleSwitch x:Name="AdultSwitch" Header="Masquer les contenus pour adultes" OnContent="Oui" OffContent="Non" Toggled="OnToggled" />
-                    <TextBlock Style="{StaticResource SettingText}" Text="Les catégories pour adultes n'apparaissent ni dans les listes ni dans la recherche." />
+                    <ToggleSwitch x:Name="AdultSwitch" Header="{ui:T Fr='Masquer les contenus pour adultes', En='Hide adult content'}" OnContent="{ui:T Fr='Oui', En='On'}" OffContent="{ui:T Fr='Non', En='Off'}" Toggled="OnToggled" />
+                    <TextBlock Style="{StaticResource SettingText}" Text="{ui:T Fr='Les catégories pour adultes n’apparaissent ni dans les listes ni dans la recherche.', En='Adult categories don’t appear in lists or search.'}" />
                 </StackPanel>
             </Border>
 
             <!-- Manette -->
-            <TextBlock Text="MANETTE" Style="{StaticResource EyebrowText}" Margin="0,24,0,0" />
+            <TextBlock Text="{ui:T Fr='MANETTE', En='CONTROLLER'}" Style="{StaticResource EyebrowText}" Margin="0,24,0,0" />
             <Border Style="{StaticResource Card}">
                 <StackPanel>
-                    <TextBlock Text="Pendant la lecture" Style="{StaticResource SettingTitle}" />
+                    <TextBlock Text="{ui:T Fr='Pendant la lecture', En='During playback'}" Style="{StaticResource SettingTitle}" />
                     <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                        <ui:Hint Key="A" Text="Commandes" />
-                        <ui:Hint Key="B" Text="Retour" />
-                        <ui:Hint Key="X" Text="Chaînes" />
-                        <ui:Hint Key="Y" Text="Audio et sous-titres" />
+                        <ui:Hint Key="A" Text="{ui:T Fr='Commandes', En='Controls'}" />
+                        <ui:Hint Key="B" Text="{ui:T Fr='Retour', En='Back'}" />
+                        <ui:Hint Key="X" Text="{ui:T Fr='Chaînes', En='Channels'}" />
+                        <ui:Hint Key="Y" Text="{ui:T Fr='Audio et sous-titres', En='Audio and subtitles'}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <ui:Hint Key="LB" Text="Chaîne précédente / −30 s" />
-                        <ui:Hint Key="RB" Text="Chaîne suivante / +30 s" />
+                        <ui:Hint Key="LB" Text="{ui:T Fr='Chaîne précédente / −30 s', En='Previous channel / −30 s'}" />
+                        <ui:Hint Key="RB" Text="{ui:T Fr='Chaîne suivante / +30 s', En='Next channel / +30 s'}" />
                     </StackPanel>
                     <TextBlock Style="{StaticResource SettingText}" Margin="0,10,0,0"
-                               Text="Direct : ⬆ ⬇ pour zapper. Films et séries : ⬅ ➡ pour avancer ou reculer de 10 secondes." />
+                               Text="{ui:T Fr='Direct : ⬆ ⬇ pour zapper. Films et séries : ⬅ ➡ pour avancer ou reculer de 10 secondes.', En='Live: ⬆ ⬇ to switch channels. Movies and series: ⬅ ➡ to skip forward or back 10 seconds.'}" />
                 </StackPanel>
             </Border>
 
             <!-- À propos -->
-            <TextBlock Text="À PROPOS" Style="{StaticResource EyebrowText}" Margin="0,24,0,0" />
+            <TextBlock Text="{ui:T Fr='À PROPOS', En='ABOUT'}" Style="{StaticResource EyebrowText}" Margin="0,24,0,0" />
             <Border Style="{StaticResource Card}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Image Source="ms-appx:///Assets/BrandMark.png" Width="40" Height="40" />
                         <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
                             <TextBlock x:Name="VersionText" Style="{StaticResource SettingTitle}" />
-                            <TextBlock Style="{StaticResource SettingText}" Text="Tes identifiants restent chiffrés sur cette console." />
+                            <TextBlock Style="{StaticResource SettingText}" Text="{ui:T Fr='Tes identifiants restent chiffrés sur cette console.', En='Your credentials stay encrypted on this console.'}" />
                         </StackPanel>
                     </StackPanel>
                     <TextBlock Style="{StaticResource SettingText}" Margin="0,12,0,0"
-                               Text="FluxTV Player est un lecteur : il ne fournit aucune chaîne ni aucun contenu. Il lit uniquement les sources que tu ajoutes." />
+                               Text="{ui:T Fr='FluxTV Player est un lecteur : il ne fournit aucune chaîne ni aucun contenu. Il lit uniquement les sources que tu ajoutes.', En='FluxTV Player is a player: it provides no channels or content. It only plays the sources you add.'}" />
                     <Button x:Name="CreditsButton" Style="{StaticResource ChipButton}" Margin="0,12,0,0" Click="OnCredits" GotFocus="OnBottomFocus">
-                        <TextBlock x:Name="CreditsLabel" Text="Crédits et licences" />
+                        <TextBlock x:Name="CreditsLabel" Text="{ui:T Fr='Crédits et licences', En='Credits and licenses'}" />
                     </Button>
                     <StackPanel x:Name="Credits" Visibility="Collapsed" Margin="0,8,0,0">
                         <TextBlock Style="{StaticResource SettingText}"
-                                   Text="Films de démonstration : Big Buck Bunny (2008) et Tears of Steel (2012), © Blender Foundation, blender.org, sous licence Creative Commons Attribution 3.0." />
+                                   Text="{ui:T Fr='Films de démonstration : Big Buck Bunny (2008) et Tears of Steel (2012), © Blender Foundation, blender.org, sous licence Creative Commons Attribution 3.0.', En='Demo movies: Big Buck Bunny (2008) and Tears of Steel (2012), © Blender Foundation, blender.org, licensed under Creative Commons Attribution 3.0.'}" />
                         <TextBlock Style="{StaticResource SettingText}"
-                                   Text="Mire en direct : flux de démonstration public d'Unified Streaming. Flux de test hébergés par Mux et Unified Streaming." />
+                                   Text="{ui:T Fr='Mire en direct : flux de démonstration public d’Unified Streaming. Flux de test hébergés par Mux et Unified Streaming.', En='Live test pattern: Unified Streaming’s public demo stream. Test streams hosted by Mux and Unified Streaming.'}" />
                         <TextBlock Style="{StaticResource SettingText}"
-                                   Text="Polices Sora et Manrope : SIL Open Font License 1.1. Animation de lancement dessinée avec Win2D (licence MIT)." />
+                                   Text="{ui:T Fr='Polices Sora et Manrope : SIL Open Font License 1.1. Animation de lancement dessinée avec Win2D (licence MIT).', En='Sora and Manrope fonts: SIL Open Font License 1.1. Launch animation drawn with Win2D (MIT license).'}" />
                     </StackPanel>
                 </StackPanel>
             </Border>

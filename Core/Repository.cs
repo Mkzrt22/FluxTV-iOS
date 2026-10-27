@@ -37,7 +37,7 @@ namespace FluxTV.Core
                 {
                     case SourceKind.Xtream: return Uri.TryCreate(Account.Server, UriKind.Absolute, out var u) ? u.Host : Account.Server;
                     case SourceKind.Playlist: return Uri.TryCreate(PlaylistUrl, UriKind.Absolute, out var p) ? p.Host : "Playlist";
-                    default: return "Démonstration";
+                    default: return Tr.T("Démonstration", "Demo");
                 }
             }
         }
@@ -316,7 +316,7 @@ namespace FluxTV.Core
                     var channels = XtreamParse.LiveStreams(streamsText);
                     // Chaînes sans catégorie connue : regroupées dans « Autres »
                     var known = new HashSet<string>(cats.Select(c => c.Id));
-                    if (channels.Any(c => !known.Contains(c.CategoryId))) cats.Add(new Category("", "Autres"));
+                    if (channels.Any(c => !known.Contains(c.CategoryId))) cats.Add(new Category("", Tr.T("Autres", "Other")));
                     return new LiveCatalog { Categories = cats, Channels = channels };
                 });
             }

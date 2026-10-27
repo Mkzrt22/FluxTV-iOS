@@ -103,7 +103,7 @@
                     <StackPanel Grid.Column="1">
                         <StackPanel Orientation="Horizontal">
                             <Border Background="{StaticResource OnAirBrush}" CornerRadius="5" Padding="7,2">
-                                <TextBlock Text="EN DIRECT" Style="{StaticResource EyebrowText}" FontSize="10" CharacterSpacing="80" Foreground="{StaticResource WhiteBrush}" />
+                                <TextBlock Text="{ui:T Fr='EN DIRECT', En='LIVE'}" Style="{StaticResource EyebrowText}" FontSize="10" CharacterSpacing="80" Foreground="{StaticResource WhiteBrush}" />
                             </Border>
                             <TextBlock x:Name="LiveNumber" Style="{StaticResource FaintText}" Margin="10,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
@@ -146,19 +146,19 @@
                     <Button x:Name="ChannelsButton" Style="{StaticResource PlayerButton}" Click="OnChannels">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE8FD;" Style="{StaticResource IconText}" FontSize="14" />
-                            <TextBlock Text="Chaînes" Margin="8,0,0,0" VerticalAlignment="Center" />
+                            <TextBlock Text="{ui:T Fr='Chaînes', En='Channels'}" Margin="8,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="TracksButton" Style="{StaticResource PlayerButton}" Click="OnTracks">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE190;" Style="{StaticResource IconText}" FontSize="14" />
-                            <TextBlock Text="Audio, sous-titres" Margin="8,0,0,0" VerticalAlignment="Center" />
+                            <TextBlock Text="{ui:T Fr='Audio, sous-titres', En='Audio, subtitles'}" Margin="8,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="NextButton" Style="{StaticResource PlayerButton}" Click="OnNextEpisode">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE101;" Style="{StaticResource IconText}" FontSize="14" />
-                            <TextBlock Text="Épisode suivant" Margin="8,0,0,0" VerticalAlignment="Center" />
+                            <TextBlock Text="{ui:T Fr='Épisode suivant', En='Next episode'}" Margin="8,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="FavoriteButton" Style="{StaticResource IconButton}" Width="40" Height="40" Click="OnFavorite">
@@ -195,19 +195,19 @@
                         <ListView x:Name="AudioList" Style="{StaticResource ColumnListStyle}" ItemContainerStyle="{StaticResource RowItemStyle}"
                                   ItemTemplate="{StaticResource OptionTemplate}" ItemClick="OnAudioClick" Padding="4,2,4,2"
                                   ScrollViewer.VerticalScrollMode="Disabled" />
-                        <TextBlock Text="SOUS-TITRES" Style="{StaticResource PanelHeader}" />
+                        <TextBlock Text="{ui:T Fr='SOUS-TITRES', En='SUBTITLES'}" Style="{StaticResource PanelHeader}" />
                         <ListView x:Name="SubtitleList" Style="{StaticResource ColumnListStyle}" ItemContainerStyle="{StaticResource RowItemStyle}"
                                   ItemTemplate="{StaticResource OptionTemplate}" ItemClick="OnSubtitleClick" Padding="4,2,4,2"
                                   ScrollViewer.VerticalScrollMode="Disabled" />
-                        <TextBlock Text="IMAGE" Style="{StaticResource PanelHeader}" />
+                        <TextBlock Text="{ui:T Fr='IMAGE', En='PICTURE'}" Style="{StaticResource PanelHeader}" />
                         <ListView x:Name="ImageList" Style="{StaticResource ColumnListStyle}" ItemContainerStyle="{StaticResource RowItemStyle}"
                                   ItemTemplate="{StaticResource OptionTemplate}" ItemClick="OnImageClick" Padding="4,2,4,2"
                                   ScrollViewer.VerticalScrollMode="Disabled" />
                     </StackPanel>
                 </ScrollViewer>
                 <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="12,12,0,0">
-                    <ui:Hint Key="A" Text="Choisir" />
-                    <ui:Hint Key="B" Text="Fermer" />
+                    <ui:Hint Key="A" Text="{ui:T Fr='Choisir', En='Select'}" />
+                    <ui:Hint Key="B" Text="{ui:T Fr='Fermer', En='Close'}" />
                 </StackPanel>
             </Grid>
         </Grid>
@@ -216,12 +216,12 @@
         <Border x:Name="UpNext" Visibility="Collapsed" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,48,40"
                 Width="390" CornerRadius="18" Background="#F2101030" BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1" Padding="20,18">
             <StackPanel>
-                <TextBlock Text="ÉPISODE SUIVANT" Style="{StaticResource EyebrowText}" />
+                <TextBlock Text="{ui:T Fr='ÉPISODE SUIVANT', En='NEXT EPISODE'}" Style="{StaticResource EyebrowText}" />
                 <TextBlock x:Name="UpNextTitle" Style="{StaticResource StrongText}" FontSize="17" Margin="0,6,0,0" TextWrapping="WrapWholeWords" MaxLines="2" />
                 <TextBlock x:Name="UpNextCountdown" Style="{StaticResource FaintText}" Margin="0,4,0,0" />
                 <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
-                    <Button x:Name="UpNextPlay" Style="{StaticResource PrimaryButton}" Content="Lire maintenant" Click="OnUpNextPlay" />
-                    <Button x:Name="UpNextCancel" Style="{StaticResource FluxButton}" Content="Annuler" Margin="12,0,0,0" Click="OnUpNextCancel" />
+                    <Button x:Name="UpNextPlay" Style="{StaticResource PrimaryButton}" Content="{ui:T Fr='Lire maintenant', En='Play now'}" Click="OnUpNextPlay" />
+                    <Button x:Name="UpNextCancel" Style="{StaticResource FluxButton}" Content="{ui:T Fr='Annuler', En='Cancel'}" Margin="12,0,0,0" Click="OnUpNextCancel" />
                 </StackPanel>
             </StackPanel>
         </Border>
@@ -235,9 +235,9 @@
                        TextWrapping="WrapWholeWords" Margin="0,16,0,0" />
             <TextBlock x:Name="ErrorText" Style="{StaticResource BodyText}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,8,0,0" />
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,22,0,0">
-                <Button x:Name="RetryButton" Style="{StaticResource PrimaryButton}" Content="Réessayer" Click="OnRetry" />
-                <Button x:Name="ErrorChannels" Style="{StaticResource FluxButton}" Content="Autre chaîne" Margin="12,0,0,0" Click="OnChannels" />
-                <Button x:Name="CloseButton" Style="{StaticResource FluxButton}" Content="Fermer" Margin="12,0,0,0" Click="OnClose" />
+                <Button x:Name="RetryButton" Style="{StaticResource PrimaryButton}" Content="{ui:T Fr='Réessayer', En='Retry'}" Click="OnRetry" />
+                <Button x:Name="ErrorChannels" Style="{StaticResource FluxButton}" Content="{ui:T Fr='Autre chaîne', En='Other channel'}" Margin="12,0,0,0" Click="OnChannels" />
+                <Button x:Name="CloseButton" Style="{StaticResource FluxButton}" Content="{ui:T Fr='Fermer', En='Close'}" Margin="12,0,0,0" Click="OnClose" />
             </StackPanel>
         </StackPanel>
     </Grid>

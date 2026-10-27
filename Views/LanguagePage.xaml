@@ -1,0 +1,54 @@
+<Page
+    x:Class="FluxTV.Views.LanguagePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="{StaticResource AbyssBrush}">
+
+    <Page.Resources>
+        <Style x:Key="ChoiceTitle" TargetType="TextBlock" BasedOn="{StaticResource StrongText}">
+            <Setter Property="FontSize" Value="18" />
+        </Style>
+        <Style x:Key="ChoiceText" TargetType="TextBlock" BasedOn="{StaticResource CardSubText}">
+            <Setter Property="Margin" Value="0,3,0,0" />
+        </Style>
+    </Page.Resources>
+
+    <!-- Premier lancement : textes dans les deux langues, quelle que soit celle de l'appareil -->
+    <Grid Margin="72,40,64,30">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="40" />
+            <ColumnDefinition Width="400" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel VerticalAlignment="Center">
+            <Image Source="ms-appx:///Assets/BrandMark.png" Width="64" Height="64" HorizontalAlignment="Left" />
+            <TextBlock Text="Choisis ta langue" Style="{StaticResource DisplayText}" Margin="0,20,0,0" />
+            <TextBlock Text="Choose your language" Style="{StaticResource BodyText}" Margin="0,8,0,0" FontSize="20" />
+            <TextBlock Style="{StaticResource FaintText}" Margin="0,22,0,0" TextWrapping="WrapWholeWords"
+                       Text="Modifiable à tout moment dans les réglages · You can change it anytime in Settings" />
+        </StackPanel>
+
+        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+            <TextBlock Text="LANGUE · LANGUAGE" Style="{StaticResource EyebrowText}" Margin="0,0,0,6" />
+            <Button x:Name="FrenchChoice" Style="{StaticResource CardButton}" Height="70" Margin="0,8,0,0" Click="OnFrench">
+                <Grid>
+                    <Border CornerRadius="16" Background="{StaticResource GlassStrongBrush}" BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1" />
+                    <StackPanel Margin="22,0" VerticalAlignment="Center">
+                        <TextBlock Text="Français" Style="{StaticResource ChoiceTitle}" />
+                        <TextBlock Text="Interface en français" Style="{StaticResource ChoiceText}" />
+                    </StackPanel>
+                </Grid>
+            </Button>
+            <Button x:Name="EnglishChoice" Style="{StaticResource CardButton}" Height="70" Margin="0,12,0,0" Click="OnEnglish">
+                <Grid>
+                    <Border CornerRadius="16" Background="{StaticResource GlassStrongBrush}" BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1" />
+                    <StackPanel Margin="22,0" VerticalAlignment="Center">
+                        <TextBlock Text="English" Style="{StaticResource ChoiceTitle}" />
+                        <TextBlock Text="English interface" Style="{StaticResource ChoiceText}" />
+                    </StackPanel>
+                </Grid>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Page>

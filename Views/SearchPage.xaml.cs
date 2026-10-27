@@ -99,7 +99,7 @@ namespace FluxTV.Views
             if (words.Count == 0 || (text ?? "").Trim().Length < 2)
             {
                 ShowRows(new List<CardItem>(), new List<CardItem>(), new List<CardItem>());
-                SetState(false, "Appuie sur Ⓐ pour écrire avec le clavier de la console.");
+                SetState(false, Tr.T("Appuie sur Ⓐ pour écrire avec le clavier de la console.", "Press Ⓐ to type with the console keyboard."));
                 return;
             }
             var repo = app.Repo;
@@ -127,7 +127,7 @@ namespace FluxTV.Views
                 // Films et séries : listes complètes chargées une fois
                 if (movies == null)
                 {
-                    SetState(true, "Recherche dans les films…");
+                    SetState(true, Tr.T("Recherche dans les films…", "Searching movies…"));
                     var hidden = HiddenIds(await repo.VodCategoriesAsync());
                     var all = await repo.AllMoviesAsync();
                     movies = await Task.Run(() => all.Where(m => !hidden.Contains(m.CategoryId)).Select(m => (TextTools.Fold(m.Name), m)).ToList());
@@ -138,7 +138,7 @@ namespace FluxTV.Views
 
                 if (series == null)
                 {
-                    SetState(true, "Recherche dans les séries…");
+                    SetState(true, Tr.T("Recherche dans les séries…", "Searching series…"));
                     var hidden = HiddenIds(await repo.SeriesCategoriesAsync());
                     var all = await repo.AllSeriesAsync();
                     series = await Task.Run(() => all.Where(s => !hidden.Contains(s.CategoryId)).Select(s => (TextTools.Fold(s.Name), s)).ToList());
@@ -148,7 +148,7 @@ namespace FluxTV.Views
                 SeriesRow.SetItems(foundSeries.Select(SeriesCard).ToList());
 
                 var total = foundChannels.Count + foundMovies.Count + foundSeries.Count;
-                SetState(false, total == 0 ? "Aucun résultat pour « " + text.Trim() + " »." : "");
+                SetState(false, total == 0 ? Tr.T("Aucun résultat pour « " + text.Trim() + " ».", "No results for “" + text.Trim() + "”.") : "");
             }
             catch (Exception e)
             {

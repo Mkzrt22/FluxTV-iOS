@@ -21,7 +21,7 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.ColumnSpan="5" Orientation="Horizontal" Margin="0,0,0,14">
-            <TextBlock Text="TV en direct" Style="{StaticResource TitleText}" />
+            <TextBlock Text="{ui:T Fr='TV en direct', En='Live TV'}" Style="{StaticResource TitleText}" />
             <TextBlock x:Name="CountText" Style="{StaticResource FaintText}" VerticalAlignment="Bottom" Margin="12,0,0,3" />
         </StackPanel>
 
@@ -45,7 +45,7 @@
             <TextBlock x:Name="StateText" Style="{StaticResource BodyText}" TextAlignment="Center" HorizontalAlignment="Center"
                        Margin="0,6,0,0" MaxLines="4" />
             <Button x:Name="RetryButton" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Center" Margin="0,16,0,0"
-                    Click="OnRetry" Visibility="Collapsed" Content="Réessayer" />
+                    Click="OnRetry" Visibility="Collapsed" Content="{ui:T Fr='Réessayer', En='Retry'}" />
         </StackPanel>
 
         <!-- Chaîne sous le focus : programme en cours et suivant -->
@@ -57,22 +57,22 @@
             <TextBlock x:Name="DetailName" Style="{StaticResource TitleText}" FontSize="18" Margin="0,12,0,0" />
             <TextBlock x:Name="DetailCategory" Style="{StaticResource FaintText}" Margin="0,2,0,0" />
             <StackPanel x:Name="NowPanel" Margin="0,16,0,0">
-                <TextBlock Text="EN CE MOMENT" Style="{StaticResource EyebrowText}" Foreground="{StaticResource OnAirBrush}" />
+                <TextBlock Text="{ui:T Fr='EN CE MOMENT', En='ON NOW'}" Style="{StaticResource EyebrowText}" Foreground="{StaticResource OnAirBrush}" />
                 <TextBlock x:Name="NowTitle" Style="{StaticResource StrongText}" TextWrapping="WrapWholeWords" MaxLines="2" Margin="0,5,0,0" />
                 <TextBlock x:Name="NowTime" Style="{StaticResource FaintText}" Margin="0,3,0,0" />
                 <ProgressBar x:Name="NowProgress" Style="{StaticResource ThinProgress}" Foreground="{StaticResource OnAirBrush}" Margin="0,8,0,0" />
                 <TextBlock x:Name="NowDesc" Style="{StaticResource BodyText}" FontSize="13" LineHeight="19" MaxLines="5" Margin="0,8,0,0" />
             </StackPanel>
             <StackPanel x:Name="NextPanel" Margin="0,14,0,0">
-                <TextBlock Text="À SUIVRE" Style="{StaticResource EyebrowText}" />
+                <TextBlock Text="{ui:T Fr='À SUIVRE', En='UP NEXT'}" Style="{StaticResource EyebrowText}" />
                 <TextBlock x:Name="NextTitle" Style="{StaticResource LabelText}" Margin="0,5,0,0" />
                 <TextBlock x:Name="NextTime" Style="{StaticResource FaintText}" Margin="0,2,0,0" />
             </StackPanel>
         </StackPanel>
 
         <StackPanel Grid.Row="2" Grid.ColumnSpan="5" Orientation="Horizontal" Margin="0,10,0,0">
-            <ui:Hint Key="A" Text="Regarder" />
-            <ui:Hint Key="Y" Text="Favori" />
+            <ui:Hint Key="A" Text="{ui:T Fr='Regarder', En='Watch'}" />
+            <ui:Hint Key="Y" Text="{ui:T Fr='Favori', En='Favorite'}" />
             <ui:Hint Key="B" Text="Menu" />
         </StackPanel>
     </Grid>

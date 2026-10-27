@@ -94,6 +94,9 @@ namespace FluxTV.Services
 
         public void NotifyChanged() => Changed?.Invoke();
 
+        /// <summary>Interface refaite (changement de langue) : les anciens écrans ne sont plus prévenus.</summary>
+        public void ClearSubscribers() => Changed = null;
+
         void Commit(bool notify)
         {
             if (notify) Changed?.Invoke();

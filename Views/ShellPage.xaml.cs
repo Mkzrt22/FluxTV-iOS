@@ -74,6 +74,25 @@ namespace FluxTV.Views
             else ShowSetup();
         }
 
+        /// <summary>Interface refaite (changement de langue) : l'app tourne déjà, pas d'animation de lancement.</summary>
+        public void Resume(string key, object parameter = null)
+        {
+            if (app.Source == null) ShowSetup();
+            else ShowApp(key, parameter);
+        }
+
+        /// <summary>Coque remplacée par une nouvelle : elle ne réagit plus à la manette ni au focus.</summary>
+        public void Detach()
+        {
+            toastTimer.Stop();
+            app.ToastRequested -= ShowToast;
+            app.PlayRequested -= OpenPlayer;
+            app.SourceChanged -= OnSourceChanged;
+            FocusManager.GotFocus -= OnGlobalGotFocus;
+            FocusManager.GettingFocus -= OnGlobalGettingFocus;
+            SystemNavigationManager.GetForCurrentView().BackRequested -= OnBackRequested;
+        }
+
         // ───────────────────────────── Intro ─────────────────────────────
 
         void PlayIntro(bool hold)
@@ -98,9 +117,9 @@ namespace FluxTV.Views
 
         string IntroStatus()
         {
-            if (app.Source == null) return "Bienvenue";
-            if (app.LiveLoading) return "Chargement des chaînes…";
-            return "Prêt";
+            if (app.Source == null) return Tr.T("Bienvenue", "Welcome");
+            if (app.LiveLoading) return Tr.T("Chargement des chaînes…", "Loading channels…");
+            return Tr.T("Prêt", "Ready");
         }
 
         /// <summary>La plongée commence : l'app sort de l'éclair et reçoit le focus.</summary>
@@ -156,12 +175,12 @@ namespace FluxTV.Views
             FocusContentSoon();
         }
 
-        void ShowApp(string key)
+        void ShowApp(string key, object parameter = null)
         {
             setupMode = false;
             Rail.Visibility = Visibility.Visible;
             ContentFrame.Margin = new Thickness(112, 0, 0, 0);
-            Navigate(key);
+            Navigate(key, parameter);
         }
 
         // ───────────────────────────── Navigation ─────────────────────────────
@@ -465,7 +484,8 @@ namespace FluxTV.Views
                     break;
                 case "play-live":
                 case "play-channels":
-                    app.Play(Demo.Channels[screen == "play-live" ? 0 : 1], Demo.Channels);
+                    var channels = Demo.Channels;
+                    app.Play(channels[screen == "play-live" ? 0 : 1], channels);
                     await Task.Delay(6000);
                     player?.ShowForTest(screen == "play-channels" ? "channels" : "controls");
                     break;

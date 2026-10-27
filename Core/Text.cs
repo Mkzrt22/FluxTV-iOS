@@ -335,21 +335,19 @@ namespace FluxTV.Core
             string.IsNullOrEmpty(w) ? w : char.ToUpperInvariant(w[0]) + w.Substring(1).ToLowerInvariant();
     }
 
-    /// <summary>Durées, heures et dates lisibles, en français.</summary>
+    /// <summary>Durées, heures et dates lisibles, dans la langue de l'app (voir <see cref="Tr"/>).</summary>
     public static class Format
     {
-        public static readonly CultureInfo French = new CultureInfo("fr-FR");
-
-        /// <summary>« 1 h 58 », « 42 min ».</summary>
+        /// <summary>« 1 h 58 », « 42 min » ; en anglais « 1h 58 ».</summary>
         public static string Duration(double seconds)
         {
             int s = (int)Math.Max(0, Math.Min(seconds, int.MaxValue));
             int h = s / 3600, m = s % 3600 / 60;
-            return h > 0 ? h + " h " + m.ToString("00", CultureInfo.InvariantCulture) : m + " min";
+            return h > 0 ? h + Tr.T(" h ", "h ") + m.ToString("00", CultureInfo.InvariantCulture) : m + " min";
         }
 
         /// <summary>Bouton de reprise : « Reprendre à 42 min », ou « Reprendre » avant la première minute.</summary>
-        public static string Resume(double seconds) => seconds < 60 ? "Reprendre" : "Reprendre à " + Duration(seconds);
+        public static string Resume(double seconds) => seconds < 60 ? Tr.T("Reprendre", "Resume") : Tr.T("Reprendre à ", "Resume at ") + Duration(seconds);
 
         /// <summary>Horloge « 1:02:03 » / « 12:34 ».</summary>
         public static string Clock(double seconds)
@@ -361,13 +359,27 @@ namespace FluxTV.Core
                 : string.Format(CultureInfo.InvariantCulture, "{0}:{1:00}", m, sec);
         }
 
-        public static string Hour(DateTimeOffset d) => d.ToLocalTime().ToString("HH:mm", French);
+        /// <summary>« 20:05 » ; en anglais selon l'horloge de l'appareil : « 8:05 PM » ou « 20:05 ».</summary>
+        public static string Hour(DateTimeOffset d) => d.ToLocalTime().ToString(Tr.English && !Tr.Clock24 ? "h:mm tt" : "HH:mm", Tr.Culture);
 
-        /// <summary>« Jeudi 2 octobre ».</summary>
-        public static string Day(DateTimeOffset d) => Capitalize(d.ToLocalTime().ToString("dddd d MMMM yyyy", French));
+        /// <summary>Temps restant : « Reste 42 min » ; en anglais « 42 min left ».</summary>
+        public static string Remaining(double seconds) => Tr.T("Reste " + Duration(seconds), Duration(seconds) + " left");
 
-        static string Capitalize(string s) => string.IsNullOrEmpty(s) ? s : char.ToUpper(s[0], French) + s.Substring(1);
+        /// <summary>
+        /// Nombre et nom accordé : « 1 chaîne », « 2 chaînes » ; en anglais « 1 channel », « 0 channels »
+        /// (le français garde le singulier pour 0 et 1, l'anglais seulement pour 1).
+        /// </summary>
+        public static string Count(int n, string frOne, string frMany, string enOne, string enMany) =>
+            n + " " + (Tr.English ? (n == 1 ? enOne : enMany) : (n > 1 ? frMany : frOne));
 
-        public static string Rating(double r) => "★ " + r.ToString("0.0", French);
+        /// <summary>« Jeudi 2 octobre 2025 » ; en anglais « Thursday, October 2, 2025 ».</summary>
+        public static string Day(DateTimeOffset d) => Capitalize(d.ToLocalTime().ToString(Tr.T("dddd d MMMM yyyy", "dddd, MMMM d, yyyy"), Tr.Culture));
+
+        /// <summary>« 2 octobre 2025 » ; en anglais « October 2, 2025 ».</summary>
+        public static string Date(DateTimeOffset d) => d.ToLocalTime().ToString(Tr.T("d MMMM yyyy", "MMMM d, yyyy"), Tr.Culture);
+
+        static string Capitalize(string s) => string.IsNullOrEmpty(s) ? s : char.ToUpper(s[0], Tr.Culture) + s.Substring(1);
+
+        public static string Rating(double r) => "★ " + r.ToString("0.0", Tr.Culture);
     }
 }

@@ -23,7 +23,7 @@
                 <TextBlock x:Name="CountText" Style="{StaticResource FaintText}" VerticalAlignment="Bottom" Margin="12,0,0,3" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <ui:Hint Key="Y" Text="Favori" />
+                <ui:Hint Key="Y" Text="{ui:T Fr='Favori', En='Favorite'}" />
                 <Button x:Name="SortButton" Style="{StaticResource ChipButton}" Click="OnSort" Margin="6,0,0,0">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE8CB;" Style="{StaticResource IconText}" FontSize="13" Foreground="{StaticResource AccentBrightBrush}" />
@@ -51,7 +51,7 @@
             <TextBlock x:Name="StateText" Style="{StaticResource BodyText}" TextAlignment="Center" HorizontalAlignment="Center"
                        Margin="0,6,0,0" MaxLines="4" />
             <Button x:Name="RetryButton" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Center" Margin="0,16,0,0"
-                    Click="OnRetry" Visibility="Collapsed" Content="Réessayer" />
+                    Click="OnRetry" Visibility="Collapsed" Content="{ui:T Fr='Réessayer', En='Retry'}" />
         </StackPanel>
     </Grid>
 </UserControl>

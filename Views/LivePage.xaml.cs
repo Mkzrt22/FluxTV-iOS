@@ -125,8 +125,8 @@ namespace FluxTV.Views
             foreach (var ch in visible) counts[ch.CategoryId] = counts.TryGetValue(ch.CategoryId, out var n) ? n + 1 : 1;
             var list = new List<CategoryItem>();
             var favorites = app.FavoriteChannels.Count;
-            if (favorites > 0) list.Add(new CategoryItem { Id = FavoritesId, Name = "Favoris", Count = favorites.ToString() });
-            list.Add(new CategoryItem { Id = AllId, Name = "Toutes les chaînes", Count = visible.Count.ToString() });
+            if (favorites > 0) list.Add(new CategoryItem { Id = FavoritesId, Name = Tr.T("Favoris", "Favorites"), Count = favorites.ToString() });
+            list.Add(new CategoryItem { Id = AllId, Name = Tr.T("Toutes les chaînes", "All channels"), Count = visible.Count.ToString() });
             foreach (var c in app.Visible(app.Live.Categories))
                 if (counts.TryGetValue(c.Id, out var count))
                     list.Add(new CategoryItem { Id = c.Id, Name = c.Name, Count = count.ToString() });
@@ -140,7 +140,7 @@ namespace FluxTV.Views
             {
                 StateRing.IsActive = false;
                 StateRing.Visibility = Visibility.Collapsed;
-                StateTitle.Text = "Impossible de charger tes chaînes";
+                StateTitle.Text = Tr.T("Impossible de charger tes chaînes", "Couldn't load your channels");
                 StateText.Text = app.LiveError;
                 RetryButton.Visibility = Visibility.Visible;
             }
@@ -148,8 +148,8 @@ namespace FluxTV.Views
             {
                 StateRing.Visibility = Visibility.Visible;
                 StateRing.IsActive = true;
-                StateTitle.Text = "Chargement des chaînes…";
-                StateText.Text = "La première fois, cela peut prendre quelques secondes.";
+                StateTitle.Text = Tr.T("Chargement des chaînes…", "Loading channels…");
+                StateText.Text = Tr.T("La première fois, cela peut prendre quelques secondes.", "The first time, this can take a few seconds.");
                 RetryButton.Visibility = Visibility.Collapsed;
                 if (!app.LiveLoading) _ = app.LoadLiveAsync();
             }
@@ -175,7 +175,7 @@ namespace FluxTV.Views
                 return item;
             }).ToList();
             Channels.ItemsSource = channels;
-            CountText.Text = c.Name + " · " + channels.Count + (channels.Count > 1 ? " chaînes" : " chaîne");
+            CountText.Text = c.Name + " · " + Format.Count(channels.Count, "chaîne", "chaînes", "channel", "channels");
             var target = focusChannelId != null && channelById.TryGetValue(focusChannelId, out var f) ? f : channels.FirstOrDefault();
             ShowDetails(target);
             if (target != null) Channels.ScrollIntoView(target);
@@ -286,7 +286,7 @@ namespace FluxTV.Views
             DetailLogo.Url = ch.Logo;
             DetailName.Text = ch.Name;
             var badges = ch.Badges.Count > 0 ? " · " + string.Join(" ", ch.Badges) : "";
-            DetailCategory.Text = (ch.Num > 0 ? "N° " + ch.Num + " · " : "") + (app.CategoryName(ch.CategoryId) ?? "") + badges;
+            DetailCategory.Text = (ch.Num > 0 ? Tr.T("N° ", "Ch. ") + ch.Num + " · " : "") + (app.CategoryName(ch.CategoryId) ?? "") + badges;
             var (now, next) = app.NowNext(ch);
             if (now != null)
             {
