@@ -379,6 +379,8 @@ final class EnglishTests: XCTestCase {
         XCTAssertEqual(Demo.channels[0].name, "Live test pattern")
         XCTAssertEqual(Demo.channels[0].logo, "asset:DemoLive1En")
         XCTAssertEqual(Demo.channels[2].logo, "asset:DemoLive3")
+        XCTAssertEqual(Demo.movies[0].poster, "asset:DemoPosterTosEn")
+        XCTAssertEqual(Demo.series[0].cover, "asset:DemoPosterOpenEn")
         XCTAssertEqual(Demo.liveCategory.name, "Demo · Live")
         XCTAssertEqual(Demo.programmes(for: "demo:live1").first?.desc, "Demo program.")
         XCTAssertEqual(FluxError.offline.errorDescription, "No internet connection.")

@@ -16,6 +16,9 @@ enum Demo {
     /// Vignettes des deux premières chaînes : « EN DIRECT » écrit dans la langue de l'app.
     private static func logo(_ n: Int) -> String { "asset:DemoLive\(n)" + (Tr.english && n < 3 ? "En" : "") }
 
+    /// Affiches dont le sous-titre est écrit dans la langue de l'app (« SÉRIE DE DÉMONSTRATION »…).
+    private static func poster(_ name: String) -> String { "asset:DemoPoster\(name)" + (Tr.english ? "En" : "") }
+
     static var channels: [LiveChannel] { [
         LiveChannel(id: "demo:live1", streamId: nil, rawName: T("Mire en direct", "Live test pattern"), logo: logo(1),
                     categoryId: liveCategory.id, tvgId: "demo.live1", num: 1,
@@ -29,7 +32,7 @@ enum Demo {
     ] }
 
     static var movies: [Movie] { [
-        Movie(id: "demo:tos", streamId: nil, rawName: "Tears of Steel", poster: "asset:DemoPosterTos", rating: 6.9,
+        Movie(id: "demo:tos", streamId: nil, rawName: "Tears of Steel", poster: poster("Tos"), rating: 6.9,
               added: Date(timeIntervalSince1970: 1_700_000_000), ext: "mov", categoryId: vodCategory.id, year: 2012,
               url: "https://download.blender.org/demo/movies/ToS/tears_of_steel_720p.mov"),
         Movie(id: "demo:bbb", streamId: nil, rawName: "Big Buck Bunny", poster: "asset:DemoPosterBbb", rating: 7.2,
@@ -42,7 +45,7 @@ enum Demo {
             plot: T("Dans un Amsterdam futuriste, un groupe de scientifiques tente de sauver le monde d'une invasion de robots en rejouant une rupture amoureuse. Court métrage libre de la Blender Foundation.",
                     "In a futuristic Amsterdam, a group of scientists tries to save the world from a robot invasion by reliving a breakup. An open short film by the Blender Foundation."),
             cast: "Derek de Lint, Sergio Hasselbaink, Rogier Schippers", director: "Ian Hubert", genre: T("Science-fiction", "Science fiction"),
-            releaseDate: "2012-09-26", durationSecs: 734, rating: 6.9, cover: "asset:DemoPosterTos",
+            releaseDate: "2012-09-26", durationSecs: 734, rating: 6.9, cover: poster("Tos"),
             backdrop: "asset:DemoBackdropTos", trailer: nil),
         "demo:bbb": MovieInfo(
             plot: T("Un lapin géant au grand cœur décide de donner une leçon à trois rongeurs qui s'en prennent aux animaux de la forêt. Court métrage d'animation libre de la Blender Foundation.",
@@ -53,7 +56,7 @@ enum Demo {
     ] }
 
     static var series: [Series] { [
-        Series(seriesId: "demo-open-movies", rawName: "Open Movies", cover: "asset:DemoPosterOpen",
+        Series(seriesId: "demo-open-movies", rawName: "Open Movies", cover: poster("Open"),
                plot: T("Les films d'animation et de science-fiction libres de la Blender Foundation, réunis en une série de démonstration.",
                        "The Blender Foundation's open animated and science fiction films, gathered into a demo series."),
                genre: "Animation", rating: 7.0, categoryId: seriesCategory.id, lastModified: nil, year: 2008,
