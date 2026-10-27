@@ -1,0 +1,5 @@
+Paquet : FluxTV.Xbox_1.1.0.0_x64_bundle.msixupload (12.4 Mo)
+Contenu : FluxTV.Xbox_1.1.0.0_x64.msixbundle
+Identité : Kevin22.FluxTVPlayer · CN=05FD659D-6D1F-4B5B-ADB5-C9C3AED73597 · 1.1.0.0 · x64
+Nom affiché : FluxTV Player · éditeur : Kevin22
+Compte intégré : non
