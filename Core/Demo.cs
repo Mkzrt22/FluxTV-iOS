@@ -21,6 +21,9 @@ namespace FluxTV.Core
         /// <summary>Vignettes sans texte français (« DIRECT », « CINÉ LIBRE ») pour l'app en anglais.</summary>
         static string Logo(int n) => Img + "DemoLive" + n + (Tr.English && n < 3 ? "En" : "") + ".png";
 
+        /// <summary>Affiches dont le sous-titre est écrit dans la langue de l'app (« SÉRIE DE DÉMONSTRATION »…).</summary>
+        static string Poster(string name) => Img + "DemoPoster" + name + (Tr.English ? "En" : "") + ".png";
+
         public static List<LiveChannel> Channels => new List<LiveChannel>
         {
             new LiveChannel("demo:live1", null, Tr.T("Mire en direct", "Live test pattern"), Logo(1), LiveCategory.Id, "demo.live1", 1,
@@ -33,7 +36,7 @@ namespace FluxTV.Core
 
         public static List<Movie> Movies => new List<Movie>
         {
-            new Movie("demo:tos", null, "Tears of Steel", Img + "DemoPosterTos.png", 6.9, DateTimeOffset.FromUnixTimeSeconds(1_700_000_000),
+            new Movie("demo:tos", null, "Tears of Steel", Poster("Tos"), 6.9, DateTimeOffset.FromUnixTimeSeconds(1_700_000_000),
                 "mov", VodCategory.Id, 2012, "https://download.blender.org/demo/movies/ToS/tears_of_steel_720p.mov"),
             new Movie("demo:bbb", null, "Big Buck Bunny", Img + "DemoPosterBbb.png", 7.2, DateTimeOffset.FromUnixTimeSeconds(1_690_000_000),
                 "m3u8", VodCategory.Id, 2008, "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"),
@@ -46,7 +49,7 @@ namespace FluxTV.Core
                 Plot = Tr.T("Dans un Amsterdam futuriste, un groupe de scientifiques tente de sauver le monde d'une invasion de robots en rejouant une rupture amoureuse. Court métrage libre de la Blender Foundation.",
                     "In a futuristic Amsterdam, a group of scientists tries to save the world from a robot invasion by reliving a breakup. An open short film by the Blender Foundation."),
                 Cast = "Derek de Lint, Sergio Hasselbaink, Rogier Schippers", Director = "Ian Hubert", Genre = Tr.T("Science-fiction", "Science fiction"),
-                ReleaseDate = "2012-09-26", DurationSecs = 734, Rating = 6.9, Cover = Img + "DemoPosterTos.png",
+                ReleaseDate = "2012-09-26", DurationSecs = 734, Rating = 6.9, Cover = Poster("Tos"),
                 Backdrop = Img + "DemoBackdropTos.png",
             },
             ["demo:bbb"] = new MovieInfo
@@ -60,7 +63,7 @@ namespace FluxTV.Core
 
         public static List<Series> SeriesList => new List<Series>
         {
-            new Series("demo-open-movies", "Open Movies", Img + "DemoPosterOpen.png",
+            new Series("demo-open-movies", "Open Movies", Poster("Open"),
                 Tr.T("Les films d'animation et de science-fiction libres de la Blender Foundation, réunis en une série de démonstration.",
                     "The Blender Foundation's open animated and science fiction films, gathered into a demo series."),
                 "Animation", 7.0, SeriesCategory.Id, null, 2008, new List<Episode>

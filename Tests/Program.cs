@@ -500,6 +500,8 @@ namespace FluxTV.Tests
                 Assert.Equal("Live test pattern", Demo.Channels[0].Name);
                 Assert.True(Demo.Channels[0].Logo.EndsWith("DemoLive1En.png"), "vignette « LIVE »");
                 Assert.Equal("Demo · Live", Demo.LiveCategory.Name);
+                Assert.True(Demo.Movies[0].Poster.EndsWith("DemoPosterTosEn.png"), "affiche « SCIENCE FICTION »");
+                Assert.True(Demo.SeriesList[0].Cover.EndsWith("DemoPosterOpenEn.png"), "affiche « DEMO SERIES »");
                 Assert.Equal("No internet connection.", new FluxException(FluxError.Offline).Message);
                 Assert.Equal("Other", M3U.Parse("#EXTM3U\n#EXTINF:-1,Chaîne\nhttp://h/1.ts\n").Entries[0].Group);
                 Assert.Equal("42 min left", Format.Remaining(2520));
