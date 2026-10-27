@@ -477,6 +477,12 @@ namespace FluxTV.Views
                 case "seriesdetail":
                     OpenSeries(Demo.SeriesList[0], Demo.SeriesCategory.Name);
                     break;
+                case "switch":
+                    // Réglages en français, puis passage à l'anglais : l'interface est refaite sur les réglages
+                    Navigate("settings");
+                    await Task.Delay(1500);
+                    App.ChangeLanguage(Lang.En);
+                    break;
                 case "credits":
                     Navigate("settings");
                     await Task.Delay(800);

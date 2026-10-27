@@ -31,7 +31,9 @@ $ecrans = @(
     @('play-movie', 13), @('play-options', 13),
     @('language', 5), @('intro@en', 4), @('setup@en', 6), @('home@en', 7), @('rail@en', 7), @('live@en', 8), @('movies@en', 8), @('series@en', 8),
     @('movie@en', 8), @('seriesdetail@en', 8), @('search@en', 9), @('settings@en', 7), @('play-channels@en', 13), @('play-movie@en', 13),
-    @('play-options@en', 13)
+    @('play-options@en', 13),
+    # En dernier : le changement de langue dans les réglages enregistre l'anglais
+    @('switch', 9)
 )
 # Écrans repris sur la fiche du Store, en français et en anglais (démonstration uniquement : contenus libres de droits)
 $pourLeStore = @('intro', 'home', 'live', 'movies', 'movie', 'seriesdetail', 'search', 'play-channels', 'play-movie')
