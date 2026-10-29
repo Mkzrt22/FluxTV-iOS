@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="fr" data-autre="en/">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Langue : le choix mémorisé, sinon celle du navigateur (le français ici, toute autre langue en anglais). Rien pour les robots d'indexation -->
+<script>(function(){var d=document.documentElement,l=null,m=/[?&]lang=(fr|en)(?:&|$)/.exec(location.search);try{if(m)localStorage.setItem('fluxtv-lang',m[1]);l=localStorage.getItem('fluxtv-lang')}catch(e){}if(m){l=m[1];history.replaceState(null,'',location.pathname+location.search.replace(/([?&])lang=(fr|en)(&|$)/,'$1').replace(/[?&]$/,'')+location.hash)}if(!l&&!/bot|crawl|spider|slurp|facebookexternalhit|preview|lighthouse/i.test(navigator.userAgent)){var a=navigator.languages||[navigator.language||''];for(var i=0;i<a.length&&!l;i++){var c=String(a[i]).slice(0,2).toLowerCase();if(c=='fr'||c=='en')l=c}l=l||'en'}if(l&&l!=d.lang){window.fluxAilleurs=1;d.style.visibility='hidden';location.replace(d.getAttribute('data-autre')+location.search+location.hash)}})();</script>
+<title>FluxTV — lecteur IPTV gratuit pour Xbox, PC, Android TV et iPhone</title>
+<meta name="description" content="Lecteur IPTV gratuit pour Xbox, PC, Android TV, Fire TV, iPhone et Apple TV : direct, guide TV, films et séries avec reprise. Compatible Xtream et M3U.">
+<link rel="canonical" href="https://mkzrt22.github.io/FluxTV-iOS/">
+<link rel="alternate" hreflang="fr" href="https://mkzrt22.github.io/FluxTV-iOS/">
+<link rel="alternate" hreflang="en" href="https://mkzrt22.github.io/FluxTV-iOS/en/">
+<link rel="alternate" hreflang="x-default" href="https://mkzrt22.github.io/FluxTV-iOS/en/">
+<meta name="theme-color" content="#080818">
+<meta name="google-site-verification" content="mrJqhD4Ktw11dD5igvkDllb9XtyijtvBYMzHdit87LQ">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FluxTV">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:title" content="FluxTV — le lecteur IPTV gratuit pensé pour la télé">
+<meta property="og:description" content="Direct, guide des programmes, films et séries avec reprise. Gratuit sur Xbox, PC, Android TV, Fire TV, iPhone et Apple TV.">
+<meta property="og:image" content="https://mkzrt22.github.io/FluxTV-iOS/assets/img/apercu-lien.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FluxTV, lecteur IPTV gratuit sur Xbox, PC, Android TV, Fire TV, iPhone et Apple TV">
+<meta property="og:url" content="https://mkzrt22.github.io/FluxTV-iOS/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FluxTV — le lecteur IPTV gratuit pensé pour la télé">
+<meta name="twitter:description" content="Direct, guide TV, films et séries avec reprise. Gratuit sur Xbox, PC, Android TV, Fire TV, iPhone et Apple TV.">
+<meta name="twitter:image" content="https://mkzrt22.github.io/FluxTV-iOS/assets/img/apercu-lien.jpg">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "FluxTV", "alternateName": "FluxTV Player", "applicationCategory": "MultimediaApplication", "operatingSystem": "Xbox, Windows 10, Windows 11, Android, Android TV, Fire OS, iOS, iPadOS, tvOS", "description": "Lecteur IPTV gratuit : direct, guide des programmes, films et séries avec reprise, à la manette ou à la télécommande. Compatible comptes Xtream Codes et playlists M3U. Ne fournit aucune chaîne.", "url": "https://mkzrt22.github.io/FluxTV-iOS/", "image": "https://mkzrt22.github.io/FluxTV-iOS/assets/img/apercu-lien.jpg", "inLanguage": "fr", "screenshot": ["https://mkzrt22.github.io/FluxTV-iOS/assets/img/xbox-home.webp", "https://mkzrt22.github.io/FluxTV-iOS/assets/img/xbox-live.webp", "https://mkzrt22.github.io/FluxTV-iOS/assets/img/xbox-movie.webp"], "downloadUrl": "https://apps.microsoft.com/detail/9P4NX39QHPW1", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}}</script>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/icone-180.png">
+<link rel="preload" href="assets/fonts/Sora-Bold.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<!-- L'intro cache le contenu le temps de l'animer ; sans le script (réseau, bloqueur), tout s'affiche quand même -->
+<script>document.documentElement.classList.add('js');setTimeout(function(){if(!window.fluxIntro)document.documentElement.classList.remove('js')},3500);</script>
+</head>
+<body>
+<a class="skip" href="#ecrans">Aller au contenu</a>
+
+<header class="top" id="top">
+  <a class="brand" href="#accueil" aria-label="FluxTV, retour en haut">
+    <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><use href="#emblem"/></svg>
+    <span>FluxTV</span>
+  </a>
+  <div class="top-actions">
+    <a class="btn btn-sm" href="#telecharger">Télécharger</a>
+    <!-- Menu : FluxTV, FluxTV Home, dons. <details> l'ouvre et le ferme même sans JavaScript -->
+    <details class="menu" id="menu">
+      <summary class="burger"><span class="sr-only">Menu</span><span class="burger-lines" aria-hidden="true"><i></i><i></i><i></i></span></summary>
+      <div class="menu-veil" aria-hidden="true"></div>
+      <nav class="menu-panel" aria-label="Menu">
+        <div class="menu-grid">
+          <section class="menu-card">
+            <div class="menu-head"><span class="menu-ico app"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#emblem"/></svg></span>
+              <div><p class="menu-eyebrow">L'app</p><p class="menu-title">FluxTV</p></div></div>
+            <p class="menu-desc">Le lecteur IPTV : direct, guide TV, films et séries avec reprise.</p>
+            <ul class="menu-links">
+              <li><a href="#ecrans">Découvrir l'app</a></li>
+              <li><a href="#fonctions">Fonctions</a></li>
+              <li><a href="#telecharger">Télécharger <small>toutes les plateformes</small></a></li>
+              <li class="sub"><a href="https://apps.microsoft.com/detail/9P4NX39QHPW1" rel="noopener" data-compte="xbox">Xbox <small>Microsoft Store</small></a></li>
+              <li class="sub"><a href="https://apps.microsoft.com/detail/9P4NX39QHPW1" rel="noopener" data-compte="windows">PC Windows <small>Microsoft Store</small></a></li>
+              <li class="sub"><a href="fluxtv.apk" download data-compte="android">Android TV · Fire TV <small>APK 8.1.0</small></a></li>
+              <li class="sub"><a href="fluxtv.ipa" download data-compte="iphone">iPhone · iPad <small>IPA 1.2</small></a></li>
+              <li class="sub"><a href="fluxtv-appletv.ipa" download data-compte="appletv">Apple TV <small>IPA 1.2</small></a></li>
+              <li><a href="#questions">Questions</a></li>
+            </ul>
+          </section>
+          <section class="menu-card">
+            <div class="menu-head"><span class="menu-ico home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h4.5v-6h4v6h4.5V9.5"/></svg></span>
+              <div><p class="menu-eyebrow">Écran d'accueil</p><p class="menu-title">FluxTV Home</p></div></div>
+            <p class="menu-desc">Ta box Android TV, Google TV ou Fire TV s'allume directement sur tes chaînes.</p>
+            <ul class="menu-links">
+              <li><a href="#fluxtv-home">Découvrir FluxTV Home</a></li>
+              <li class="sub"><a href="fluxtv.apk" download data-compte="android">FluxTV avec FluxTV Home <small>APK 8.1.0</small></a></li>
+              <li class="sub"><a href="fluxtv-home.apk" download data-compte="assistant">Assistant FluxTV Home <small>Fire TV, Google TV</small></a></li>
+            </ul>
+          </section>
+          <section class="menu-card">
+            <div class="menu-head"><span class="menu-ico don"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3l-1.2-1.1C6.1 14.9 3 12.1 3 8.6 3 5.8 5.2 3.7 7.9 3.7c1.6 0 3.1.7 4.1 1.9 1-1.2 2.5-1.9 4.1-1.9 2.7 0 4.9 2.1 4.9 4.9 0 3.5-3.1 6.3-7.8 10.6L12 20.3z"/></svg></span>
+              <div><p class="menu-eyebrow">Soutenir</p><p class="menu-title">Dons</p></div></div>
+            <p class="menu-desc">FluxTV est gratuit et sans pub. Un don libre aide à le faire vivre.</p>
+            <ul class="menu-links">
+              <li><a href="https://mkzrt22.github.io/soutenir" data-compte="soutien">Page de dons <small>tous les moyens</small></a></li>
+              <li class="sub"><a href="https://ko-fi.com/fluxtv" target="_blank" rel="noopener" data-compte="don-kofi">Ko-fi <small>carte ou PayPal</small></a></li>
+              <li class="sub"><a href="https://mkzrt22.github.io/soutenir#crypto">Crypto <small>Ethereum, Solana</small></a></li>
+              <li><a href="#telecharger" data-partage>Partager FluxTV</a></li>
+              <li><a href="https://apps.microsoft.com/detail/9P4NX39QHPW1" rel="noopener">Noter l'app <small>Microsoft Store</small></a></li>
+            </ul>
+          </section>
+        </div>
+        <div class="menu-foot">
+          <div class="menu-social"><span>Suivre FluxTV</span>
+            <a href="https://www.tiktok.com/@fluxtvv" target="_blank" rel="noopener">TikTok</a>
+            <a href="https://www.instagram.com/fluxtvv/" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://www.youtube.com/@FluxTV-z3m" target="_blank" rel="noopener">YouTube</a>
+          </div>
+          <div class="lang-switch" role="group" aria-label="Langue · Language"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><span class="on" lang="fr" aria-current="true">Français</span><a href="en/?lang=en" hreflang="en" lang="en" data-lang="en">English</a></div>
+        </div>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<main>
+<!-- ─────────────── Intro : la même que dans l'app ─────────────── -->
+<section class="hero" id="accueil">
+  <canvas class="hero-fx" id="fx" aria-hidden="true"></canvas>
+  <div class="hero-rays" aria-hidden="true"></div>
+  <div class="hero-core">
+    <div class="mark" id="mark" aria-hidden="true">
+      <svg viewBox="0 0 48 48">
+        <rect width="48" height="48" rx="13" fill="url(#lg)"/><rect width="48" height="48" rx="13" fill="url(#lh)"/>
+        <path id="spPlay" d="M11,15.2C11,13.6 12.7,12.7 14,13.5L26.6,22.2C27.7,23 27.7,24.9 26.6,25.7L14,34.5C12.7,35.3 11,34.4 11,32.8Z" fill="#fff"/>
+        <path id="spW1" d="M30.5,18.6A7.6,7.6 0 0 1 30.5,29.4" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="2.7" stroke-linecap="round" stroke-dasharray="14" stroke-dashoffset="14"/>
+        <path id="spW2" d="M34.8,14.6A13,13 0 0 1 34.8,33.4" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2.7" stroke-linecap="round" stroke-dasharray="24" stroke-dashoffset="24"/>
+      </svg>
+      <span class="glare"></span>
+    </div>
+    <h1 class="word" id="word" aria-label="FluxTV"><span>F</span><span>l</span><span>u</span><span>x</span><span>T</span><span>V</span></h1>
+    <p class="tag" id="tag">Lecteur IPTV</p>
+    <p class="hero-lead reveal">Tes chaînes méritent <em>un vrai lecteur</em>.</p>
+    <p class="hero-sub reveal">Direct, guide des programmes, films et séries avec reprise à la minute.
+      Tout se pilote à la manette ou à la télécommande, depuis le canapé.</p>
+    <div class="hero-cta reveal">
+      <a class="btn" href="#telecharger">Télécharger gratuitement</a>
+      <a class="btn btn-ghost" href="#fluxtv-home">Découvrir FluxTV Home</a>
+    </div>
+    <ul class="chips reveal" aria-label="Appareils">
+      <li>Xbox</li><li>PC Windows</li><li>Android TV</li><li>Google TV</li><li>Fire TV</li><li>iPhone · iPad</li><li>Apple TV</li>
+    </ul>
+    <!-- Compteur de téléchargements, en direct (affiché dès le premier téléchargement) -->
+  </div>
+  <a class="scroll-hint" href="#ecrans" aria-label="Voir la suite"><span></span></a>
+</section>
+
+<!-- ─────────────── Écrans ─────────────── -->
+<section class="section screens" id="ecrans">
+  <div class="wrap">
+    <header class="head">
+      <p class="eyebrow">L'app</p>
+      <h2>Une interface pensée pour le canapé.</h2>
+      <p class="lede">Grandes affiches, textes lisibles à trois mètres, focus bien visible : FluxTV se parcourt
+        aux flèches, sans jamais chercher où l'on est.</p>
+    </header>
+
+    <div class="tv-stage" data-tabs>
+      <div class="tv">
+        <div class="tv-screen">
+          <img class="shot is-on" data-shot="0" src="assets/img/xbox-home.webp" width="1280" height="720" alt="Accueil de FluxTV : film à la une, chaînes en direct, films et séries" loading="lazy">
+          <img class="shot" data-shot="1" src="assets/img/xbox-live.webp" width="1280" height="720" alt="TV en direct avec le programme en cours et le suivant" loading="lazy">
+          <img class="shot" data-shot="2" src="assets/img/xbox-play-channels.webp" width="1280" height="720" alt="Liste des chaînes ouverte pendant la lecture" loading="lazy">
+          <img class="shot" data-shot="3" src="assets/img/xbox-movie.webp" width="1280" height="720" alt="Fiche d'un film avec résumé, distribution et reprise" loading="lazy">
+          <img class="shot" data-shot="4" src="assets/img/xbox-seriesdetail.webp" width="1280" height="720" alt="Fiche d'une série : saisons et épisodes" loading="lazy">
+          <img class="shot" data-shot="5" src="assets/img/xbox-play-movie.webp" width="1280" height="720" alt="Lecteur vidéo plein écran avec ses commandes" loading="lazy">
+        </div>
+        <div class="tv-foot" aria-hidden="true"></div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Écrans de l'app">
+        <button role="tab" aria-selected="true" data-tab="0"><b>Accueil</b><span>Ce que tu regardais, prêt à reprendre</span></button>
+        <button role="tab" aria-selected="false" data-tab="1"><b>Direct</b><span>Programme en cours et suivant</span></button>
+        <button role="tab" aria-selected="false" data-tab="2"><b>Zapping</b><span>Les chaînes sans quitter la vidéo</span></button>
+        <button role="tab" aria-selected="false" data-tab="3"><b>Films</b><span>Fiches détaillées, reprise à la minute</span></button>
+        <button role="tab" aria-selected="false" data-tab="4"><b>Séries</b><span>Épisode suivant enchaîné tout seul</span></button>
+        <button role="tab" aria-selected="false" data-tab="5"><b>Lecteur</b><span>Audio, sous-titres, format d'image</span></button>
+      </div>
+    </div>
+    <p class="note">Captures de FluxTV Player sur Xbox, en mode démonstration (films libres de la Blender Foundation).</p>
+  </div>
+</section>
+
+<!-- ─────────────── Fonctions ─────────────── -->
+<section class="section" id="fonctions">
+  <div class="wrap">
+    <header class="head">
+      <p class="eyebrow">Fonctions</p>
+      <h2>Tout ce qu'un lecteur devrait faire.</h2>
+    </header>
+    <div class="grid features">
+      <article class="feat">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="2.5"/><path d="M8 21h8M12 17v4"/><circle cx="7.5" cy="9" r="1" class="dot"/></svg>
+        <h3>Direct et guide TV</h3>
+        <p>Programme en cours et à venir, barre d'avancement, replay sur les chaînes qui le proposent.</p>
+      </article>
+      <article class="feat">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v5M15 4v5"/><path d="m10 13 5 2.5-5 2.5z"/></svg>
+        <h3>Films et séries</h3>
+        <p>Grandes affiches, fiches détaillées, reprise exacte là où tu t'es arrêté, épisode suivant enchaîné.</p>
+      </article>
+      <article class="feat">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12a4 4 0 0 1 4 4v2a3 3 0 0 1-5.4 1.8L15 14H9l-1.6 1.8A3 3 0 0 1 2 14v-2a4 4 0 0 1 4-4z"/><path d="M7 11v2M6 12h2"/><circle cx="16" cy="11.5" r=".8" class="dot"/><circle cx="18" cy="13" r=".8" class="dot"/></svg>
+        <h3>Manette et télécommande</h3>
+        <p>Tout se pilote aux flèches : zapping, recherche, options du lecteur. Souris et clavier sur PC.</p>
+      </article>
+      <article class="feat">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0z"/><path d="M12 8v4l3 2"/></svg>
+        <h3>Image fluide</h3>
+        <p>La télé passe en 24, 50 ou 60 Hz selon la vidéo : plus de saccades dans les travellings.</p>
+      </article>
+      <article class="feat">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <h3>Tes données restent chez toi</h3>
+        <p>Aucune collecte, aucune pub, aucun pistage. Tes identifiants restent chiffrés sur l'appareil.</p>
+      </article>
+      <article class="feat">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg>
+        <h3>Essaie sans abonnement</h3>
+        <p>Le mode démonstration ouvre une mire en direct et des films libres : tu découvres l'app tout de suite.</p>
+      </article>
+    </div>
+    <div class="sources">
+      <span>Xtream Codes</span><span>Playlist M3U</span><span>Guide XMLTV</span><span>HLS</span><span>MPEG-TS</span><span>MP4 · MKV</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── Téléphones et tablettes ─────────────── -->
+<section class="section pocket">
+  <div class="wrap pocket-in">
+    <div class="pocket-text">
+      <p class="eyebrow">iPhone · iPad · Android</p>
+      <h2>Et dans ta poche.</h2>
+      <p class="lede">La même app sur téléphone et tablette : navigation à une main, fiches détaillées, lecteur plein écran
+        et mode démonstration pour essayer tout de suite.</p>
+    </div>
+    <div class="phones" aria-hidden="true">
+      <img class="phone p1" src="assets/img/iphone-1-bienvenue.webp" width="420" height="913" alt="" loading="lazy">
+      <img class="phone p2" src="assets/img/iphone-10-fiche-serie.webp" width="420" height="913" alt="" loading="lazy">
+      <img class="phone p3" src="assets/img/iphone-9-fiche-film.webp" width="420" height="913" alt="" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── Téléchargement ─────────────── -->
+<section class="section downloads" id="telecharger">
+  <div class="wrap">
+    <header class="head">
+      <p class="eyebrow">Télécharger</p>
+      <h2>Une app. Tous tes écrans.</h2>
+      <p class="lede">Gratuit. Il te faut ton propre abonnement IPTV (compte Xtream ou playlist M3U), ou le mode démonstration pour essayer.</p>
+    </header>
+
+    <div class="grid platforms">
+      <article class="plat">
+        <div class="plat-top">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12a4 4 0 0 1 4 4v2a3 3 0 0 1-5.4 1.8L15 14H9l-1.6 1.8A3 3 0 0 1 2 14v-2a4 4 0 0 1 4-4z"/><path d="M7 11v2M6 12h2"/></svg>
+          <span class="state ok">Disponible</span>
+        </div>
+        <h3>Xbox</h3>
+        <p>Xbox Series X|S et Xbox One. L'app s'appelle <b>FluxTV Player</b> sur le Microsoft Store.</p>
+        <a class="btn btn-store" href="https://apps.microsoft.com/detail/9P4NX39QHPW1" rel="noopener" data-compte="xbox">Obtenir sur le Microsoft Store</a>
+        <p class="small">Mises à jour automatiques par le Store.</p>
+      </article>
+
+      <article class="plat">
+        <div class="plat-top">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+          <span class="state ok">Disponible</span>
+        </div>
+        <h3>PC Windows</h3>
+        <p>Windows 10 et 11. La même app que sur Xbox, à la souris, au clavier ou à la manette.</p>
+        <a class="btn btn-store" href="https://apps.microsoft.com/detail/9P4NX39QHPW1" rel="noopener" data-compte="windows">Obtenir sur le Microsoft Store</a>
+        <p class="small">Signée par Microsoft, sans avertissement de sécurité.</p>
+      </article>
+
+      <article class="plat">
+        <div class="plat-top">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M7 21h10"/><rect x="9" y="17" width="6" height="2" rx=".5"/></svg>
+          <span class="state soon">Bientôt sur Google Play</span>
+        </div>
+        <h3>Android TV · Fire TV</h3>
+        <p>Google TV, Android TV, Fire TV, Xiaomi TV Box, Chromecast, Shield, téléphones et tablettes Android 7.1+. Films et épisodes à télécharger pour les regarder hors ligne.</p>
+        <a class="btn" href="fluxtv.apk" download data-compte="android">Télécharger l'APK <small>8.1.0 · 3 Mo</small></a>
+        <details class="how">
+          <summary>Installer sur une box ou une Fire TV</summary>
+          <ol>
+            <li>Installe l'appli <b>Downloader</b> (Appstore Amazon ou Google Play).</li>
+            <li>Autorise-la à installer des applis : Paramètres › Ma Fire TV › Options pour les développeurs › Applis inconnues (Google TV : Paramètres › Système › À propos, 7 clics sur « Build » puis Sources inconnues).</li>
+            <li>Dans Downloader, saisis l'adresse&nbsp;:
+              <code class="copy" data-copy="mkzrt22.github.io/apk">mkzrt22.github.io/apk</code></li>
+            <li>Installe, puis ouvre FluxTV. Les mises à jour suivantes arrivent toutes seules.</li>
+          </ol>
+          <p class="small">Si l'adresse courte ne passe pas, l'adresse complète marche aussi : mkzrt22.github.io/FluxTV-iOS/fluxtv.apk. Téléphone ou tablette : ouvre ce lien dans le navigateur et autorise l'installation. Les Fire TV sous Vega OS (Fire TV Stick 4K Select, Fire TV Stick HD 2026) n'installent pas d'applis Android.</p>
+        </details>
+      </article>
+
+      <article class="plat">
+        <div class="plat-top">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10.5 18.5h3"/></svg>
+          <span class="state soon">Bientôt sur l'App Store</span>
+        </div>
+        <h3>iPhone · iPad · Apple TV</h3>
+        <p>En attendant l'App Store, l'app s'installe depuis un ordinateur avec ton identifiant Apple.</p>
+        <div class="btn-row">
+          <a class="btn" href="fluxtv.ipa" download data-compte="iphone">IPA iPhone · iPad <small>1.2</small></a>
+          <a class="btn btn-ghost" href="fluxtv-appletv.ipa" download data-compte="appletv">IPA Apple TV <small>1.2</small></a>
+        </div>
+        <details class="how">
+          <summary>Installer avec Sideloadly</summary>
+          <ol>
+            <li>Sur un PC (avec iTunes) ou un Mac, installe <b>Sideloadly</b> (sideloadly.io).</li>
+            <li>Branche ton iPhone ou ton iPad, glisse le fichier .ipa dans Sideloadly, saisis ton identifiant Apple et lance l'installation.</li>
+            <li>Sur l'appareil : Réglages › Général › VPN et gestion de l'appareil › fais confiance à ton identifiant ; sur iOS 16 et plus, active aussi Réglages › Confidentialité et sécurité › Mode développeur.</li>
+          </ol>
+          <p class="small">Avec un identifiant Apple gratuit, l'app doit être réinstallée tous les 7 jours (Sideloadly peut le faire automatiquement).</p>
+        </details>
+      </article>
+    </div>
+
+    <div class="share">
+      <p>Tu connais quelqu'un à qui FluxTV rendrait service ?</p>
+      <button class="btn btn-ghost" type="button" data-partage><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg><span>Partager FluxTV</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── FluxTV Home (catégorie à part) ─────────────── -->
+<section class="section home" id="fluxtv-home">
+  <div class="wrap">
+    <header class="head">
+      <p class="eyebrow eyebrow-home">FluxTV Home</p>
+      <h2>Ta box allume directement tes chaînes.</h2>
+      <p class="lede">FluxTV Home remplace l'écran d'accueil d'une box Android TV, Google TV ou Fire TV. À l'allumage
+        et à chaque appui sur la touche Accueil, tu arrives sur ta télé, pas sur des pubs.</p>
+      <p class="home-new">Nouveau en 8.1 : un accueil entièrement repensé.</p>
+    </header>
+
+    <div class="home-show">
+      <figure class="home-shot a">
+        <img src="assets/img/home-bandeau.webp" width="1000" height="562" alt="FluxTV Home : la chaîne en direct en plein écran derrière l'accueil, avec son programme et la rangée Chaînes" loading="lazy">
+      </figure>
+      <figure class="home-shot b">
+        <img src="assets/img/home-rangees.webp" width="1000" height="562" alt="FluxTV Home : un film avec son année, sa durée, son genre et son résumé, au-dessus de la rangée Films" loading="lazy">
+      </figure>
+    </div>
+
+    <div class="grid home-points">
+      <div><b>La télé en fond</b><p>La chaîne choisie passe en plein écran derrière l'accueil, sans le son. Elle s'arrête dès qu'une vidéo démarre : une seule connexion utilisée.</p></div>
+      <div><b>Films et séries</b><p>Image, résumé, année, durée et note de chaque film. «&nbsp;Continuer à regarder&nbsp;» reprend là où tu t'étais arrêté.</p></div>
+      <div><b>Tout sous la main</b><p>Tes applis, la recherche, les réglages de la box, et le numéro de chaîne tapé directement à la télécommande.</p></div>
+      <div><b>Mode ambiance</b><p>Après 4&nbsp;minutes sans toucher la télécommande, les images de tes films défilent avec une grande horloge.</p></div>
+    </div>
+
+    <div class="home-install">
+      <ol class="steps">
+        <li><b>Installe FluxTV</b><span>FluxTV Home est inclus dans l'app Android (APK ci-dessous).</span></li>
+        <li><b>Active-le</b><span>Dans FluxTV : Réglages › Écran d'accueil › Utiliser FluxTV comme écran d'accueil, puis suis les indications propres à ton appareil.</span></li>
+        <li><b>Fire TV et Google TV</b><span>Amazon et Google imposent leur accueil : installe l'assistant FluxTV Home (bouton dans FluxTV, ou ci-dessous), puis active-le dans Paramètres › Accessibilité.</span></li>
+      </ol>
+      <div class="home-dl">
+        <a class="btn" href="fluxtv.apk" download data-compte="android">FluxTV avec FluxTV Home <small>8.1.0</small></a>
+        <a class="btn btn-home" href="fluxtv-home.apk" download data-compte="assistant">Assistant FluxTV Home <small>1.3 · 260 Ko</small></a>
+        <p class="small">L'assistant ne lit rien à l'écran : il est prévenu uniquement quand l'accueil d'Amazon ou de Google s'affiche, et ouvre FluxTV Home à la place. Le bouton ⚙ de FluxTV Home › «&nbsp;Accueil Fire TV&nbsp;» ou «&nbsp;Accueil Google TV&nbsp;» y ramène pendant 5&nbsp;minutes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── Soutenir ─────────────── -->
+<section class="section support" id="soutenir">
+  <div class="wrap narrow">
+    <header class="head">
+      <p class="eyebrow">Soutenir</p>
+      <h2>Gratuit, sans pub. Grâce&nbsp;à&nbsp;toi.</h2>
+      <p class="lede">FluxTV est fait par un développeur indépendant, sur son temps libre. Si l'app te rend service, un petit don aide à payer les comptes développeur des stores et les prochaines nouveautés.</p>
+    </header>
+    <div class="support-row">
+      <a class="btn" href="https://mkzrt22.github.io/soutenir" target="_blank" rel="noopener" data-compte="soutien"><svg viewBox="0 0 24 24" aria-hidden="true" style="fill:currentColor;stroke:none"><path d="M12 21.2l-1.3-1.2C5.6 15.4 2.3 12.4 2.3 8.6 2.3 5.6 4.6 3.3 7.6 3.3c1.7 0 3.3.8 4.4 2 1.1-1.2 2.7-2 4.4-2 3 0 5.3 2.3 5.3 5.3 0 3.8-3.3 6.8-8.4 11.4L12 21.2z"/></svg><span>Soutenir FluxTV</span></a>
+      <p class="small">Don libre, sans compte. Il ne débloque rien : FluxTV reste entièrement gratuit pour tout le monde.</p>
+    </div>
+    <p class="support-free">Pas de budget ? <a href="#telecharger" data-partage>Partage FluxTV</a> ou <a href="https://apps.microsoft.com/detail/9P4NX39QHPW1" rel="noopener">laisse une note sur le Microsoft Store</a> : ça aide tout autant.</p>
+  </div>
+</section>
+
+<!-- ─────────────── Questions ─────────────── -->
+<section class="section" id="questions">
+  <div class="wrap narrow">
+    <header class="head">
+      <p class="eyebrow">Questions</p>
+      <h2>Avant de te lancer.</h2>
+    </header>
+    <div class="faq">
+      <details><summary>Faut-il un abonnement IPTV ?</summary>
+        <p>Oui. FluxTV lit un compte Xtream Codes ou une playlist M3U fournie par ton fournisseur. Sans source, le mode démonstration permet de découvrir l'app avec une mire en direct et des films libres.</p></details>
+      <details><summary>En quelles langues est l'app ?</summary>
+        <p>En français et en anglais, sur tous les appareils. La langue est demandée au premier lancement (celle de ton appareil est proposée) et se change à tout moment dans les réglages.</p></details>
+      <details><summary>FluxTV fournit-il des chaînes ?</summary>
+        <p>Non. FluxTV est un lecteur : il ne fournit, n'héberge et ne vend aucune chaîne, aucun film ni aucun abonnement. Utilise-le uniquement avec des sources auxquelles tu as légalement accès.</p></details>
+      <details><summary>Pourquoi « FluxTV Player » sur le Microsoft Store ?</summary>
+        <p>Le nom « FluxTV » était déjà pris sur le Store. C'est la même app, avec la même interface et le même mode démonstration.</p></details>
+      <details><summary>Où vont mes identifiants ?</summary>
+        <p>Nulle part ailleurs que chez ton fournisseur. Ils sont enregistrés chiffrés sur ton appareil et envoyés uniquement à ton serveur. FluxTV ne collecte aucune donnée.</p></details>
+      <details><summary>Comment se font les mises à jour ?</summary>
+        <p>Xbox et PC : par le Microsoft Store. Android : au lancement, une petite fenêtre te propose la nouvelle version, qui s'installe en un clic (sur Google TV, FluxTV peut aussi se mettre à jour tout seul en arrière-plan). iPhone : télécharge la nouvelle IPA et réinstalle-la avec Sideloadly.</p></details>
+      <details><summary>Mes favoris survivent à un changement de fournisseur ?</summary>
+        <p>Oui : favoris, reprises et historique sont liés aux chaînes et aux films, pas à l'adresse du serveur.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── Vie privée ─────────────── -->
+<section class="section privacy" id="confidentialite">
+  <div class="wrap narrow">
+    <header class="head">
+      <p class="eyebrow">Vie privée</p>
+      <h2>Politique de confidentialité</h2>
+      <p class="small">FluxTV et FluxTV Player, sur tous les appareils — en vigueur le 26 octobre 2026.</p>
+    </header>
+    <div class="policy">
+      <h3>En bref</h3>
+      <p>FluxTV ne collecte aucune donnée personnelle. Pas de compte FluxTV, pas de publicité, pas de mesure d'audience, pas de pistage.</p>
+      <h3>Tes identifiants</h3>
+      <p>L'adresse de ton serveur, ton nom d'utilisateur et ton mot de passe (ou l'adresse de ta playlist) sont enregistrés uniquement sur ton appareil, chiffrés par le système (coffre d'identifiants de Windows, trousseau d'Apple, stockage chiffré d'Android). Ils ne sont envoyés qu'au serveur que tu as choisi, et ne nous sont jamais transmis.</p>
+      <h3>Favoris et reprises</h3>
+      <p>Favoris, historique et positions de reprise restent sur ton appareil. Ils sont supprimés si tu désinstalles l'app.</p>
+      <h3>Connexions réseau</h3>
+      <p>FluxTV se connecte uniquement aux serveurs de ta source (listes, guide des programmes, images, vidéos), y compris sur ton réseau local. Le mode démonstration utilise des flux de test publics (Unified Streaming, Mux) et des films libres de la Blender Foundation. La version Android vérifie ce site pour ses mises à jour.</p>
+      <h3>Contenus</h3>
+      <p>FluxTV est un lecteur multimédia : il ne fournit, n'héberge et ne vend aucun contenu. Tu es responsable des sources que tu ajoutes.</p>
+      <h3>Ce site</h3>
+      <p>Le site compte, de façon anonyme, les visites et les clics sur les boutons de téléchargement et de soutien, avec le service gratuit Abacus (abacus.jasoncameron.dev). Chaque visite ajoute 1 à un compteur et à celui de la langue de la page, ainsi qu'au compteur du réseau d'où vient le lien s'il en indique un (par exemple « ?s=reddit »). Ni cookie, ni identifiant, ni profil : seul un repère reste dans ton navigateur pour ne pas compter deux fois la même visite ou le même téléchargement, ainsi que ton choix de langue. Comme tout site web, ce service et GitHub Pages voient l'adresse IP de la connexion. Les dons se font sur la plateforme de dons, qui a sa propre politique de confidentialité. Les apps, elles, ne comptent rien.</p>
+      <h3>Enfants</h3>
+      <p>L'app ne collecte aucune donnée, y compris auprès des enfants. Les catégories pour adultes sont masquées par défaut.</p>
+      <h3>Contact</h3>
+      <p>Pour toute question : l'adresse de contact indiquée sur la fiche Microsoft Store de FluxTV Player.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p class="warn"><b>FluxTV est un lecteur.</b> Il ne fournit aucune chaîne, aucun film et aucun abonnement. Il lit les sources que tu lui donnes : utilise-le uniquement avec des flux auxquels tu as légalement accès.</p>
+    <p class="small">Démonstration : Big Buck Bunny, Tears of Steel, Elephants Dream, Sintel © Blender Foundation (blender.org), licence Creative Commons Attribution. Polices Sora et Manrope : SIL Open Font License 1.1. Xbox, Windows, Android, Fire TV, iPhone et Apple TV sont des marques de leurs propriétaires respectifs.</p>
+    <p class="made"><a href="confidentialite/">Confidentialité</a> · <a href="#telecharger" data-partage>Partager le site</a> · <a href="#soutenir">Soutenir</a> · <a href="en/?lang=en" hreflang="en" lang="en" data-lang="en">English</a> · Made by Kevin G</p>
+  </div>
+</footer>
+
+<!-- Emblème et dégradés partagés -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366F1"/><stop offset="1" stop-color="#A21CAF"/></linearGradient>
+    <linearGradient id="lh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <symbol id="emblem" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="13" fill="url(#lg)"/><rect width="48" height="48" rx="13" fill="url(#lh)"/>
+      <path d="M11,15.2C11,13.6 12.7,12.7 14,13.5L26.6,22.2C27.7,23 27.7,24.9 26.6,25.7L14,34.5C12.7,35.3 11,34.4 11,32.8Z" fill="#fff"/>
+      <path d="M30.5,18.6A7.6,7.6 0 0 1 30.5,29.4" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="2.7" stroke-linecap="round"/>
+      <path d="M34.8,14.6A13,13 0 0 1 34.8,33.4" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2.7" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+<script src="assets/site.js" defer></script>
+</body>
+</html>

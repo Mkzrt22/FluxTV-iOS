@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>FluxTV — Statistiques</title>
+<meta name="theme-color" content="#080818">
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  .stats { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .stats li { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 18px 22px; border-radius: 16px; background: var(--card); box-shadow: inset 0 0 0 1px var(--stroke); }
+  .stats li i { position: absolute; inset: 0 auto 0 0; width: 0; background: linear-gradient(90deg, rgba(99,102,241,.28), rgba(162,28,175,.12)); transition: width .8s var(--ease); }
+  .stats span, .stats b { position: relative; }
+  .stats span { font: 600 17px Sora; }
+  .stats small { display: block; font: 400 13px Manrope; color: var(--text-faint); }
+  .stats b { font: 700 24px Sora; font-variant-numeric: tabular-nums; }
+  .big { display: flex; align-items: baseline; gap: 14px; margin: 6px 0 30px; }
+  .big b { font: 700 clamp(56px, 12vw, 96px)/1 Sora; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .stats li[hidden] { display: none; }
+  h2.second { margin-top: 64px; }
+</style>
+</head>
+<body>
+<header class="top solid">
+  <a class="brand" href="../"><img class="brand-mark" src="../assets/img/favicon.png" alt=""><span>FluxTV</span></a>
+</header>
+<main class="section" style="padding-top:120px">
+  <div class="wrap narrow">
+    <p class="eyebrow"><span class="live-dot" style="display:inline-block;margin-right:10px;vertical-align:middle"></span>En direct</p>
+    <h2>Téléchargements</h2>
+    <div class="big"><b id="total">—</b><span class="small">toutes plateformes confondues</span></div>
+    <ul class="stats" id="liste">
+      <li data-k="android"><i></i><span>Android<small>TV, Fire TV, téléphones (APK)</small></span><b>—</b></li>
+      <li data-k="iphone"><i></i><span>iPhone · iPad<small>IPA</small></span><b>—</b></li>
+      <li data-k="appletv"><i></i><span>Apple TV<small>IPA</small></span><b>—</b></li>
+      <li data-k="xbox"><i></i><span>Xbox<small>clics vers le Microsoft Store</small></span><b>—</b></li>
+      <li data-k="windows"><i></i><span>PC Windows<small>clics vers le Microsoft Store</small></span><b>—</b></li>
+      <li data-k="assistant"><i></i><span>Assistant FluxTV Home<small>hors total</small></span><b>—</b></li>
+      <li data-k="soutien"><i></i><span>Bouton Soutenir<small>clics vers la page de dons, hors total</small></span><b>—</b></li>
+      <li data-k="don-kofi"><i></i><span>Dons : Ko-fi<small>clics sur la page de dons</small></span><b>—</b></li>
+      <li data-k="don-crypto"><i></i><span>Dons : crypto<small>adresse copiée sur la page de dons</small></span><b>—</b></li>
+    </ul>
+    <p class="small" style="margin-top:22px">Clics sur les boutons de téléchargement du site, une fois par navigateur. Les installations faites directement depuis le Microsoft Store ou par Downloader (adresse saisie à la main) ne passent pas par ces boutons.</p>
+
+    <h2 class="second">Visites</h2>
+    <div class="big"><b id="visites">—</b><span class="small">visites du site</span></div>
+    <ul class="stats" id="sources">
+      <li data-k="src-partage" hidden><i></i><span>Bouton Partager<small>bouche-à-oreille</small></span><b>—</b></li>
+      <li data-k="src-whatsapp" hidden><i></i><span>WhatsApp</span><b>—</b></li>
+      <li data-k="src-facebook" hidden><i></i><span>Facebook</span><b>—</b></li>
+      <li data-k="src-instagram" hidden><i></i><span>Instagram</span><b>—</b></li>
+      <li data-k="src-tiktok" hidden><i></i><span>TikTok</span><b>—</b></li>
+      <li data-k="src-youtube" hidden><i></i><span>YouTube</span><b>—</b></li>
+      <li data-k="src-reddit" hidden><i></i><span>Reddit</span><b>—</b></li>
+      <li data-k="src-x" hidden><i></i><span>X (Twitter)</span><b>—</b></li>
+      <li data-k="src-discord" hidden><i></i><span>Discord</span><b>—</b></li>
+      <li data-k="src-snapchat" hidden><i></i><span>Snapchat</span><b>—</b></li>
+      <li data-k="src-forum" hidden><i></i><span>Forums</span><b>—</b></li>
+      <li data-k="src-presse" hidden><i></i><span>Presse, YouTubeurs</span><b>—</b></li>
+      <li data-k="src-store" hidden><i></i><span>Microsoft Store<small>lien de la fiche</small></span><b>—</b></li>
+      <li data-k="src-qr" hidden><i></i><span>QR code</span><b>—</b></li>
+      <li data-k="autres"><i></i><span>Autres<small>Google, lien direct, lien sans « ?s= »</small></span><b>—</b></li>
+    </ul>
+    <ul class="stats" id="langues" style="margin-top:18px">
+      <li data-k="lang-fr"><i></i><span>Site en français<small>depuis le 27 octobre 2026</small></span><b>—</b></li>
+      <li data-k="lang-en"><i></i><span>Site en anglais<small>depuis le 27 octobre 2026</small></span><b>—</b></li>
+    </ul>
+    <p class="small" style="margin-top:22px">Une visite = un onglet ouvert sur le site (les robots ne sont pas comptés). Le réseau est reconnu grâce à la fin des liens que tu partages, par exemple <code>?s=tiktok</code>. Actualisé toutes les 30 secondes.</p>
+  </div>
+</main>
+<script>
+(() => {
+  const API = 'https://abacus.jasoncameron.dev', NS = 'fluxtv-mkzrt22';
+  const nf = new Intl.NumberFormat('fr-FR'), fmt = { format: (v) => nf.format(v).replace(/\u202f/g, '\u00a0') };
+  // Clé absente (jamais visitée) : 0
+  const get = (k) => fetch(`${API}/get/${NS}/${k}`).then((r) => r.json()).then((d) => (typeof d.value === 'number' && d.value >= 0 ? d.value : 0)).catch(() => null);
+  function bars(items, vals) {
+    const max = Math.max(1, ...vals.filter((v) => v !== null));
+    items.forEach((li, i) => {
+      if (vals[i] === null) return;
+      li.querySelector('b').textContent = fmt.format(vals[i]);
+      li.querySelector('i').style.width = (vals[i] / max * 100) + '%';
+    });
+  }
+  async function refresh() {
+    const dl = [...document.querySelectorAll('#liste li')], lg = [...document.querySelectorAll('#langues li')];
+    const src = [...document.querySelectorAll('#sources li[data-k^="src-"]')], autres = document.querySelector('#sources li[data-k="autres"]');
+    const [total, visites, ...vals] = await Promise.all([get('total'), get('visites'), ...dl.map((li) => get(li.dataset.k)), ...src.map((li) => get(li.dataset.k)), ...lg.map((li) => get(li.dataset.k))]);
+    if (total !== null) document.getElementById('total').textContent = fmt.format(total);
+    if (visites !== null) document.getElementById('visites').textContent = fmt.format(visites);
+    bars(dl, vals.slice(0, dl.length));
+    const sv = vals.slice(dl.length, dl.length + src.length);
+    bars(lg, vals.slice(dl.length + src.length));
+    src.forEach((li, i) => { li.hidden = !sv[i]; });
+    const suivies = sv.reduce((a, v) => a + (v || 0), 0);
+    // Les plus gros réseaux en premier
+    src.map((li, i) => [li, sv[i] || 0]).sort((a, b) => b[1] - a[1]).forEach(([li]) => li.parentNode.insertBefore(li, autres));
+    bars([...src, autres], [...sv, visites === null ? null : Math.max(0, visites - suivies)]);
+  }
+  refresh();
+  setInterval(() => { if (!document.hidden) refresh(); }, 30000);
+})();
+</script>
+</body>
+</html>

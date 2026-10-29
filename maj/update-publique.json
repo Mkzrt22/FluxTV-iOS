@@ -1,0 +1,9 @@
+{
+  "versionCode": 43,
+  "versionName": "8.1.0",
+  "apkUrl": "https://mkzrt22.github.io/FluxTV-iOS/fluxtv.apk",
+  "sha256": "b732a81d53ce03212873af49c617ad9da7da6b4e856a461ddc2cc440cabfeca8",
+  "notes": "FluxTV 8.1 : FluxTV Home entièrement repensé. La télé en fond derrière l'accueil, les films et séries avec image, résumé et durée, tes applis à portée de télécommande et un mode ambiance.",
+  "notes_en": "FluxTV 8.1: a completely redesigned FluxTV Home. Live TV behind the home screen, movies and series with backdrop, synopsis and running time, your apps one click away, and an ambient mode.",
+  "force": false
+}
