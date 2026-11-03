@@ -89,7 +89,16 @@
                     </Rectangle.Fill>
                 </Rectangle>
                 <Rectangle x:Name="RailShade" Width="340" HorizontalAlignment="Left" Fill="{StaticResource RailShade}" Opacity="0" IsHitTestVisible="False" />
-                <Image Source="ms-appx:///Assets/BrandMark.png" Width="30" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="49,27,0,0" />
+                <Grid Width="30" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="49,27,0,0">
+                    <Image Source="ms-appx:///Assets/BrandMark.png" />
+                    <!-- Badge Soutien (Pack Soutien) : petit cœur doré au coin du logo -->
+                    <Border x:Name="SupporterBadge" Width="15" Height="15" CornerRadius="8" Background="{StaticResource GoldBrush}"
+                            BorderBrush="#04040D" BorderThickness="1.5" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                            Margin="0,0,-6,-6" Visibility="Collapsed">
+                        <TextBlock Text="&#xEB52;" FontFamily="{StaticResource FontIcons}" FontSize="7" Foreground="#04040D"
+                                   IsTextScaleFactorEnabled="False" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                </Grid>
                 <StackPanel x:Name="RailItems" Margin="40,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">
                     <StackPanel.RenderTransform>
                         <TranslateTransform />

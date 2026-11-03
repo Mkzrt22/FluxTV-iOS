@@ -30,5 +30,8 @@ No personal data is collected. No analytics, no advertising, no account. The ser
 CONTENT
 Adult categories are hidden by default (Settings › "Hide adult content").
 
+IN-APP PURCHASE (OPTIONAL)
+One optional durable add-on, "Supporter Pack" (product ID "packsoutien"). It unlocks a gold color theme and a small supporter badge next to the logo; every feature of the app stays free. To see it: Settings (gear in the left menu) › "Support FluxTV" › the "Support FluxTV" button opens the Microsoft Store purchase dialog. Once purchased, a "Gold theme" switch appears in the same card.
+
 THIRD-PARTY COMPONENTS
 Win2D (MIT license) for the launch animation. Fonts Sora and Manrope (SIL Open Font License 1.1). Credits are shown in Settings › About › "Credits and licenses".

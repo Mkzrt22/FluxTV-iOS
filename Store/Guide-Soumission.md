@@ -94,10 +94,20 @@ VOS DONNÉES RESTENT CHEZ VOUS
 • Aucune collecte de données, aucun pistage, aucune publicité
 • Vos identifiants restent chiffrés sur votre console
 
+SOUTENIR FLUXTV (FACULTATIF)
+• Toutes les fonctions sont gratuites
+• Achat intégré facultatif : le Pack Soutien (1,99 €, payé une fois) aide au développement et débloque en remerciement le thème Or et le badge Soutien
+
 IMPORTANT : FluxTV Player est un lecteur multimédia. Il ne fournit, n'héberge et ne vend aucun contenu, aucune chaîne ni aucun abonnement. Vous devez disposer de vos propres sources et des droits nécessaires pour les regarder.
 ```
 
 ### Nouveautés de cette version
+
+Version 1.2 :
+
+```
+Nouveau : le Pack Soutien, facultatif, dans Réglages › Soutenir FluxTV. En remerciement, il débloque le thème Or et le badge Soutien. Toutes les fonctions restent gratuites.
+```
 
 Version 1.1 (si la 1.0 a déjà été publiée) :
 
@@ -198,10 +208,20 @@ YOUR DATA STAYS WITH YOU
 • No data collection, no tracking, no ads
 • Your credentials stay encrypted on your console
 
+SUPPORT FLUXTV (OPTIONAL)
+• Every feature is free
+• Optional in-app purchase: the Supporter Pack (one-time purchase) supports development and unlocks the Gold theme and the Supporter badge as a thank-you
+
 IMPORTANT: FluxTV Player is a media player. It does not provide, host or sell any content, channels or subscriptions. You must have your own sources and the rights needed to watch them.
 ```
 
 ### What's new in this version
+
+Version 1.2:
+
+```
+New: the optional Supporter Pack, in Settings › Support FluxTV. As a thank-you, it unlocks the Gold theme and the Supporter badge. Every feature stays free.
+```
 
 Version 1.1 (if 1.0 was already published):
 
@@ -278,6 +298,31 @@ Chaque nouvelle version doit avoir un numéro plus grand (1.0.1.0, 1.1.0.0…) :
 `Package.appxmanifest`. Le serveur de compilation produit à chaque fois un nouveau
 `FluxTV-Player-Store.msixupload` ; dans l'Espace partenaires, « Mettre à jour » la soumission puis
 remplacer le paquet.
+
+## Extension « Pack Soutien » (version 1.2)
+
+Achat intégré facultatif, **payé une fois** : il débloque en remerciement le thème Or et le badge
+Soutien ; toutes les fonctions restent gratuites. La règle 10.8.2 du Store n'autorise pas les dons
+purs (qui ne donnent rien en échange) par une extension : c'est pourquoi le pack débloque ce bonus.
+
+1. Dans FluxTV Player › **Extensions** (Add-ons) › **Créer une extension** :
+   type **Durable**, identifiant du produit **`packsoutien`** (exactement, c'est celui de l'app).
+2. **Propriétés** : durée de vie « Pour toujours » ; type de contenu « Téléchargement de logiciel
+   électronique » (Electronic software download).
+3. **Tarification et disponibilité** : 1,99 € ; disponible.
+4. **Classification par âge** : même questionnaire que l'app.
+5. **Fiches du Store** : « Ajouter/supprimer des langues » › Français (France) et Anglais (États-Unis).
+   - Français — titre : `Pack Soutien` ; description :
+     `Soutiens le développement de FluxTV et débloque en remerciement le thème Or et le badge Soutien. Toutes les fonctions de l'app restent gratuites.`
+   - Anglais — titre : `Supporter Pack` ; description :
+     `Support FluxTV's development and unlock the Gold theme and the Supporter badge as a thank-you. Every feature of the app stays free.`
+   - Icône (les deux langues) : `Images/PackSoutien-300x300.png`.
+6. **Soumettre au Store** (certification en général en une heure environ).
+
+Ensuite seulement, la mise à jour de l'app : nouvelle soumission de FluxTV Player avec le paquet 1.2,
+description et nouveautés ci-dessus. Si le questionnaire de classification demande si l'app propose
+des achats, réponds **oui**. L'ancienne extension « soutien1 » (consommable) reste non publiée :
+supprime simplement son brouillon de soumission.
 
 ## Ta copie personnelle
 

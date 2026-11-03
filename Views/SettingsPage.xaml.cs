@@ -18,6 +18,7 @@ namespace FluxTV.Views
         bool loading;
         bool confirmChange;
         bool focusLanguage;
+        bool buying;
 
         public SettingsPage()
         {
@@ -34,7 +35,10 @@ namespace FluxTV.Views
                 confirmChange = false;
                 ConfirmText.Visibility = Visibility.Collapsed;
                 Fill();
+                Support.Changed += FillSupport;
+                FillSupport();
             };
+            Unloaded += (s, e) => Support.Changed -= FillSupport;
             ChangeButton.LostFocus += (s, e) =>
             {
                 confirmChange = false;
@@ -84,6 +88,69 @@ namespace FluxTV.Views
         {
             CreditsButton.Focus(FocusState.Keyboard);
             OnCredits(null, null);
+        }
+
+        /// <summary>Captures automatiques : carte « Soutenir FluxTV » au milieu de l'écran.</summary>
+        public void ShowSupportForTest()
+        {
+            FillSupport();
+            if (Support.Owned) GoldSwitch.Focus(FocusState.Keyboard);
+            else SupportButton.Focus(FocusState.Keyboard);
+            SupportCard.StartBringIntoView(new BringIntoViewOptions { VerticalAlignmentRatio = 0.5, AnimationDesired = false });
+        }
+
+        // ───────────────────────────── Pack Soutien ─────────────────────────────
+
+        /// <summary>Carte « Soutenir FluxTV » : proposition du Pack Soutien, ou remerciement et choix du thème Or.</summary>
+        async void FillSupport()
+        {
+            var owned = Support.Owned;
+            SupportTitle.Text = owned ? Tr.T("Merci pour ton soutien !", "Thank you for your support!") : Tr.T("Pack Soutien", "Supporter Pack");
+            SupportText.Text = owned
+                ? Tr.T("Le thème Or et le badge Soutien sont à toi, pour toujours, sur toutes tes consoles et tous tes PC.",
+                    "The Gold theme and the Supporter badge are yours, forever, on all your consoles and PCs.")
+                : Tr.T("FluxTV est gratuit et le restera. Si l'app te plaît, le Pack Soutien aide à la faire vivre. En remerciement, il débloque le thème Or et le badge Soutien.",
+                    "FluxTV is free and will stay free. If you enjoy the app, the Supporter Pack helps keep it going. As a thank-you, it unlocks the Gold theme and the Supporter badge.");
+            SupportButton.Visibility = owned ? Visibility.Collapsed : Visibility.Visible;
+            GoldSwitch.Visibility = owned ? Visibility.Visible : Visibility.Collapsed;
+            loading = true;
+            GoldSwitch.IsOn = Support.GoldTheme;
+            loading = false;
+            if (owned) return;
+            SupportLabel.Text = Tr.T("Soutenir FluxTV", "Support FluxTV");
+            // Prix dans la monnaie du compte, dès que le Store répond
+            var price = await Support.PriceAsync();
+            if (price != null && !Support.Owned) SupportLabel.Text = Tr.T("Soutenir FluxTV · ", "Support FluxTV · ") + price;
+        }
+
+        async void OnSupport(object sender, RoutedEventArgs e)
+        {
+            if (buying) return;
+            buying = true;
+            var result = await Support.BuyAsync();
+            buying = false;
+            switch (result)
+            {
+                case SupportResult.Done:
+                    app.Toast(Tr.T("Merci ! Le thème Or est activé.", "Thank you! The Gold theme is on."));
+                    GoldSwitch.Focus(FocusState.Keyboard);
+                    break;
+                case SupportResult.Network:
+                    app.Toast(Tr.T("Pas de connexion au Microsoft Store. Réessaie dans un instant.", "Can't reach the Microsoft Store. Try again in a moment."));
+                    break;
+                case SupportResult.Unavailable:
+                    app.Toast(Tr.T("Le Pack Soutien n'est pas disponible pour le moment.", "The Supporter Pack isn't available right now."));
+                    break;
+                case SupportResult.Error:
+                    app.Toast(Tr.T("L'achat n'a pas abouti. Réessaie plus tard.", "The purchase didn't go through. Try again later."));
+                    break;
+            }
+        }
+
+        void OnGoldToggled(object sender, RoutedEventArgs e)
+        {
+            if (loading) return;
+            Support.GoldTheme = GoldSwitch.IsOn;
         }
 
         void Fill()

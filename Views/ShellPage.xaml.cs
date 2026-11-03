@@ -59,8 +59,13 @@ namespace FluxTV.Views
             FocusManager.GotFocus += OnGlobalGotFocus;
             FocusManager.GettingFocus += OnGlobalGettingFocus;
             SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
+            Support.Changed += UpdateBadge;
             UpdateRail();
+            UpdateBadge();
         }
+
+        /// <summary>Badge Soutien au coin du logo, pour qui a pris le Pack Soutien.</summary>
+        void UpdateBadge() => SupporterBadge.Visibility = Support.Owned ? Visibility.Visible : Visibility.Collapsed;
 
         /// <summary>
         /// Animation de lancement pendant que les chaînes se chargent, puis accueil si une source est connue,
@@ -91,6 +96,7 @@ namespace FluxTV.Views
             FocusManager.GotFocus -= OnGlobalGotFocus;
             FocusManager.GettingFocus -= OnGlobalGettingFocus;
             SystemNavigationManager.GetForCurrentView().BackRequested -= OnBackRequested;
+            Support.Changed -= UpdateBadge;
         }
 
         // ───────────────────────────── Intro ─────────────────────────────
@@ -487,6 +493,17 @@ namespace FluxTV.Views
                     Navigate("settings");
                     await Task.Delay(800);
                     (ContentFrame.Content as SettingsPage)?.ShowCreditsForTest();
+                    break;
+                case "soutien":
+                case "soutien-or":
+                    // Pack Soutien sans passer par le Store : proposé (« soutien ») ou acheté, thème Or (« soutien-or »)
+                    Support.UseForTest(screen == "soutien-or", Tr.T("1,99 €", "$1.99"));
+                    Navigate("settings");
+                    await Task.Delay(800);
+                    (ContentFrame.Content as SettingsPage)?.ShowSupportForTest();
+                    break;
+                case "home-or":
+                    Support.UseForTest(true, null);
                     break;
                 case "play-live":
                 case "play-channels":

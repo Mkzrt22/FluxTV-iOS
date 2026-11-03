@@ -32,6 +32,9 @@ namespace FluxTV
                 started = true;
                 // Tout l'écran de la télé : les marges de sécurité sont gérées par les pages
                 ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
+                // Pack Soutien : thème Or dès le premier écran, puis à chaque changement
+                Accent.Apply(Support.GoldActive);
+                Support.Changed += () => Accent.Apply(Support.GoldActive);
                 var args = e.Arguments ?? "";
                 if (args.StartsWith("test:", StringComparison.Ordinal))
                 {
@@ -57,6 +60,8 @@ namespace FluxTV
                     Lang.Apply();
                     NewShell().Start();
                 }
+                // Licence du pack relue en arrière-plan (achat sur une autre console, remboursement)
+                if (!args.StartsWith("test:", StringComparison.Ordinal)) _ = Support.RefreshAsync();
             }
             Window.Current.Activate();
         }

@@ -29,9 +29,11 @@ $ecrans = @(
     @('intro', 4), @('intro-sortie', 0), @('demarrage', 11), @('setup', 6), @('home', 7), @('rail', 7), @('row', 7), @('live', 8), @('movies', 8), @('series', 8),
     @('movie', 8), @('seriesdetail', 8), @('search', 9), @('settings', 7), @('credits', 8), @('play-live', 13), @('play-channels', 13),
     @('play-movie', 13), @('play-options', 13),
+    # Pack Soutien : proposé, puis acheté (thème Or, badge au coin du logo)
+    @('soutien', 8), @('soutien-or', 8), @('home-or', 7),
     @('language', 5), @('intro@en', 4), @('setup@en', 6), @('home@en', 7), @('rail@en', 7), @('live@en', 8), @('movies@en', 8), @('series@en', 8),
     @('movie@en', 8), @('seriesdetail@en', 8), @('search@en', 9), @('settings@en', 7), @('play-channels@en', 13), @('play-movie@en', 13),
-    @('play-options@en', 13),
+    @('play-options@en', 13), @('soutien@en', 8), @('soutien-or@en', 8),
     # En dernier : le changement de langue dans les réglages enregistre l'anglais
     @('switch', 9)
 )

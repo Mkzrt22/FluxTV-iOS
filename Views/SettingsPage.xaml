@@ -149,6 +149,34 @@
                 </StackPanel>
             </Border>
 
+            <!-- Soutien : Pack Soutien du Microsoft Store, facultatif (thème Or et badge en remerciement) -->
+            <TextBlock Text="{ui:T Fr='SOUTENIR FLUXTV', En='SUPPORT FLUXTV'}" Style="{StaticResource EyebrowText}" Margin="0,24,0,0" />
+            <Border x:Name="SupportCard" Style="{StaticResource Card}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="44" Height="44" CornerRadius="22" Background="{StaticResource GoldSoftBrush}" VerticalAlignment="Top">
+                            <TextBlock Text="&#xEB52;" Style="{StaticResource IconText}" FontSize="18" Foreground="{StaticResource GoldBrush}" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+                            <TextBlock x:Name="SupportTitle" Style="{StaticResource SettingTitle}" />
+                            <TextBlock x:Name="SupportText" Style="{StaticResource SettingText}" />
+                        </StackPanel>
+                    </Grid>
+                    <Button x:Name="SupportButton" Style="{StaticResource PrimaryButton}" Margin="0,16,0,0" Click="OnSupport">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xEB52;" Style="{StaticResource IconText}" FontSize="14" Foreground="{StaticResource WhiteBrush}" />
+                            <TextBlock x:Name="SupportLabel" Margin="9,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <ToggleSwitch x:Name="GoldSwitch" Header="{ui:T Fr='Thème Or', En='Gold theme'}" OnContent="{ui:T Fr='Oui', En='On'}" OffContent="{ui:T Fr='Non', En='Off'}"
+                                  Margin="0,14,0,0" Visibility="Collapsed" Toggled="OnGoldToggled" />
+                </StackPanel>
+            </Border>
+
             <!-- À propos -->
             <TextBlock Text="{ui:T Fr='À PROPOS', En='ABOUT'}" Style="{StaticResource EyebrowText}" Margin="0,24,0,0" />
             <Border Style="{StaticResource Card}">
