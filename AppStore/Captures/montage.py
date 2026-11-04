@@ -24,9 +24,20 @@ VIOLET = (155, 77, 235)
 TEXTE = (241, 242, 255)
 TEXTE_DOUX = (166, 171, 210)
 
-TAILLES = {"iphone": (1320, 2868), "ipad": (2064, 2752), "tv": (1920, 1080)}
+# iPhone : « écran moyen » (6,3 pouces, obligatoire depuis l'automne 2026) et « grand écran »
+# (6,9 pouces, facultatif mais évite de devoir fournir la taille 6,5 pouces). Même mise en page.
+TAILLES = {"iphone-moyen": (1206, 2622), "iphone": (1320, 2868), "ipad": (2064, 2752), "tv": (1920, 1080)}
 # Arrondi des coins de l'écran, en part de sa largeur
-RAYON = {"iphone": 0.11, "ipad": 0.045}
+RAYON = {"iphone-moyen": 0.11, "iphone": 0.11, "ipad": 0.045}
+# Captures brutes utilisées pour chaque taille (l'écran moyen reprend celles de l'iPhone)
+SOURCE = {"iphone-moyen": "iphone", "iphone": "iphone", "ipad": "ipad", "tv": "tv"}
+# Dossiers du zip : un par emplacement d'App Store Connect, dans l'ordre où les remplir
+EMPLACEMENTS = [
+    ("iphone-moyen", "1-iPhone-ecran-moyen-1206x2622-obligatoire", "iPhone"),
+    ("iphone", "2-iPhone-grand-ecran-1320x2868", "iPhone"),
+    ("ipad", "3-iPad-13-pouces-2064x2752", "iPad"),
+]
+DOSSIER_TV = "4-AppleTV-1920x1080"
 
 # Titre et sous-titre de chaque écran ; « puces » : formats affichés sous le lecteur
 TEXTES = {
@@ -49,6 +60,7 @@ TEXTES = {
 }
 # Ordre de la fiche (les premières comptent le plus). Sur iPad, le lecteur reste vertical : plus loin.
 ORDRE = {
+    "iphone-moyen": ["accueil", "lecture-film", "direct", "fiche-film", "fiche-serie", "bienvenue"],
     "iphone": ["accueil", "lecture-film", "direct", "fiche-film", "fiche-serie", "bienvenue"],
     "ipad": ["accueil", "direct", "fiche-film", "lecture-film", "fiche-serie", "bienvenue"],
 }
@@ -207,6 +219,7 @@ def charger(chemin, paysage=False):
 
 
 def trouver(dossier, appareil_nom, langue, ecran):
+    appareil_nom = SOURCE.get(appareil_nom, appareil_nom)
     base = os.path.join(dossier, f"{appareil_nom}-{langue}-{ecran}")
     for nom in (f"{base}.png", f"{base}-{INSTANT[appareil_nom][langue]}.png", f"{base}-1.png"):
         if os.path.exists(nom):
@@ -216,9 +229,9 @@ def trouver(dossier, appareil_nom, langue, ecran):
 
 def main(src, dst):
     for langue, dossier_l in (("fr", "francais"), ("en", "english")):
-        out = os.path.join(dst, dossier_l)
-        os.makedirs(out, exist_ok=True)
-        for appareil_nom, prefixe in (("iphone", "iPhone"), ("ipad", "iPad")):
+        for appareil_nom, dossier_e, prefixe in EMPLACEMENTS:
+            out = os.path.join(dst, dossier_l, dossier_e)
+            os.makedirs(out, exist_ok=True)
             for n, ecran in enumerate(ORDRE[appareil_nom], 1):
                 titre, sous = TEXTES[langue][ecran]
                 f = trouver(src, appareil_nom, langue, ecran)
@@ -226,10 +239,12 @@ def main(src, dst):
                     print("  manque", appareil_nom, langue, ecran)
                     continue
                 # iPhone : le lecteur a été capturé à l'horizontale
-                paysage = appareil_nom == "iphone" and ecran.startswith("lecture")
+                paysage = appareil_nom.startswith("iphone") and ecran.startswith("lecture")
                 img = composer(charger(f, paysage), appareil_nom, titre, sous, PUCES if langue == "fr" else PUCES_EN)
                 assert img.size == TAILLES[appareil_nom] and img.mode == "RGB"
                 img.save(os.path.join(out, f"{prefixe}-{n}-{ecran}.png"), optimize=True)
+        out = os.path.join(dst, dossier_l, DOSSIER_TV)
+        os.makedirs(out, exist_ok=True)
         for n, ecran in enumerate(ECRANS_TV, 1):
             f = trouver(src, "tv", langue, ecran)
             if not f:
@@ -239,7 +254,7 @@ def main(src, dst):
             if img.size != TAILLES["tv"]:
                 img = img.resize(TAILLES["tv"], Image.LANCZOS)
             img.save(os.path.join(out, f"AppleTV-{n}-{ecran}.png"), optimize=True)
-        print(langue, ":", len(os.listdir(out)), "fichiers")
+        print(langue, ":", sum(len(f) for _, _, f in os.walk(os.path.join(dst, dossier_l))), "fichiers")
 
 
 if __name__ == "__main__":

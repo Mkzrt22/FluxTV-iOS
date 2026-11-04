@@ -48,15 +48,24 @@ Même chose pour « tvOS 1.0 ».
 ## 5. Page de la version 1.2 (iOS, puis tvOS)
 
 ### Captures d'écran
-Fichiers fournis par Claude (`FluxTV-AppStore-captures.zip`), numérotés dans l'ordre (les
-premières comptent le plus, elles s'affichent dans les résultats de recherche) :
-- **iPhone 6,9 pouces** : 6 captures `iPhone-1…6` (1320 × 2868)
-- **iPad 13 pouces** : 6 captures `iPad-1…6` (2064 × 2752)
-- **Apple TV** (page tvOS) : 5 captures `AppleTV-1…5` (1920 × 1080)
+Fichiers fournis par Claude (`FluxTV-AppStore-captures.zip`), un dossier par emplacement
+d'App Store Connect, dans `francais` (fiche française) et `english` (fiche anglaise). Fichiers
+numérotés dans l'ordre (les premiers comptent le plus : ils s'affichent dans les recherches).
 
-Dossier `francais` pour la fiche française, `english` pour la fiche anglaise. Glisser les
-fichiers dans la zone de dépôt de chaque taille, dans l'ordre des numéros. Apple adapte
-lui-même les captures aux autres tailles d'écran.
+| Dossier | Emplacement dans App Store Connect | |
+|---|---|---|
+| `1-iPhone-ecran-moyen-1206x2622-obligatoire` | iPhone avec Dynamic Island (écran moyen) | **obligatoire** (6 captures) |
+| `2-iPhone-grand-ecran-1320x2868` | iPhone avec Dynamic Island (grand écran) | conseillé (sinon Apple réclame la taille 6,5 pouces) |
+| `3-iPad-13-pouces-2064x2752` | iPad, écran de 13 pouces | obligatoire (6 captures) |
+| `4-AppleTV-1920x1080` | Apple TV (page tvOS) | obligatoire (5 captures) |
+
+Depuis l'automne 2026, la taille iPhone **obligatoire** est l'écran moyen (1206 × 2622) ; le grand
+écran est facultatif. **iPhone Duo** : facultatif jusqu'en avril 2027 (obligatoire seulement pour
+les apps compilées avec le SDK iOS 27.1). **En-tête et résultats de recherche** (nouveauté 2026,
+images 3840 × 1646 ou 5244 × 2950) : facultatif, à laisser vide pour l'instant.
+
+À laisser vide aussi sur la page de la version : « Fichier de couverture géographique »,
+« Extrait d'app », « App iMessage », « Game Center », « Pièce jointe ».
 
 ### Texte promotionnel (170 max, modifiable à tout moment sans nouvelle version)
 FR (149) :
@@ -73,7 +82,7 @@ FR (96) : `m3u,xtream,tv,direct,chaînes,guide,epg,xmltv,films,séries,playlist,
 EN (91) : `m3u,m3u8,xtream,live,tv,channels,guide,epg,xmltv,movies,series,stream,vod,catchup,lists,hls`
 
 ### URL
-- **URL d'assistance** (obligatoire) : `https://mkzrt22.github.io/FluxTV-iOS/assistance/`
+- **URL de l'assistance** (obligatoire) : `https://mkzrt22.github.io/FluxTV-iOS/assistance/`
   (anglais : `https://mkzrt22.github.io/FluxTV-iOS/en/help/`). En ligne depuis le 4 novembre
   2026 : questions fréquentes et contact `fluxtv.support@gmail.com`.
 - **URL marketing** (facultative) : `https://mkzrt22.github.io/FluxTV-iOS/` (anglais :
@@ -163,14 +172,15 @@ Pas demandé pour la toute première version publiée sur l'App Store.
 ### Copyright
 `2026 FluxTV`
 
-### Informations pour la vérification de l'app
-- **Connexion requise** : **non** (case décochée) : l'équipe d'Apple utilise le mode démo.
+### Informations utiles à la vérification de l'app
+- **Connexion requise** : cochée d'office, **à décocher** : l'équipe d'Apple utilise le mode démo.
 - **Coordonnées** : ton prénom, ton nom, ton téléphone et ton e-mail. Apple ne les affiche pas
   sur la fiche. Tu les remplis toi-même, ne les envoie à personne (Claude compris).
-- **Notes** : copier le texte de `Notes-validation.md` (en anglais).
+- **Remarques** : copier le texte de `Notes-validation.md` (en anglais).
 
-### Publication de la version
-Conseil : « Publier manuellement cette version » pour choisir le jour de la sortie.
+### Publication de la version dans l'App Store
+Cocher « Publier cette version manuellement » (« automatiquement » est coché d'office) pour
+choisir le jour de la sortie.
 
 ---
 

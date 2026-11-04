@@ -44,10 +44,10 @@ CHAMPS = {
     "promo": ("Texte promotionnel", 170, ligne_code(promo, "FR ("), ligne_code(promo, "EN (")),
     "description": ("Description", 4000, desc_fr, desc_en),
     "mots-cles": ("Mots-clés", 100, ligne_code(mots, "FR ("), ligne_code(mots, "EN (")),
-    "assistance": ("URL d'assistance", None, SITE + "assistance/", SITE + "en/help/"),
+    "assistance": ("URL de l'assistance", None, SITE + "assistance/", SITE + "en/help/"),
     "marketing": ("URL marketing", None, SITE, SITE + "en/"),
     "copyright": ("Copyright", None, "2026 FluxTV", None),
-    "notes": ("Notes (en anglais, pour les deux langues)", 4000, notes, None),
+    "notes": ("Remarques (en anglais, pour les deux langues)", 4000, notes, None),
     "cle-nom": ("Nom de la clé", None, "GitHub FluxTV", None),
     "secret-id": ("Name du secret 1", None, "ASC_KEY_ID", None),
     "secret-emetteur": ("Name du secret 2", None, "ASC_ISSUER_ID", None),
@@ -63,7 +63,9 @@ PHASES = [
     ("avant", "Avant de commencer", "Dix minutes pour tout avoir sous la main.", [
         ("zip", "Ouvre le dossier des captures",
          "Décompresse <code>FluxTV-AppStore-captures.zip</code> (dans ton coffre : <code>Sauvegardes/App Store</code>). "
-         "Les dossiers <code>francais</code> et <code>english</code> contiennent chacun 6 captures iPhone, 6 iPad et 5 Apple TV, numérotées dans l'ordre.", []),
+         "Dans <code>francais</code> et dans <code>english</code>, un dossier par emplacement d'App Store Connect : "
+         "<code>1-iPhone-ecran-moyen</code> (obligatoire), <code>2-iPhone-grand-ecran</code>, <code>3-iPad-13-pouces</code> et <code>4-AppleTV</code>. "
+         "Les fichiers sont numérotés dans l'ordre où les déposer.", []),
         ("connexion", "Ouvre App Store Connect sur un ordinateur",
          f"{ASC} › <b>FluxTV</b>. Garde ce guide ouvert à côté, ou sur ton téléphone.", []),
         ("langue-guide", "Choisis la langue des textes en haut de ce guide",
@@ -72,8 +74,9 @@ PHASES = [
     ]),
     ("infos", "Informations communes", "Valables pour l'iPhone, l'iPad et l'Apple TV.", [
         ("version", "Passe la version à 1.2",
-         "Colonne de gauche : <b>iOS 1.0</b>. Dans le champ « Version », remplace 1.0 par 1.2, puis « Enregistrer ». "
-         "Même chose sur <b>tvOS 1.0</b>. L'app envoyée porte le numéro 1.2 : sans ce changement, Apple ne la proposerait pas.", ["version"]),
+         "Page <b>App iOS Version 1.0</b> : le champ « Version » est plus bas, sous « URL de l'assistance ». Remplace 1.0 par 1.2, puis "
+         "<b>« Enregistrer »</b> en haut à droite : le titre devient « App iOS Version 1.2 ». Même chose sur la page <b>tvOS</b>. "
+         "L'app envoyée porte le numéro 1.2 : sans ce changement, Apple ne la proposerait pas.", ["version"]),
         ("anglais", "Ajoute l'anglais",
          "Menu des langues en haut à droite de la page (il affiche « Français ») › <b>English (U.S.)</b>. "
          "Ce menu sert ensuite à passer d'une langue à l'autre pour chaque texte.", []),
@@ -98,34 +101,42 @@ PHASES = [
          "Puis « Pratiques de confidentialité » › « Commencer » › <b>Non, nous ne collectons pas de données</b> › « Enregistrer » › <b>« Publier »</b>. "
          "La fiche affichera « Données non collectées ».", ["confidentialite"]),
     ]),
-    ("ios", "Page de la version iPhone et iPad", "Colonne de gauche : iOS 1.2. En français d'abord, puis en anglais.", [
+    ("ios", "Page de la version iPhone et iPad", "Page « App iOS Version 1.2 », rubrique « Informations de la page produit ». En français d'abord, puis en anglais.", [
+        ("ignorer-ios", "Ce que tu laisses vide",
+         "<b>En-tête et résultats de recherche</b> (nouveauté 2026, facultatif), <b>iPhone Duo</b> (facultatif jusqu'en avril 2027), "
+         "<b>Fichier de couverture géographique</b>, <b>Extrait d'app</b>, <b>App iMessage</b>, <b>Game Center</b> et <b>Pièce jointe</b> : rien à faire, ils ne concernent pas FluxTV.", []),
         ("captures-iphone", "Captures iPhone",
-         "Rubrique « Aperçus et captures d'écran » › iPhone <b>6,9 pouces</b> › glisse <code>iPhone-1</code> à <code>iPhone-6</code> "
-         "du dossier de la langue (<code>francais</code> ou <code>english</code>), dans l'ordre. Apple les adapte lui-même aux autres tailles d'iPhone.", []),
+         "Trouve la rubrique des captures de l'app (« Aperçus et captures d'écran ») : si la page n'affiche que « En-tête et résultats de recherche », "
+         "clique sur ce titre pour changer de rubrique. Onglet <b>iPhone avec Dynamic Island (écran moyen)</b> : glisse les 6 fichiers du dossier "
+         "<code>1-iPhone-ecran-moyen</code>, dans l'ordre (obligatoire). Puis, si l'onglet existe, <b>iPhone avec Dynamic Island (grand écran)</b> : "
+         "dossier <code>2-iPhone-grand-ecran</code> (conseillé : sinon Apple réclame une taille de plus). "
+         "Introuvable ? Envoie une capture de la page à Claude.", []),
         ("captures-ipad", "Captures iPad",
-         "iPad <b>13 pouces</b> › <code>iPad-1</code> à <code>iPad-6</code>.", []),
+         "Onglet <b>iPad, écran de 13 pouces</b> : les 6 fichiers du dossier <code>3-iPad-13-pouces</code>.", []),
         ("textes-ios", "Texte promotionnel, description et mots-clés",
          "Le texte promotionnel peut changer à tout moment, sans nouvelle version.", ["promo", "description", "mots-cles"]),
         ("url-ios", "Adresses et copyright", "", ["assistance", "marketing", "copyright"]),
-        ("verification-ios", "Informations pour la vérification",
-         "Décoche <b>Connexion requise</b> : l'équipe d'Apple utilise le mode démo. Remplis tes coordonnées (prénom, nom, téléphone, e-mail) : "
-         "Apple ne les publie pas, ne les envoie à personne. Puis colle les notes, en anglais (les mêmes dans les deux langues).", ["notes"]),
-        ("publication-ios", "Publication de la version",
-         "Choisis <b>Publier manuellement cette version</b> : tu choisiras le jour de la sortie.", []),
+        ("verification-ios", "Informations utiles à la vérification de l'app",
+         "<b>Connexion requise</b> est cochée d'office : <b>décoche-la</b> (l'équipe d'Apple utilise le mode démo, nom d'utilisateur et mot de passe restent vides). "
+         "Coordonnées : ton prénom, ton nom, ton téléphone et ton e-mail (Apple ne les publie pas ; ne les envoie à personne). "
+         "<b>Remarques</b> : colle le texte ci-dessous, en anglais (le même dans les deux langues).", ["notes"]),
+        ("publication-ios", "Publication de la version dans l'App Store",
+         "Coche <b>Publier cette version manuellement</b> : c'est « automatiquement » qui est coché d'office. Tu choisiras ainsi le jour de la sortie.", []),
         ("enregistrer-ios", "Enregistre, puis passe à l'anglais",
          "« Enregistrer » en haut à droite. Menu des langues › English (U.S.), choisis <b>English</b> en haut de ce guide, "
          "et refais les captures (dossier <code>english</code>) et les textes.", []),
     ]),
-    ("tvos", "Page de la version Apple TV", "Colonne de gauche : tvOS 1.2. Les textes sont les mêmes que pour l'iPhone.", [
+    ("tvos", "Page de la version Apple TV", "Menu à côté du titre « App iOS Version 1.2 » (ou menu « Distribution ») › tvOS. Même présentation que la page iPhone, mêmes textes.", [
         ("captures-tv", "Captures Apple TV",
-         "Rubrique « Aperçus et captures d'écran » › Apple TV › <code>AppleTV-1</code> à <code>AppleTV-5</code>.", []),
+         "Rubrique des captures de l'app › Apple TV : les 5 fichiers du dossier <code>4-AppleTV</code>, dans l'ordre. "
+         "« En-tête et résultats de recherche » : facultatif, à laisser vide.", []),
         ("textes-tv", "Textes, adresses et copyright",
          "Recolle le texte promotionnel, la description, les mots-clés, l'URL d'assistance, l'URL marketing et le copyright "
          "(boutons « Copier » de la page iPhone, juste au-dessus).", []),
-        ("verification-tv", "Informations pour la vérification",
-         "Comme pour l'iPhone : <b>Connexion requise</b> décochée, tes coordonnées, les mêmes notes.", []),
+        ("verification-tv", "Informations utiles à la vérification de l'app",
+         "Comme pour l'iPhone : <b>Connexion requise</b> décochée, tes coordonnées, les mêmes remarques.", []),
         ("publication-tv", "Publication manuelle, puis l'anglais",
-         "<b>Publier manuellement cette version</b> › « Enregistrer ». Puis la même chose en anglais.", []),
+         "<b>Publier cette version manuellement</b> › « Enregistrer ». Puis la même chose en anglais.", []),
     ]),
     ("cle", "La clé d'accès Apple", "Elle permet à GitHub d'envoyer FluxTV à Apple. Une seule fois.", [
         ("acces-api", "Demande l'accès à l'API",
@@ -452,7 +463,7 @@ input:checked + .box::after { content: ""; width: 6px; height: 11px; border: sol
     <p class="lead">Toutes les étapes, dans l'ordre : la fiche dans App Store Connect, la clé d'accès, l'envoi depuis GitHub, l'essai sur TestFlight et la soumission. Coche chaque étape faite : ta progression reste dans ce navigateur. Les boutons « Copier » collent les textes dans la langue choisie en haut.</p>
     <p class="ready-label">Déjà prêt</p>
     <ul class="ready">
-      <li>34 captures aux tailles d'Apple</li>
+      <li>46 captures aux tailles d'Apple</li>
       <li>Textes de la fiche en français et en anglais</li>
       <li>Page Assistance en ligne</li>
       <li>Envoi automatique prêt sur GitHub</li>
