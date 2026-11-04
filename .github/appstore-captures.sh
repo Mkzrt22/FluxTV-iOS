@@ -10,6 +10,9 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 OUT="$PWD/appstore/captures"
 BUNDLE=bzh.fluxtv.player
+# Messages de l'app (dossier temporaire du Mac, accessible aux simulateurs)
+SORTIE="$(mktemp -d /tmp/fluxtv-sortie.XXXX)"
+chmod 777 "$SORTIE"
 rm -rf "$OUT"
 mkdir -p "$OUT/journaux" "$OUT/plantages"
 touch "$OUT/.debut"
@@ -18,17 +21,51 @@ log() { echo "$*" | tee -a "$OUT/journal.txt"; }
 ./Preparer.command --ci > /dev/null || { log "✘ préparation"; exit 1; }
 log "$(xcodebuild -version | head -1)"
 
-# $1 schéma, $2 plateforme, $3 nom court
+# Signature locale (« ad hoc », sans compte Apple) de l'app et de ses moteurs : les simulateurs
+# récents refusent de lancer une app non signée.
+signer() {
+  local fw
+  for fw in "$1"/Frameworks/*.framework; do
+    [ -d "$fw" ] && codesign --force --sign - --timestamp=none "$fw" >> "$OUT/journaux/signature.txt" 2>&1
+  done
+  codesign --force --sign - --timestamp=none "$1" >> "$OUT/journaux/signature.txt" 2>&1
+}
+
+# $1 schéma, $2 plateforme, $3 nom court, $4 app produite. Signée pour le simulateur par Xcode
+# (« Sign to Run Locally ») ; sinon compilée sans signature puis signée à la main.
 compiler() {
+  local journal="$OUT/journaux/compilation-$3.log"
   if xcodebuild -project FluxTV.xcodeproj -scheme "$1" -configuration Debug \
       -destination "generic/platform=$2" -derivedDataPath build/Sim \
-      CODE_SIGNING_ALLOWED=NO build > "$OUT/journaux/compilation-$3.log" 2>&1; then
-    log "✔ compilation $3"
+      CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= PROVISIONING_PROFILE_SPECIFIER= \
+      build > "$journal" 2>&1; then
+    log "✔ compilation $3 (signature locale par Xcode)"
+  elif xcodebuild -project FluxTV.xcodeproj -scheme "$1" -configuration Debug \
+      -destination "generic/platform=$2" -derivedDataPath build/Sim \
+      CODE_SIGNING_ALLOWED=NO build > "$journal.2" 2>&1; then
+    signer "$4"
+    log "✔ compilation $3 (signature locale ajoutée)"
   else
     log "✘ compilation $3"
-    grep -E ": (fatal )?error:" "$OUT/journaux/compilation-$3.log" | head -20 | tee -a "$OUT/journal.txt"
+    grep -E ": (fatal )?error:" "$journal" "$journal.2" | head -20 | tee -a "$OUT/journal.txt"
     return 1
   fi
+  log "  $(codesign -dv "$4" 2>&1 | grep -E '^Signature' | head -1)"
+}
+
+# Raisons d'un lancement refusé : apps installées, journaux du simulateur et du Mac (une fois)
+diagnostic() {
+  [ -e "$OUT/journaux/diagnostic-$2.txt" ] && return
+  {
+    echo "== Apps installées"
+    xcrun simctl listapps "$1" 2>&1 | grep -i -A4 "fluxtv" | head -20
+    echo "== Journal du simulateur"
+    xcrun simctl spawn "$1" log show --last 3m --style compact \
+      --predicate 'eventMessage CONTAINS[c] "fluxtv" OR process CONTAINS[c] "fluxtv"' 2>&1 | tail -80
+    echo "== Journal du Mac"
+    /usr/bin/log show --last 3m --style compact --predicate 'eventMessage CONTAINS[c] "fluxtv"' 2>&1 | tail -60
+  } > "$OUT/journaux/diagnostic-$2.txt" 2>&1
+  log "  (diagnostic : journaux/diagnostic-$2.txt)"
 }
 
 # Simulateur du modèle demandé ($1 : expression sur le nom, $2 : iOS ou tvOS), système le plus
@@ -103,17 +140,26 @@ capture() {
 }
 
 # Lance l'app ($1 simulateur, $2 nom, puis les arguments) ; affiche le numéro du processus.
-# En cas d'échec : un second essai, et le message de simctl dans le journal.
+# Messages de l'app gardés tant que c'est accepté ; sinon lancement simple. Trois essais.
 lancer() {
   local udid="$1" nom="$2" pid t
   shift 2
-  for t in 1 2; do
+  for t in 1 2 3; do
     xcrun simctl terminate "$udid" "$BUNDLE" > /dev/null 2>&1
-    sleep "$t"
+    sleep 1
     # « bzh.fluxtv.player: 12345 » : l'app du simulateur est un processus du Mac
-    pid="$(xcrun simctl launch --stdout="$OUT/journaux/$nom.out.txt" --stderr="$OUT/journaux/$nom.err.txt" \
-      "$udid" "$BUNDLE" "$@" 2>&1 | tee "$OUT/journaux/$nom.lancement.txt" | awk -F': ' '/bzh.fluxtv.player: [0-9]/ { print $2 }')"
+    if [ ! -e "$OUT/.sans-redirection" ]; then
+      pid="$(xcrun simctl launch --stdout="$SORTIE/$nom.out.txt" --stderr="$SORTIE/$nom.err.txt" \
+        "$udid" "$BUNDLE" "$@" 2>&1 | tee "$OUT/journaux/$nom.lancement.txt" | awk -F': ' '/bzh.fluxtv.player: [0-9]/ { print $2 }')"
+    else
+      pid="$(xcrun simctl launch "$udid" "$BUNDLE" "$@" 2>&1 | tee "$OUT/journaux/$nom.lancement.txt" \
+        | awk -F': ' '/bzh.fluxtv.player: [0-9]/ { print $2 }')"
+    fi
     if [ -n "$pid" ]; then echo "$pid"; return; fi
+    if [ ! -e "$OUT/.sans-redirection" ]; then
+      touch "$OUT/.sans-redirection"
+      echo "    (lancement sans les messages de l'app)" >&2
+    fi
     sleep 3
   done
   head -4 "$OUT/journaux/$nom.lancement.txt" | sed 's/^/    simctl : /' >&2
@@ -124,11 +170,20 @@ lancer() {
 essai() {
   local udid="$1" nom="$2" attentes="$3" pid n=0 a
   shift 3
+  local appareil_nom="${nom%%-*}"
+  # Trois échecs de suite sans aucune réussite sur cet appareil : inutile d'insister
+  if [ ! -e "$OUT/.ok-$appareil_nom" ] && [ "$(cat "$OUT/.echecs-$appareil_nom" 2>/dev/null | wc -l)" -ge 3 ]; then
+    log "  – $nom sauté"
+    return
+  fi
   pid="$(lancer "$udid" "$nom" "$@" 2>> "$OUT/journal.txt")"
   if [ -z "$pid" ]; then
     log "  ✘ lancement impossible ($nom)"
+    echo "$nom" >> "$OUT/.echecs-$appareil_nom"
+    diagnostic "$udid" "$appareil_nom"
     return
   fi
+  touch "$OUT/.ok-$appareil_nom"
   set -- $attentes
   for a in "$@"; do
     sleep "$a"
@@ -174,8 +229,8 @@ serie() {
 }
 
 # iPhone 6,9 pouces (1320 × 2868) et iPad 13 pouces (2064 × 2752)
-if compiler FluxTV "iOS Simulator" ios; then
-  APP=build/Sim/Build/Products/Debug-iphonesimulator/FluxTV.app
+APP=build/Sim/Build/Products/Debug-iphonesimulator/FluxTV.app
+if compiler FluxTV "iOS Simulator" ios "$APP"; then
   for modele in "iphone|^iPhone [0-9]+ Pro Max$" "ipad|^iPad Pro 13-inch"; do
     p="${modele%%|*}"
     UDID="$(simulateur "${modele#*|}" iOS)"
@@ -188,8 +243,8 @@ if compiler FluxTV "iOS Simulator" ios; then
 fi
 
 # Apple TV 4K (3840 × 2160, réduites en 1920 × 1080 : texte plus net qu'une capture en 1080p)
-if compiler "FluxTV TV" "tvOS Simulator" tvos; then
-  APP=build/Sim/Build/Products/Debug-appletvsimulator/FluxTV.app
+APP=build/Sim/Build/Products/Debug-appletvsimulator/FluxTV.app
+if compiler "FluxTV TV" "tvOS Simulator" tvos "$APP"; then
   UDID="$(simulateur "^Apple TV 4K \(3rd generation\)$" tvOS)"
   if [ -n "$UDID" ]; then
     demarrer "$UDID"
@@ -208,6 +263,8 @@ if compiler "FluxTV TV" "tvOS Simulator" tvos; then
 fi
 
 find ~/Library/Logs/DiagnosticReports -name "FluxTV*" -newer "$OUT/.debut" -exec cp {} "$OUT/plantages/" \; 2>/dev/null
+cp "$SORTIE"/*.txt "$OUT/journaux/" 2>/dev/null
+rm -f "$OUT/.sans-redirection" "$OUT"/.echecs-* "$OUT"/.ok-*
 log "Plantages enregistrés : $(find "$OUT/plantages" -type f | wc -l | tr -d ' ')"
 rm -f "$OUT/.debut"
 gzip -f "$OUT"/journaux/*.log 2>/dev/null
