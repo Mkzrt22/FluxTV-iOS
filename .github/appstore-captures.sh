@@ -60,26 +60,38 @@ PY
 demarrer() {
   xcrun simctl boot "$1" > /dev/null 2>&1
   xcrun simctl bootstatus "$1" -b > /dev/null 2>&1
+  sleep 5
 }
 
 # Barre d'état propre (iPhone et iPad) : 9:41, réseau plein, batterie pleine
 barre() {
-  xcrun simctl status_bar "$1" override --time "2026-11-04T09:41:00Z" --dataNetwork wifi --wifiMode active \
+  xcrun simctl status_bar "$1" override --time 9:41 --dataNetwork wifi --wifiMode active \
     --wifiBars 3 --cellularMode active --cellularBars 4 --operatorName "" --batteryState charged \
     --batteryLevel 100 >> "$OUT/journaux/barre.txt" 2>&1 ||
   { log "  (barre d'état simplifiée)"; xcrun simctl status_bar "$1" override --time 9:41 --batteryState charged \
       --batteryLevel 100 > /dev/null 2>&1; }
 }
 
-# Système du simulateur dans la langue $2 (date de la barre d'état de l'iPad), puis redémarrage
-langue_systeme() {
+# Simulateur remis à neuf ($1), système dans la langue $2 (date de la barre d'état de l'iPad),
+# app $3 installée. Aucune source enregistrée, rien de regardé.
+preparer() {
   local loc=en_US
   [ "$2" = fr ] && loc=fr_FR
-  xcrun simctl spawn "$1" defaults write -g AppleLanguages -array "$2" > /dev/null 2>&1
-  xcrun simctl spawn "$1" defaults write -g AppleLocale -string "$loc" > /dev/null 2>&1
   xcrun simctl shutdown "$1" > /dev/null 2>&1
+  xcrun simctl erase "$1" >> "$OUT/journaux/simulateur.txt" 2>&1 || log "  (effacement impossible)"
   demarrer "$1"
-  barre "$1"
+  if [ "$4" != tv ]; then
+    xcrun simctl spawn "$1" defaults write -g AppleLanguages -array "$2" >> "$OUT/journaux/simulateur.txt" 2>&1
+    xcrun simctl spawn "$1" defaults write -g AppleLocale -string "$loc" >> "$OUT/journaux/simulateur.txt" 2>&1
+    xcrun simctl shutdown "$1" > /dev/null 2>&1
+    demarrer "$1"
+    barre "$1"
+  fi
+  if ! xcrun simctl install "$1" "$3" >> "$OUT/journaux/simulateur.txt" 2>&1; then
+    log "  ✘ installation"
+    tail -5 "$OUT/journaux/simulateur.txt" | tee -a "$OUT/journal.txt"
+    return 1
+  fi
 }
 
 capture() {
@@ -90,15 +102,21 @@ capture() {
   fi
 }
 
-# Lance l'app ($1 simulateur, $2 nom, puis les arguments) ; affiche le numéro du processus
+# Lance l'app ($1 simulateur, $2 nom, puis les arguments) ; affiche le numéro du processus.
+# En cas d'échec : un second essai, et le message de simctl dans le journal.
 lancer() {
-  local udid="$1" nom="$2"
+  local udid="$1" nom="$2" pid t
   shift 2
-  xcrun simctl terminate "$udid" "$BUNDLE" > /dev/null 2>&1
-  sleep 1
-  # « bzh.fluxtv.player: 12345 » : l'app du simulateur est un processus du Mac
-  xcrun simctl launch --stdout="$OUT/journaux/$nom.out.txt" --stderr="$OUT/journaux/$nom.err.txt" \
-    "$udid" "$BUNDLE" "$@" 2>/dev/null | awk -F': ' '/bzh.fluxtv.player/ { print $2 }'
+  for t in 1 2; do
+    xcrun simctl terminate "$udid" "$BUNDLE" > /dev/null 2>&1
+    sleep "$t"
+    # « bzh.fluxtv.player: 12345 » : l'app du simulateur est un processus du Mac
+    pid="$(xcrun simctl launch --stdout="$OUT/journaux/$nom.out.txt" --stderr="$OUT/journaux/$nom.err.txt" \
+      "$udid" "$BUNDLE" "$@" 2>&1 | tee "$OUT/journaux/$nom.lancement.txt" | awk -F': ' '/bzh.fluxtv.player: [0-9]/ { print $2 }')"
+    if [ -n "$pid" ]; then echo "$pid"; return; fi
+    sleep 3
+  done
+  head -4 "$OUT/journaux/$nom.lancement.txt" | sed 's/^/    simctl : /' >&2
 }
 
 # $1 simulateur, $2 nom, $3 attentes avant chaque capture (« 14 7 7 » : trois captures), puis les
@@ -106,7 +124,7 @@ lancer() {
 essai() {
   local udid="$1" nom="$2" attentes="$3" pid n=0 a
   shift 3
-  pid="$(lancer "$udid" "$nom" "$@")"
+  pid="$(lancer "$udid" "$nom" "$@" 2>> "$OUT/journal.txt")"
   if [ -z "$pid" ]; then
     log "  ✘ lancement impossible ($nom)"
     return
@@ -134,10 +152,7 @@ serie() {
   [ "$p" = ipad ] && O=(-FluxTVOrientation landscape)
   [ "$p" != tv ] && P=(-FluxTVOrientation landscape)
   log "── $p ($l)"
-  # Installation neuve : aucune source enregistrée, rien de regardé
-  xcrun simctl uninstall "$u" "$BUNDLE" > /dev/null 2>&1
-  xcrun simctl keychain "$u" reset >> "$OUT/journaux/trousseau.txt" 2>&1 || log "  (trousseau non vidé)"
-  xcrun simctl install "$u" "$app" || { log "  ✘ installation"; return 1; }
+  preparer "$u" "$l" "$app" "$p" || return 1
   [ "$l" = fr ] && essai "$u" "$p-langue" 8 ${O[@]+"${O[@]}"}
   essai "$u" "$p-$l-bienvenue" 8 "${L[@]}" ${O[@]+"${O[@]}"}
   # TV en direct avant toute lecture : catégorie « Toutes »
@@ -167,10 +182,7 @@ if compiler FluxTV "iOS Simulator" ios; then
     if [ -z "$UDID" ]; then log "✘ aucun simulateur pour $p"; continue; fi
     demarrer "$UDID"
     log "→ $(xcrun simctl list devices | grep "$UDID" | sed -E 's/^ +//; s/ \([0-9A-F-]{36}\)//')"
-    for l in fr en; do
-      langue_systeme "$UDID" "$l"
-      serie "$UDID" "$p" "$l" "$APP"
-    done
+    for l in fr en; do serie "$UDID" "$p" "$l" "$APP"; done
     xcrun simctl shutdown "$UDID" > /dev/null 2>&1
   done
 fi
