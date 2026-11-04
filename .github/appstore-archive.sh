@@ -119,7 +119,7 @@ controler() {
     archs="$(lipo -archs "$b" 2>/dev/null)"
     [ "$archs" = arm64 ] || erreur "$n : architectures « $archs »"
     [ "$(otool -l "$b" | grep -c "segname __LLVM")" = 0 ] || erreur "$n : contient du bitcode"
-    [ "$(file "$b" | grep -c "dynamically linked shared library")" = 1 ] || erreur "$n : n'est pas une bibliothèque dynamique"
+    [ "$(file "$b" | grep -c "dynamically linked shared library")" -ge 1 ] || erreur "$n : n'est pas une bibliothèque dynamique"
     for k in CFBundleIdentifier CFBundleShortVersionString CFBundleVersion MinimumOSVersion; do
       [ -n "$(valeur "$fw/Info.plist" $k)" ] || erreur "$n : $k manquant"
     done

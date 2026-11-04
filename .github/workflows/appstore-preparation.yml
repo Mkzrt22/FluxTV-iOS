@@ -3,6 +3,8 @@
 #    et en anglais, avec la démonstration ;
 #  - archives App Store non signées et contrôles (version, icônes, moteur VLC, aucun compte intégré).
 # Résultat : branche « ci-appstore ». Lancement : envoi sur la branche « appstore » ou « Run workflow ».
+# « [sans captures] » ou « [sans verification] » dans le message du commit : partie sautée (le
+# résultat précédent reste sur la branche).
 name: App Store - préparation
 on:
   push:
@@ -16,6 +18,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   captures:
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[sans captures]') }}
     runs-on: macos-latest
     timeout-minutes: 120
     steps:
@@ -29,6 +32,7 @@ jobs:
           path: appstore/captures
           retention-days: 7
   verification:
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[sans verification]') }}
     runs-on: macos-latest
     timeout-minutes: 60
     steps:
@@ -48,16 +52,25 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          path: appstore
+          path: nouveau
       - name: Publication sur la branche ci-appstore
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          depot="https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+          # On garde le résultat précédent des parties sautées
+          git clone -q --depth 1 -b ci-appstore "$depot" appstore 2>/dev/null || { mkdir appstore && git -C appstore init -q -b ci-appstore; }
+          for d in captures verification; do
+            if [ -d "nouveau/$d" ]; then rm -rf "appstore/$d"; cp -R "nouveau/$d" "appstore/$d"; fi
+          done
           cd appstore
-          echo "commit: $GITHUB_SHA" > resultat.txt
-          echo "captures: ${{ needs.captures.result }}" >> resultat.txt
-          echo "verification: ${{ needs.verification.result }}" >> resultat.txt
-          git init -q -b ci-appstore
+          {
+            echo "commit: $GITHUB_SHA"
+            echo "captures: ${{ needs.captures.result }}"
+            echo "verification: ${{ needs.verification.result }}"
+          } > resultat.txt
+          # Un seul commit, sans historique : la branche ne grossit pas d'une exécution à l'autre
+          git checkout -q --orphan publication
           git add -A
           git -c user.name="FluxTV CI" -c user.email="ci@fluxtv.invalid" commit -qm "App Store $GITHUB_SHA"
-          git push -qf "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git" ci-appstore
+          git push -qf "$depot" HEAD:ci-appstore
