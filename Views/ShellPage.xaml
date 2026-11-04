@@ -165,7 +165,7 @@
 
         <!-- Invitation à noter l'app : une seule fois, après un vrai usage, jamais pendant une vidéo -->
         <Grid x:Name="RateHost" Visibility="Collapsed" Background="#C704040D">
-            <Border Width="540" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="34,30,34,26" CornerRadius="24"
+            <Border Width="580" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="34,30,34,26" CornerRadius="24"
                     Background="#F5121230" BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1" RenderTransformOrigin="0.5,0.5">
                 <Border.RenderTransform>
                     <ScaleTransform x:Name="RateZoom" />
