@@ -1,0 +1,9 @@
+﻿installing mingw-w64-x86_64-curl...
+installing mingw-w64-x86_64-osslsigncode...
+Paquet personnel pr�t : build\FluxTV-essai-perso.msix (ne le partage pas : il contient tes identifiants)
+Paquet personnel installé
+perso : lancée (processus 8120)
+journal de l'app : 2026-11-04 20:58:25  Vérification du compte : Couldn't connect: server not found.
+journal de l'app : 2026-11-04 20:58:25  Chaînes : Couldn't connect: server not found.
+journal de l'app : 2026-11-04 20:58:25  Accueil, films : Couldn't connect: server not found.
+journal de l'app : 2026-11-04 20:58:25  Accueil, séries : Couldn't connect: server not found.
