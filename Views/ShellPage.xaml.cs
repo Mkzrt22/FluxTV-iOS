@@ -43,6 +43,8 @@ namespace FluxTV.Views
         object focusBeforePlayer;
         IntroView intro;
         bool introBlocking;
+        bool rateOpen;
+        object focusBeforeRate;
 
         public ShellPage()
         {
@@ -309,6 +311,12 @@ namespace FluxTV.Views
                 if (e.NewFocusedElement != null && !Tv.IsInside(e.NewFocusedElement, IntroHost)) e.TryCancel();
                 return;
             }
+            // Invitation à noter ouverte : le focus reste sur ses deux boutons
+            if (rateOpen)
+            {
+                if (e.NewFocusedElement != null && !Tv.IsInside(e.NewFocusedElement, RateHost)) e.TryCancel();
+                return;
+            }
             if (setupMode || player != null || e.Direction == FocusNavigationDirection.None) return;
             var target = e.NewFocusedElement;
             if (target == null || !Tv.IsInside(target, Rail) || Tv.IsInside(e.OldFocusedElement, Rail)) return;
@@ -354,6 +362,11 @@ namespace FluxTV.Views
         public bool Back()
         {
             if (introBlocking) return true;
+            if (rateOpen)
+            {
+                CloseRate();
+                return true;
+            }
             if (player != null)
             {
                 player.HandleBack();
@@ -405,6 +418,8 @@ namespace FluxTV.Views
         {
             var p = player;
             player = null;
+            var watched = p?.WatchedSeconds ?? 0;
+            var failed = p?.EndedWithError ?? false;
             if (p != null)
             {
                 p.Closed -= OnPlayerClosed;
@@ -420,12 +435,67 @@ namespace FluxTV.Views
             {
                 if (!Tv.FocusControl(target)) (ContentFrame.Content as TvPage)?.FocusDefault();
             });
+            // Lecture assez longue et sans erreur, après des jours d'usage : invitation à noter (une seule fois)
+            if (Rating.ShouldAsk(watched, failed)) AskRatingSoon();
         }
 
         /// <summary>Retour de veille : le direct en cours est relancé.</summary>
         public void OnResuming() => player?.OnResuming();
 
-        public void OnSuspending() => player?.SaveProgress();
+        public void OnSuspending()
+        {
+            player?.SaveProgress();
+            player?.FlushWatched();
+        }
+
+        // ───────────────────────────── Note de l'app ─────────────────────────────
+
+        /// <summary>Invitation à noter, un instant après le retour sur la page (sauf si une lecture a repris entre-temps).</summary>
+        async void AskRatingSoon()
+        {
+            await Task.Delay(900);
+            if (Current != this || player != null || setupMode || introBlocking || rateOpen) return;
+            ShowRate();
+        }
+
+        /// <summary>
+        /// Carte « FluxTV te plaît ? » par-dessus la page : « Noter FluxTV » ouvre la fenêtre de note du
+        /// Microsoft Store (la note se choisit là-bas, librement), « Non merci » ou Ⓑ referme. Montrée une fois.
+        /// </summary>
+        void ShowRate()
+        {
+            Rating.MarkAsked();
+            rateOpen = true;
+            focusBeforeRate = FocusManager.GetFocusedElement();
+            SetRailOpen(false);
+            RateHost.Visibility = Visibility.Visible;
+            RateShow.Begin();
+            Tv.Later(() =>
+            {
+                if (rateOpen) RateNowButton.Focus(FocusState.Keyboard);
+            });
+        }
+
+        /// <summary>Invitation refermée : le focus revient où il était, sans ouvrir le menu.</summary>
+        void CloseRate()
+        {
+            if (!rateOpen) return;
+            rateOpen = false;
+            railQuietUntil = DateTime.UtcNow.AddMilliseconds(600);
+            var target = focusBeforeRate;
+            focusBeforeRate = null;
+            if (!Tv.FocusControl(target)) (ContentFrame.Content as TvPage)?.FocusDefault();
+            RateHost.Visibility = Visibility.Collapsed;
+        }
+
+        async void OnRateNow(object sender, RoutedEventArgs e)
+        {
+            CloseRate();
+            var message = Rating.MessageOf(await Rating.RateAsync(), false);
+            if (message != null) app.Toast(message);
+        }
+
+        void OnRateLater(object sender, RoutedEventArgs e) => CloseRate();
 
         // ───────────────────────────── Messages ─────────────────────────────
 
@@ -504,6 +574,10 @@ namespace FluxTV.Views
                     break;
                 case "home-or":
                     Support.UseForTest(true, null);
+                    break;
+                case "noter":
+                    // Invitation à noter l'app par-dessus l'accueil (en essai, rien n'est enregistré ni envoyé au Store)
+                    ShowRate();
                     break;
                 case "play-live":
                 case "play-channels":

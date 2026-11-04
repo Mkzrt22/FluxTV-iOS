@@ -62,6 +62,14 @@ namespace FluxTV.Views
         int upNextLeft;
         List<ChannelItem> panelChannels = new List<ChannelItem>();
         bool holdOverlay;
+        DateTime lastTick;
+        double unsentSeconds;
+
+        /// <summary>Temps réellement regardé depuis l'ouverture du lecteur, en secondes (pauses et attentes exclues).</summary>
+        public double WatchedSeconds { get; private set; }
+
+        /// <summary>Le lecteur se ferme sur un message d'erreur (pas le moment d'inviter à noter l'app).</summary>
+        public bool EndedWithError => ErrorPanel.Visibility == Visibility.Visible;
 
         public PlayerView()
         {
@@ -433,6 +441,7 @@ namespace FluxTV.Views
         {
             if (closed) return;
             SaveProgress();
+            FlushWatched();
             closed = true;
             timer.Stop();
             upNextTimer.Stop();
@@ -533,6 +542,23 @@ namespace FluxTV.Views
                 if (idle > (overlay == Overlay.Banner ? 4.5 : 7)) HideOverlay();
             }
             if (!current.IsLive && opened && playing && (now - lastSave).TotalSeconds > 15) SaveProgress();
+            // Temps regardé (invitation à noter l'app) : seulement pendant la lecture, sans compter la veille
+            var step = (now - lastTick).TotalSeconds;
+            if (playing && lastTick != default(DateTime) && step > 0 && step < 3)
+            {
+                WatchedSeconds += step;
+                unsentSeconds += step;
+            }
+            lastTick = now;
+            if (unsentSeconds >= 60) FlushWatched();
+        }
+
+        /// <summary>Temps regardé transmis au compteur de l'invitation à noter (aussi à la mise en veille).</summary>
+        public void FlushWatched()
+        {
+            if (unsentSeconds <= 0) return;
+            Rating.AddWatched(unsentSeconds);
+            unsentSeconds = 0;
         }
 
         void UpdateInfo()

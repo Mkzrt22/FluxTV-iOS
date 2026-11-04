@@ -19,6 +19,7 @@ namespace FluxTV.Views
         bool confirmChange;
         bool focusLanguage;
         bool buying;
+        bool rating;
 
         public SettingsPage()
         {
@@ -145,6 +146,17 @@ namespace FluxTV.Views
                     app.Toast(Tr.T("L'achat n'a pas abouti. Réessaie plus tard.", "The purchase didn't go through. Try again later."));
                     break;
             }
+        }
+
+        /// <summary>« Noter FluxTV » : fenêtre de note du Microsoft Store (l'invitation ne sera plus proposée).</summary>
+        async void OnRate(object sender, RoutedEventArgs e)
+        {
+            if (rating) return;
+            rating = true;
+            Rating.MarkAsked();
+            var message = Rating.MessageOf(await Rating.RateAsync(), true);
+            rating = false;
+            if (message != null) app.Toast(message);
         }
 
         void OnGoldToggled(object sender, RoutedEventArgs e)

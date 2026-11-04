@@ -31,9 +31,11 @@ $ecrans = @(
     @('play-movie', 13), @('play-options', 13),
     # Pack Soutien : proposé, puis acheté (thème Or, badge au coin du logo)
     @('soutien', 8), @('soutien-or', 8), @('home-or', 7),
+    # Invitation à noter l'app (une seule fois, après un vrai usage), forcée ici par-dessus l'accueil
+    @('noter', 8),
     @('language', 5), @('intro@en', 4), @('setup@en', 6), @('home@en', 7), @('rail@en', 7), @('live@en', 8), @('movies@en', 8), @('series@en', 8),
     @('movie@en', 8), @('seriesdetail@en', 8), @('search@en', 9), @('settings@en', 7), @('play-channels@en', 13), @('play-movie@en', 13),
-    @('play-options@en', 13), @('soutien@en', 8), @('soutien-or@en', 8),
+    @('play-options@en', 13), @('soutien@en', 8), @('soutien-or@en', 8), @('noter@en', 8),
     # En dernier : le changement de langue dans les réglages enregistre l'anglais
     @('switch', 9)
 )

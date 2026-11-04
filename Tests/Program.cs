@@ -487,6 +487,40 @@ namespace FluxTV.Tests
         }
 
         /// <summary>App en anglais : formats, messages et démonstration suivent la langue choisie.</summary>
+        public static void TestRatePolicy()
+        {
+            var u = new RateUsage();
+            var monday = new DateTime(2026, 11, 2, 20, 0, 0);
+            // Premier jour : deux heures d'un coup ne suffisent pas, il faut revenir d'autres jours
+            RatePolicy.Add(u, 7200, monday);
+            RatePolicy.Add(u, 600, monday.AddHours(2));
+            Assert.Equal(1, u.Days, "un seul jour compté");
+            Assert.False(RatePolicy.ShouldAsk(u, 3600, false), "dès le premier jour");
+            RatePolicy.Add(u, 900, monday.AddDays(1));
+            Assert.False(RatePolicy.ShouldAsk(u, 3600, false), "deux jours seulement");
+            RatePolicy.Add(u, 900, monday.AddDays(3));
+            Assert.Equal(3, u.Days, "trois jours différents");
+            Assert.True(RatePolicy.ShouldAsk(u, 900, false), "usage suffisant, lecture de 15 min");
+            // Pas après une lecture courte ou ratée
+            Assert.False(RatePolicy.ShouldAsk(u, 120, false), "lecture de 2 min");
+            Assert.False(RatePolicy.ShouldAsk(u, 900, true), "lecture finie sur une erreur");
+            // Une seule fois
+            u.Asked = true;
+            Assert.False(RatePolicy.ShouldAsk(u, 3600, false), "déjà proposé");
+            // Pas assez d'heures, même sur plusieurs jours
+            var light = new RateUsage();
+            for (var i = 0; i < 5; i++) RatePolicy.Add(light, 600, monday.AddDays(i));
+            Assert.Equal(5, light.Days, "cinq jours");
+            Assert.False(RatePolicy.ShouldAsk(light, 600, false), "50 min en tout");
+            // Valeurs absurdes ignorées
+            var before = light.Seconds;
+            RatePolicy.Add(light, double.NaN, monday);
+            RatePolicy.Add(light, -30, monday);
+            RatePolicy.Add(light, double.PositiveInfinity, monday);
+            Assert.Equal(before, light.Seconds, "NaN, négatif, infini");
+            Assert.False(RatePolicy.ShouldAsk(null, 3600, false), "sans compteur");
+        }
+
         public static void TestEnglish()
         {
             Tr.English = true;

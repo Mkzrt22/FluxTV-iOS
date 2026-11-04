@@ -166,12 +166,21 @@
                             <TextBlock x:Name="SupportText" Style="{StaticResource SettingText}" />
                         </StackPanel>
                     </Grid>
-                    <Button x:Name="SupportButton" Style="{StaticResource PrimaryButton}" Margin="0,16,0,0" Click="OnSupport">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#xEB52;" Style="{StaticResource IconText}" FontSize="14" Foreground="{StaticResource WhiteBrush}" />
-                            <TextBlock x:Name="SupportLabel" Margin="9,0,0,0" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Button>
+                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                        <Button x:Name="SupportButton" Style="{StaticResource PrimaryButton}" Margin="0,0,12,0" Click="OnSupport">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xEB52;" Style="{StaticResource IconText}" FontSize="14" Foreground="{StaticResource WhiteBrush}" />
+                                <TextBlock x:Name="SupportLabel" Margin="9,0,0,0" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <!-- Note sur le Microsoft Store : toujours possible ici (l'invitation, elle, n'apparaît qu'une fois) -->
+                        <Button x:Name="RateButton" Style="{StaticResource FluxButton}" Click="OnRate">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE735;" Style="{StaticResource IconText}" FontSize="14" Foreground="{StaticResource GoldBrush}" />
+                                <TextBlock Text="{ui:T Fr='Noter FluxTV', En='Rate FluxTV'}" Margin="9,0,0,0" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
                     <ToggleSwitch x:Name="GoldSwitch" Header="{ui:T Fr='Thème Or', En='Gold theme'}" OnContent="{ui:T Fr='Oui', En='On'}" OffContent="{ui:T Fr='Non', En='Off'}"
                                   Margin="0,14,0,0" Visibility="Collapsed" Toggled="OnGoldToggled" />
                 </StackPanel>
