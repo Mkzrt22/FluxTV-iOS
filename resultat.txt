@@ -1,0 +1,8 @@
+commit: a7f20c0f38d149a2a5c6d39a25a34753c2269d0e
+ipa: success
+tests: success
+date: 2026-11-04T05:23:16Z
+Xcode 26.6
+total 92296
+-rw-r--r--  1 runner  staff  25886563 Nov  4 05:22 FluxTV-AppleTV.ipa
+-rw-r--r--  1 runner  staff  20516818 Nov  4 05:21 FluxTV-iPhone.ipa
