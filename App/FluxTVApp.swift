@@ -72,7 +72,18 @@ struct RootView: View {
                 }
             }
         }
-        .onAppear { if !askLanguage { app.start() } }
+        .onAppear {
+            if !askLanguage { app.start() }
+            #if DEBUG && os(iOS)
+            // Captures pour l'App Store : « -FluxTVOrientation landscape » tourne l'écran à l'horizontale
+            if UserDefaults.standard.string(forKey: "FluxTVOrientation") == "landscape",
+               let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first {
+                scene.requestGeometryUpdate(.iOS(interfaceOrientations: .landscapeRight)) { error in
+                    print("Orientation refusée : \(error)")
+                }
+            }
+            #endif
+        }
         .animation(.easeInOut(duration: 0.35), value: askLanguage)
         .animation(.easeInOut(duration: 0.35), value: app.phase)
         .overlay(alignment: .top) {

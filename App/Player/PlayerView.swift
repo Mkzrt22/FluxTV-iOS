@@ -555,6 +555,10 @@ struct PlayerView: View {
 
     private func scheduleHide() {
         hideTask?.cancel()
+        #if DEBUG
+        // Captures pour l'App Store : « -FluxTVKeepControls YES » laisse les commandes à l'écran
+        if UserDefaults.standard.bool(forKey: "FluxTVKeepControls") { return }
+        #endif
         hideTask = Task {
             try? await Task.sleep(nanoseconds: 4_500_000_000)
             if Task.isCancelled { return }

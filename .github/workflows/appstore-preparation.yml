@@ -1,0 +1,63 @@
+# Préparation de la fiche App Store, sur des Mac de GitHub. Rien n'est envoyé à Apple.
+#  - captures d'écran aux tailles demandées par Apple (iPhone 6,9", iPad 13", Apple TV), en français
+#    et en anglais, avec la démonstration ;
+#  - archives App Store non signées et contrôles (version, icônes, moteur VLC, aucun compte intégré).
+# Résultat : branche « ci-appstore ». Lancement : envoi sur la branche « appstore » ou « Run workflow ».
+name: App Store - préparation
+on:
+  push:
+    branches: [appstore]
+    paths-ignore: ["AppStore/**", "**.md"]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: appstore-preparation
+  cancel-in-progress: true
+jobs:
+  captures:
+    runs-on: macos-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Captures d'écran
+        run: .github/appstore-captures.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: captures
+          path: appstore/captures
+          retention-days: 7
+  verification:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Archives App Store non signées et contrôles
+        run: .github/appstore-archive.sh verifier
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification
+          path: appstore/verification
+          retention-days: 7
+  publication:
+    needs: [captures, verification]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: appstore
+      - name: Publication sur la branche ci-appstore
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd appstore
+          echo "commit: $GITHUB_SHA" > resultat.txt
+          echo "captures: ${{ needs.captures.result }}" >> resultat.txt
+          echo "verification: ${{ needs.verification.result }}" >> resultat.txt
+          git init -q -b ci-appstore
+          git add -A
+          git -c user.name="FluxTV CI" -c user.email="ci@fluxtv.invalid" commit -qm "App Store $GITHUB_SHA"
+          git push -qf "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git" ci-appstore

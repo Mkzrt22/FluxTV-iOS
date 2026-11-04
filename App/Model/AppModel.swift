@@ -111,7 +111,8 @@ final class AppModel: ObservableObject {
      Essais automatiques sur simulateur (jamais dans la version installée) :
      « -FluxTVDemo YES » ouvre la démonstration, « -FluxTVOpen <id> » ouvre la fiche d'un film ou
      d'une série, « -FluxTVPlay <id> » lance aussitôt un film ou une chaîne de la démonstration
-     (« demo:tos », « m3us:demo-open-movies », « demo:bbb », « demo:live2 »…).
+     (« demo:tos », « m3us:demo-open-movies », « demo:bbb », « demo:live2 »…), et pour un film,
+     « -FluxTVStartAt 60 » le reprend à la 60ᵉ seconde (captures pour l'App Store).
      */
     private func startForAutomatedTest() -> Bool {
         let d = UserDefaults.standard
@@ -125,7 +126,13 @@ final class AppModel: ObservableObject {
             }
             guard let id = d.string(forKey: "FluxTVPlay") else { return }
             if let m = Demo.movies.first(where: { $0.id == id }) {
-                play(movie: m, group: nil, fromStart: true)
+                let at = d.double(forKey: "FluxTVStartAt")
+                if at > 0 {
+                    var ref = m.ref(group: nil)
+                    if ref.image == nil { ref.image = m.poster }
+                    library.savePosition(ref, position: at, duration: Double(Demo.movieInfo[m.id]?.durationSecs ?? 600))
+                }
+                play(movie: m, group: nil, fromStart: at <= 0)
             } else if let ch = Demo.channels.first(where: { $0.id == id }) {
                 play(channel: ch, in: Demo.channels)
             }

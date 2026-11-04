@@ -1,0 +1,42 @@
+# Envoi de FluxTV sur App Store Connect (TestFlight, puis validation par Apple).
+#
+# DÉSACTIVÉ tant que les trois conditions ne sont pas réunies :
+#   1. la clé d'API App Store Connect est dans les secrets du dépôt : ASC_KEY_ID, ASC_ISSUER_ID et
+#      ASC_KEY_P8 (contenu du fichier .p8) ;
+#   2. ce fichier est sur la branche principale (main) ;
+#   3. quelqu'un le lance à la main : onglet Actions › « App Store - envoi » › Run workflow, en
+#      écrivant ENVOYER dans la case de confirmation.
+# Jamais lancé automatiquement. Apple signe les apps lui-même (aucun certificat à fabriquer).
+# Mode d'emploi : AppStore/Envoi-App-Store.md
+name: App Store - envoi
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Écris ENVOYER pour envoyer le build à Apple"
+        required: true
+        default: "non"
+      plateformes:
+        description: "Plateformes à envoyer"
+        type: choice
+        options: [les-deux, iphone-ipad, apple-tv]
+        default: les-deux
+permissions:
+  contents: read
+concurrency:
+  group: appstore-envoi
+  cancel-in-progress: false
+jobs:
+  envoi:
+    if: ${{ inputs.confirmation == 'ENVOYER' }}
+    runs-on: macos-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - name: Archives, signature par Apple et envoi
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          PLATEFORMES: ${{ inputs.plateformes }}
+        run: .github/appstore-archive.sh envoyer
