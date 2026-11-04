@@ -74,8 +74,8 @@ EN (91) : `m3u,m3u8,xtream,live,tv,channels,guide,epg,xmltv,movies,series,stream
 
 ### URL
 - **URL d'assistance** (obligatoire) : `https://mkzrt22.github.io/FluxTV-iOS/assistance/`
-  (anglais : `https://mkzrt22.github.io/FluxTV-iOS/en/help/`). Page prête, mise en ligne dès que
-  l'adresse de contact est choisie (« À décider », point 1).
+  (anglais : `https://mkzrt22.github.io/FluxTV-iOS/en/help/`). En ligne depuis le 4 novembre
+  2026 : questions fréquentes et contact `fluxtv.support@gmail.com`.
 - **URL marketing** (facultative) : `https://mkzrt22.github.io/FluxTV-iOS/` (anglais :
   `https://mkzrt22.github.io/FluxTV-iOS/en/`)
 
@@ -176,11 +176,8 @@ Conseil : « Publier manuellement cette version » pour choisir le jour de la so
 
 ## À décider (Claude te guide pour chaque point)
 
-1. **Adresse de contact de la page « Assistance »** (obligatoire) : Apple veut une page avec
-   un moyen de te contacter. La page est prête (questions fréquentes en français et en anglais,
-   liens depuis l'accueil et la page confidentialité) : il ne manque que l'adresse e-mail à y
-   afficher, réservée à FluxTV (pas ton adresse personnelle). Claude la met en ligne dès que tu
-   la lui donnes.
+1. ✅ **Page « Assistance »** : en ligne le 4 novembre 2026, avec l'adresse
+   `fluxtv.support@gmail.com` (réservée à FluxTV).
 2. **Prix** : conseil, **gratuit** (comme sur Android et Xbox). Une app payante demande en plus
    le contrat « Apps payantes » d'Apple, avec coordonnées bancaires et fiscales.
 3. **Classification par âge** : répondre honnêtement au questionnaire (aucune violence, aucun
