@@ -24,33 +24,40 @@ VIOLET = (155, 77, 235)
 TEXTE = (241, 242, 255)
 TEXTE_DOUX = (166, 171, 210)
 
-TAILLES = {"iphone": (1320, 2868), "ipad": (2752, 2064), "tv": (1920, 1080)}
+TAILLES = {"iphone": (1320, 2868), "ipad": (2064, 2752), "tv": (1920, 1080)}
+# Arrondi des coins de l'écran, en part de sa largeur
+RAYON = {"iphone": 0.11, "ipad": 0.045}
 
-# Ordre de la fiche : (écran, titre, sous-titre) ; « puces » : formats affichés sous le lecteur
-ECRANS = {
-    "fr": [
-        ("accueil", "Toute votre TV,\nau même endroit", "Chaînes, films et séries de votre abonnement"),
-        ("lecture-film", "Un lecteur complet", "Formats, pistes audio et sous-titres"),
-        ("direct", "La TV en direct,\navec le programme", "Guide XMLTV, favoris, zapping rapide"),
-        ("fiche-film", "Reprenez là où\nvous en étiez", "Reprise automatique des films et des épisodes"),
-        ("fiche-serie", "Saisons et épisodes\nenchaînés", "L'épisode suivant démarre tout seul"),
-        ("bienvenue", "Ajoutez votre source\nen un instant", "Compte Xtream ou playlist M3U · aucune chaîne fournie"),
-    ],
-    "en": [
-        ("accueil", "All your TV,\nin one place", "Live channels, movies and series from your subscription"),
-        ("lecture-film", "A complete player", "Formats, audio tracks and subtitles"),
-        ("direct", "Live TV with\nwhat's on now", "XMLTV guide, favorites, fast zapping"),
-        ("fiche-film", "Pick up where\nyou left off", "Movies and episodes resume automatically"),
-        ("fiche-serie", "Seasons and episodes,\nback to back", "The next episode starts on its own"),
-        ("bienvenue", "Add your source\nin seconds", "Xtream account or M3U playlist · no channels included"),
-    ],
+# Titre et sous-titre de chaque écran ; « puces » : formats affichés sous le lecteur
+TEXTES = {
+    "fr": {
+        "accueil": ("Toute votre TV,\nau même endroit", "Chaînes, films et séries de votre abonnement"),
+        "lecture-film": ("Un lecteur complet", "Formats, pistes audio et sous-titres"),
+        "direct": ("La TV en direct,\navec le programme", "Guide XMLTV, favoris, zapping rapide"),
+        "fiche-film": ("Reprenez là où\nvous en étiez", "Reprise automatique des films et des épisodes"),
+        "fiche-serie": ("Saisons et épisodes\nenchaînés", "L'épisode suivant démarre tout seul"),
+        "bienvenue": ("Ajoutez votre source\nen un instant", "Compte Xtream ou playlist M3U · aucune chaîne fournie"),
+    },
+    "en": {
+        "accueil": ("All your TV,\nin one place", "Live channels, movies and series from your subscription"),
+        "lecture-film": ("A complete player", "Formats, audio tracks and subtitles"),
+        "direct": ("Live TV with\nwhat's on now", "XMLTV guide, favorites, fast zapping"),
+        "fiche-film": ("Pick up where\nyou left off", "Movies and episodes resume automatically"),
+        "fiche-serie": ("Seasons and episodes,\nback to back", "The next episode starts on its own"),
+        "bienvenue": ("Add your source\nin seconds", "Xtream account or M3U playlist · no channels included"),
+    },
+}
+# Ordre de la fiche (les premières comptent le plus). Sur iPad, le lecteur reste vertical : plus loin.
+ORDRE = {
+    "iphone": ["accueil", "lecture-film", "direct", "fiche-film", "fiche-serie", "bienvenue"],
+    "ipad": ["accueil", "direct", "fiche-film", "lecture-film", "fiche-serie", "bienvenue"],
 }
 PUCES = ["HLS", "MPEG-TS", "MP4", "MKV", "AVI", "AC3", "E-AC3", "DTS", "Sous-titres"]
 PUCES_EN = ["HLS", "MPEG-TS", "MP4", "MKV", "AVI", "AC3", "E-AC3", "DTS", "Subtitles"]
 # Apple TV : captures brutes, dans cet ordre
-ECRANS_TV = ["accueil", "direct", "lecture-film", "fiche-film", "fiche-serie", "lecture-direct"]
-# Plusieurs instants du film : celui retenu
-INSTANT = {"iphone": 2, "ipad": 2, "tv": 2}
+ECRANS_TV = ["accueil", "direct", "lecture-film", "fiche-film", "fiche-serie"]
+# Plusieurs instants du film (captures -1, -2, -3) : celui retenu, par appareil et par langue
+INSTANT = {"iphone": {"fr": 2, "en": 2}, "ipad": {"fr": 1, "en": 2}, "tv": {"fr": 3, "en": 3}}
 
 
 def police(nom, taille):
@@ -146,6 +153,7 @@ def puces(d, w, y, mots, f, marge):
 
 
 def composer(capture, appareil_nom, titre, sous_titre, puces_mots=None):
+    rayon = RAYON[appareil_nom]
     W, H = TAILLES[appareil_nom]
     img = fond(W, H).convert("RGBA")
     d = ImageDraw.Draw(img)
@@ -174,7 +182,6 @@ def composer(capture, appareil_nom, titre, sous_titre, puces_mots=None):
     else:
         bas = round(H * (0.035 if portrait else 0.045))
         dispo_h = H - y - bas
-        rayon = 0.11 if portrait else 0.025
         # Largeur qui fait tenir l'appareil (cadre compris) dans la hauteur restante
         largeur = round(dispo_h / (capture.height / capture.width) / 1.0)
         largeur = min(largeur, W - 2 * marge)
@@ -186,8 +193,12 @@ def composer(capture, appareil_nom, titre, sous_titre, puces_mots=None):
     return img.convert("RGB")
 
 
-def charger(chemin):
+def charger(chemin, paysage=False):
+    """Capture sans transparence. « paysage » : le simulateur range une app tournée à
+    l'horizontale dans une image verticale, couchée ; on la redresse."""
     img = Image.open(chemin)
+    if paysage and img.height > img.width:
+        img = img.rotate(90, expand=True)
     if img.mode != "RGB":
         fond_noir = Image.new("RGB", img.size, (0, 0, 0))
         fond_noir.paste(img, mask=img.getchannel("A") if "A" in img.getbands() else None)
@@ -197,7 +208,7 @@ def charger(chemin):
 
 def trouver(dossier, appareil_nom, langue, ecran):
     base = os.path.join(dossier, f"{appareil_nom}-{langue}-{ecran}")
-    for nom in (f"{base}.png", f"{base}-{INSTANT[appareil_nom]}.png", f"{base}-1.png"):
+    for nom in (f"{base}.png", f"{base}-{INSTANT[appareil_nom][langue]}.png", f"{base}-1.png"):
         if os.path.exists(nom):
             return nom
     return None
@@ -208,12 +219,15 @@ def main(src, dst):
         out = os.path.join(dst, dossier_l)
         os.makedirs(out, exist_ok=True)
         for appareil_nom, prefixe in (("iphone", "iPhone"), ("ipad", "iPad")):
-            for n, (ecran, titre, sous) in enumerate(ECRANS[langue], 1):
+            for n, ecran in enumerate(ORDRE[appareil_nom], 1):
+                titre, sous = TEXTES[langue][ecran]
                 f = trouver(src, appareil_nom, langue, ecran)
                 if not f:
                     print("  manque", appareil_nom, langue, ecran)
                     continue
-                img = composer(charger(f), appareil_nom, titre, sous, PUCES if langue == "fr" else PUCES_EN)
+                # iPhone : le lecteur a été capturé à l'horizontale
+                paysage = appareil_nom == "iphone" and ecran.startswith("lecture")
+                img = composer(charger(f, paysage), appareil_nom, titre, sous, PUCES if langue == "fr" else PUCES_EN)
                 assert img.size == TAILLES[appareil_nom] and img.mode == "RGB"
                 img.save(os.path.join(out, f"{prefixe}-{n}-{ecran}.png"), optimize=True)
         for n, ecran in enumerate(ECRANS_TV, 1):

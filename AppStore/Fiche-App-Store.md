@@ -48,13 +48,15 @@ Même chose pour « tvOS 1.0 ».
 ## 5. Page de la version 1.2 (iOS, puis tvOS)
 
 ### Captures d'écran
-Fichiers fournis par Claude, dans l'ordre (le premier compte le plus) :
-- **iPhone 6,9 pouces** : 6 captures (1320 × 2868)
-- **iPad 13 pouces** : 6 captures (2752 × 2064)
-- **Apple TV** (page tvOS) : 6 captures (1920 × 1080)
+Fichiers fournis par Claude (`FluxTV-AppStore-captures.zip`), numérotés dans l'ordre (les
+premières comptent le plus, elles s'affichent dans les résultats de recherche) :
+- **iPhone 6,9 pouces** : 6 captures `iPhone-1…6` (1320 × 2868)
+- **iPad 13 pouces** : 6 captures `iPad-1…6` (2064 × 2752)
+- **Apple TV** (page tvOS) : 5 captures `AppleTV-1…5` (1920 × 1080)
 
 Dossier `francais` pour la fiche française, `english` pour la fiche anglaise. Glisser les
-fichiers dans la zone de dépôt de chaque taille.
+fichiers dans la zone de dépôt de chaque taille, dans l'ordre des numéros. Apple adapte
+lui-même les captures aux autres tailles d'écran.
 
 ### Texte promotionnel (170 max, modifiable à tout moment sans nouvelle version)
 FR (149) :
@@ -191,5 +193,6 @@ Conseil : « Publier manuellement cette version » pour choisir le jour de la so
 
 ## Captures : comment elles sont faites
 Sur des Mac de GitHub (workflow « App Store - préparation », branche `appstore`), avec la
-démonstration : aucune chaîne protégée à l'écran, uniquement des films libres. Claude ajoute
-ensuite un titre en haut de chaque capture iPhone et iPad.
+démonstration : aucune chaîne protégée à l'écran, uniquement des films libres de la Blender
+Foundation. Captures brutes : branche `ci-appstore`. Titre ajouté au-dessus des captures iPhone
+et iPad par `AppStore/Captures/montage.py` (polices et couleurs de l'app).
