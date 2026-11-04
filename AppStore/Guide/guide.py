@@ -106,8 +106,9 @@ PHASES = [
          "<b>En-tête et résultats de recherche</b> (nouveauté 2026, facultatif), <b>iPhone Duo</b> (facultatif jusqu'en avril 2027), "
          "<b>Fichier de couverture géographique</b>, <b>Extrait d'app</b>, <b>App iMessage</b>, <b>Game Center</b> et <b>Pièce jointe</b> : rien à faire, ils ne concernent pas FluxTV.", []),
         ("captures-iphone", "Captures iPhone",
-         "Trouve la rubrique des captures de l'app (« Aperçus et captures d'écran ») : si la page n'affiche que « En-tête et résultats de recherche », "
-         "clique sur ce titre pour changer de rubrique. Onglet <b>iPhone avec Dynamic Island (écran moyen)</b> : glisse les 6 fichiers du dossier "
+         "Sous « Informations de la page produit », ouvre l'onglet <b>Aperçus et captures d'écran</b>. Fenêtre étroite : les deux onglets deviennent un menu ; "
+         "clique sur le titre bleu <b>En-tête et résultats de recherche ⌄</b> et choisis « Aperçus et captures d'écran » (ou agrandis la fenêtre). "
+         "Onglet <b>iPhone avec Dynamic Island (écran moyen)</b> : glisse les 6 fichiers du dossier "
          "<code>1-iPhone-ecran-moyen</code>, dans l'ordre (obligatoire). Puis, si l'onglet existe, <b>iPhone avec Dynamic Island (grand écran)</b> : "
          "dossier <code>2-iPhone-grand-ecran</code> (conseillé : sinon Apple réclame une taille de plus). "
          "Introuvable ? Envoie une capture de la page à Claude.", []),
@@ -128,7 +129,7 @@ PHASES = [
     ]),
     ("tvos", "Page de la version Apple TV", "Menu à côté du titre « App iOS Version 1.2 » (ou menu « Distribution ») › tvOS. Même présentation que la page iPhone, mêmes textes.", [
         ("captures-tv", "Captures Apple TV",
-         "Rubrique des captures de l'app › Apple TV : les 5 fichiers du dossier <code>4-AppleTV</code>, dans l'ordre. "
+         "Onglet <b>Aperçus et captures d'écran</b> (même menu que sur la page iPhone) › Apple TV : les 5 fichiers du dossier <code>4-AppleTV</code>, dans l'ordre. "
          "« En-tête et résultats de recherche » : facultatif, à laisser vide.", []),
         ("textes-tv", "Textes, adresses et copyright",
          "Recolle le texte promotionnel, la description, les mots-clés, l'URL d'assistance, l'URL marketing et le copyright "

@@ -51,6 +51,9 @@ Même chose pour « tvOS 1.0 ».
 Fichiers fournis par Claude (`FluxTV-AppStore-captures.zip`), un dossier par emplacement
 d'App Store Connect, dans `francais` (fiche française) et `english` (fiche anglaise). Fichiers
 numérotés dans l'ordre (les premiers comptent le plus : ils s'affichent dans les recherches).
+Où : page de la version › « Informations de la page produit » › onglet **Aperçus et captures
+d'écran** (fenêtre étroite : cliquer sur le titre bleu « En-tête et résultats de recherche ⌄ » et
+choisir « Aperçus et captures d'écran »), puis l'onglet de l'appareil.
 
 | Dossier | Emplacement dans App Store Connect | |
 |---|---|---|
