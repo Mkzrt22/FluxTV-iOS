@@ -1,23 +1,83 @@
-# Fiche App Store — FluxTV
+# Fiche App Store — FluxTV (iPhone, iPad, Apple TV)
 
-À recopier dans App Store Connect (onglet de l'app › Distribution › Informations).
+À recopier dans App Store Connect (https://appstoreconnect.apple.com › Apps › FluxTV), dans
+l'ordre des écrans. Les textes entre `…` se copient tels quels. Toutes les limites d'Apple sont
+vérifiées (nombre de caractères indiqué entre parenthèses).
 
-## Nom (30 caractères max)
-FluxTV
+Langue principale de la fiche : **français**. Ajouter ensuite **English (U.S.)** (menu des langues
+en haut à droite de la fiche) et recopier la partie anglaise.
 
-Si le nom est déjà pris : « FluxTV Player » ou « FluxTV – Lecteur TV ».
+---
 
-## Sous-titre (30 caractères max)
-Vos listes TV, films et séries
+## 1. Version : 1.0 → 1.2
 
-## Catégorie
-Principale : Divertissement — Secondaire : Photo et vidéo
+L'app envoyée porte le numéro **1.2**. Sur la page de la version (colonne de gauche,
+« iOS 1.0 »), remplacer **1.0** par `1.2` dans le champ « Version », puis « Enregistrer ».
+Même chose pour « tvOS 1.0 ».
 
-## Texte promotionnel (170 caractères, modifiable à tout moment)
-Nouveau : interface repensée pour iPhone, iPad et Apple TV, reprise automatique des films et des épisodes, recherche instantanée.
+## 2. Informations sur l'app (Général › Informations sur l'app)
 
-## Description
-FluxTV est un lecteur élégant pour regarder VOS propres listes de lecture : chaînes en direct, films et séries, sur iPhone, iPad et Apple TV.
+| Champ | Français | English (U.S.) |
+|---|---|---|
+| Nom | `FluxTV` | `FluxTV` |
+| Sous-titre (30 max) | `Lecteur IPTV pour vos listes` (28) | `IPTV player for your playlists` (30) |
+
+- **Catégorie principale** : Divertissement · **secondaire** : Photo et vidéo
+- **Droits sur le contenu** : « Oui, l'app contient, affiche ou donne accès à du contenu tiers » ›
+  « J'ai les droits nécessaires » (la démonstration n'utilise que des films libres de la Blender
+  Foundation, licence Creative Commons BY, et des flux de test publics ; le reste est apporté par
+  l'utilisateur).
+- **Classification par âge** : voir « À décider », point 3.
+- **Statut de commerçant (Union européenne)** : voir « À décider », point 4.
+
+## 3. Tarifs et disponibilité
+
+- **Prix** : voir « À décider », point 2 (conseil : gratuit, comme sur Android et Xbox).
+- **Disponibilité** : tous les pays **sauf la Chine continentale** (Apple y exige une licence
+  ICP, que FluxTV n'a pas).
+
+## 4. Confidentialité de l'app
+
+- **URL de la politique de confidentialité** :
+  `https://mkzrt22.github.io/FluxTV-iOS/confidentialite/`
+  (en anglais : `https://mkzrt22.github.io/FluxTV-iOS/en/privacy/`)
+- **Pratiques de confidentialité** › « Commencer » › « Collectez-vous des données à partir de
+  cette app ? » › **Non, nous ne collectons pas de données** › Publier. La fiche affichera
+  « Données non collectées ».
+
+## 5. Page de la version 1.2 (iOS, puis tvOS)
+
+### Captures d'écran
+Fichiers fournis par Claude, dans l'ordre (le premier compte le plus) :
+- **iPhone 6,9 pouces** : 6 captures (1320 × 2868)
+- **iPad 13 pouces** : 6 captures (2752 × 2064)
+- **Apple TV** (page tvOS) : 6 captures (1920 × 1080)
+
+Dossier `francais` pour la fiche française, `english` pour la fiche anglaise. Glisser les
+fichiers dans la zone de dépôt de chaque taille.
+
+### Texte promotionnel (170 max, modifiable à tout moment sans nouvelle version)
+FR (149) :
+`Regardez vos chaînes, films et séries sur iPhone, iPad et Apple TV avec votre propre abonnement. Sans publicité, sans pistage. Aucune chaîne fournie.`
+
+EN (137) :
+`Watch your live TV, movies and series on iPhone, iPad and Apple TV with your own subscription. No ads, no tracking. No channels included.`
+
+### Mots-clés (100 max, séparés par des virgules, sans espaces)
+Pas besoin de répéter les mots du nom et du sous-titre (Apple les prend déjà en compte).
+
+FR (96) : `m3u,xtream,tv,direct,chaînes,guide,epg,xmltv,films,séries,playlist,player,stream,replay,live,vod`
+
+EN (91) : `m3u,m3u8,xtream,live,tv,channels,guide,epg,xmltv,movies,series,stream,vod,catchup,lists,hls`
+
+### URL
+- **URL d'assistance** (obligatoire) : voir « À décider », point 1.
+- **URL marketing** (facultative) : `https://mkzrt22.github.io/FluxTV-iOS/` (anglais :
+  `https://mkzrt22.github.io/FluxTV-iOS/en/`)
+
+### Description (français)
+```
+FluxTV est un lecteur élégant pour regarder VOS propres listes : chaînes en direct, films et séries, sur iPhone, iPad et Apple TV.
 
 AJOUTEZ VOTRE SOURCE
 • Compte Xtream (serveur, utilisateur, mot de passe) ou lien de playlist M3U
@@ -44,66 +104,18 @@ PENSÉ POUR CHAQUE ÉCRAN
 • iPad : catégories en barre latérale
 • iPhone : navigation à une main
 
+EN FRANÇAIS ET EN ANGLAIS
+• Langue demandée au premier lancement, modifiable dans les réglages
+
 VOS DONNÉES RESTENT CHEZ VOUS
 • Aucune collecte de données, aucun pistage, aucune publicité
 • Vos identifiants restent chiffrés sur votre appareil (trousseau sécurisé)
 
 IMPORTANT : FluxTV est un lecteur multimédia. Il ne fournit, n'héberge et ne vend aucun contenu, aucune chaîne ni aucun abonnement. Vous devez disposer de vos propres sources et des droits nécessaires pour les regarder.
+```
 
-## Mots-clés (100 caractères, séparés par des virgules, sans espaces)
-lecteur,m3u,xtream,tv,direct,guide,epg,films,séries,playlist,stream,replay,player,chaînes
-
-## URL d'assistance
-(ton site de vente, ou une page de contact)
-
-## URL de la politique de confidentialité
-`https://mkzrt22.github.io/FluxTV-iOS/confidentialite/` (page du site, valable pour toutes les
-versions de FluxTV ; un visiteur anglophone arrive sur la version anglaise, `…/en/privacy/`).
-
-## Confidentialité de l'app (questionnaire)
-« Données non collectées » — FluxTV ne collecte aucune donnée.
-
-## Classification par âge
-Réponds honnêtement au questionnaire. FluxTV peut lire n'importe quel contenu fourni par
-l'utilisateur : la classification la plus élevée est généralement demandée pour ce type de
-lecteur. Le réglage « Masquer les contenus pour adultes » est activé par défaut.
-
-## Prix
-Au choix dans « Tarifs et disponibilité » :
-- app payante à l'achat (ex. 4,99 €) — le plus simple, rien à changer dans l'app ;
-- ou gratuite (un achat intégré pourra être ajouté plus tard).
-Apple prélève 15 % (programme pour les petites entreprises, à demander dans App Store Connect).
-
-## Statut de commerçant (Union européenne)
-Si tu vends l'app, Apple te demandera de déclarer ton statut de « commerçant » : ton
-adresse, ton téléphone et ton e-mail seront alors affichés sur la fiche (obligation légale
-européenne, DSA).
-
-## Captures d'écran
-- iPhone 6,9 pouces (1320 × 2868 ou 2868 × 1320) : 3 à 10 captures
-- iPad 13 pouces (2064 × 2752 ou 2752 × 2064) : 3 à 10 captures
-- Apple TV (1920 × 1080 ou 3840 × 2160) : 1 à 10 captures
-Prends-les avec le mode **Démonstration** (aucune chaîne protégée à l'écran) :
-dans le simulateur de Xcode, Cmd+S enregistre une capture.
-
----
-
-# Fiche en anglais (English — U.S.)
-
-Depuis la version 1.2, l'app est en français et en anglais (langue demandée au premier
-lancement, modifiable dans les réglages). Dans App Store Connect, ajoute la langue « English
-(U.S.) » (menu des langues en haut à droite de la fiche) et recopie ces textes.
-
-## Name
-FluxTV
-
-## Subtitle (30 characters max)
-Your TV lists, movies & series
-
-## Promotional text
-New: English and French interface, redesigned for iPhone, iPad and Apple TV, auto-resume for movies and episodes, instant search.
-
-## Description
+### Description (English)
+```
 FluxTV is an elegant player to watch YOUR own playlists: live channels, movies and series, on iPhone, iPad and Apple TV.
 
 ADD YOUR SOURCE
@@ -139,13 +151,45 @@ YOUR DATA STAYS WITH YOU
 • Your login details stay encrypted on your device (secure keychain)
 
 IMPORTANT: FluxTV is a media player. It does not provide, host or sell any content, channels or subscriptions. You must have your own sources and the rights needed to watch them.
+```
 
-## Keywords (100 characters, comma-separated, no spaces)
-iptv,player,m3u,xtream,live,tv,guide,epg,movies,series,playlist,stream,replay,channels
+### Nouveautés de cette version
+Pas demandé pour la toute première version publiée sur l'App Store.
 
-## What's New in This Version
-FluxTV now speaks English and French: the language is asked at first launch and can be changed anytime in Settings.
+### Copyright
+`2026 FluxTV`
 
-## Screenshots
-Same sizes as the French listing, taken in English: the GitHub simulators produce them
-(files ending in « -en » on the « ci-simulateurs » branch).
+### Informations pour la vérification de l'app
+- **Connexion requise** : **non** (case décochée) : l'équipe d'Apple utilise le mode démo.
+- **Coordonnées** : ton prénom, ton nom, ton téléphone et ton e-mail. Apple ne les affiche pas
+  sur la fiche. Tu les remplis toi-même, ne les envoie à personne (Claude compris).
+- **Notes** : copier le texte de `Notes-validation.md` (en anglais).
+
+### Publication de la version
+Conseil : « Publier manuellement cette version » pour choisir le jour de la sortie.
+
+---
+
+## À décider (Claude te guide pour chaque point)
+
+1. **URL d'assistance** (obligatoire) : Apple veut une page avec un moyen de te contacter.
+   Aujourd'hui, la rubrique « Contact » du site renvoie seulement vers la fiche Microsoft Store.
+   Le plus simple : une page « Assistance » sur le site (questions fréquentes et une adresse
+   e-mail réservée à FluxTV, par exemple celle de la fiche Microsoft Store si elle n'est pas ton
+   adresse personnelle). Claude la prépare dès que tu as choisi l'adresse.
+2. **Prix** : conseil, **gratuit** (comme sur Android et Xbox). Une app payante demande en plus
+   le contrat « Apps payantes » d'Apple, avec coordonnées bancaires et fiscales.
+3. **Classification par âge** : répondre honnêtement au questionnaire (aucune violence, aucun
+   contenu sexuel, etc., dans l'app elle-même ; contrôle parental : oui, « Masquer les contenus
+   pour adultes », activé par défaut). Apple se méfie des lecteurs IPTV, qui peuvent lire
+   n'importe quelle source : choisir ensuite une classification plus élevée (**18+**) évite le
+   plus souvent un refus. Contrepartie : l'app est masquée sur les appareils d'enfants.
+4. **Statut de commerçant (DSA, Union européenne)** : obligatoire pour être visible dans l'UE.
+   « Commerçant » affiche ton adresse, ton téléphone et ton e-mail sur la fiche. Pour une app
+   gratuite faite à titre personnel, sans vente ni publicité, « Non commerçant » est en général
+   la bonne réponse : c'est à toi de juger ta situation.
+
+## Captures : comment elles sont faites
+Sur des Mac de GitHub (workflow « App Store - préparation », branche `appstore`), avec la
+démonstration : aucune chaîne protégée à l'écran, uniquement des films libres. Claude ajoute
+ensuite un titre en haut de chaque capture iPhone et iPad.
