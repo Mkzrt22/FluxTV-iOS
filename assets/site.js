@@ -12,16 +12,28 @@
   // ─────────────── Fond étoilé : nébuleuse, étoiles en vitesse lumière, ondes, étincelles ───────────────
   const Field = (() => {
     const cv = $('#fx'); const g = cv.getContext('2d');
-    let w = 0, h = 0, dpr = 1, cx = 0, cy = 0, warp = 1, flash = 0, t0 = 0, last = 0, nextRing = 0, raf = 0, running = false, visible = true;
+    let w = 0, h = 0, dpr = 1, cx = 0, cy = 0, warp = 1, flash = 0, t0 = 0, last = 0, lastDraw = 0, nextRing = 0, raf = 0, running = false, visible = true;
     const stars = [], rings = [], sparks = [];
     const cols = ['#ffffff', '#c7d2fe', '#e9d5ff', '#8e97ff', '#f0abfc'];
+    // Téléphones et petits processeurs : image à la densité 1 et 30 images par seconde (la batterie et la fluidité du défilement y gagnent)
+    const small = innerWidth < 700 || (navigator.hardwareConcurrency || 8) <= 4;
+    const minGap = small ? 1000 / 30 : 0;
+    // Nébuleuses dessinées une seule fois, puis simplement agrandies à chaque image
+    const sprite = (stops) => {
+      const c = document.createElement('canvas'); c.width = c.height = 256;
+      const x = c.getContext('2d'), gr = x.createRadialGradient(128, 128, 0, 128, 128, 128);
+      stops.forEach(([o, col]) => gr.addColorStop(o, col)); x.fillStyle = gr; x.fillRect(0, 0, 256, 256);
+      return c;
+    };
+    const neb1 = sprite([[0, 'rgba(109,76,245,.55)'], [0.45, 'rgba(91,92,240,.18)'], [1, 'rgba(0,0,0,0)']]);
+    const neb2 = sprite([[0, 'rgba(244,63,94,.12)'], [1, 'rgba(0,0,0,0)']]);
     const spawn = (s, any) => {
       s.a = Math.random() * Math.PI * 2; s.d = any ? Math.random() : Math.random() * 0.06;
       s.v = 0.1 + Math.random() * 0.38; s.z = 0.7 + Math.random() * 1.8; s.c = cols[(Math.random() * cols.length) | 0];
     };
     function resize() {
       const r = cv.getBoundingClientRect();
-      dpr = Math.min(2, window.devicePixelRatio || 1);
+      dpr = Math.min(small ? 1 : 2, window.devicePixelRatio || 1);
       w = cv.width = Math.max(1, Math.round(r.width * dpr)); h = cv.height = Math.max(1, Math.round(r.height * dpr));
       center();
     }
@@ -33,17 +45,18 @@
     }
     function frame(now) {
       if (!running) return;
+      raf = requestAnimationFrame(frame);
+      if (minGap && now - lastDraw < minGap - 2) return;
+      lastDraw = now;
       if (!t0) { t0 = now; last = now; nextRing = now + 2600; }
       const dt = Math.min(0.05, (now - last) / 1000); last = now;
       const t = (now - t0) / 1000;
       g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
       g.clearRect(0, 0, w, h);
       const R = Math.min(w, h) * 0.6 * (0.9 + 0.1 * Math.sin(t * 1.6));
-      let gr = g.createRadialGradient(cx, cy, 0, cx, cy, R);
-      gr.addColorStop(0, 'rgba(109,76,245,.55)'); gr.addColorStop(0.45, 'rgba(91,92,240,.18)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
-      g.fillStyle = gr; g.fillRect(0, 0, w, h);
-      gr = g.createRadialGradient(cx + Math.cos(t * 0.6) * R * 0.3, cy + Math.sin(t * 0.5) * R * 0.2, 0, cx, cy, R * 0.8);
-      gr.addColorStop(0, 'rgba(244,63,94,.12)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+      g.drawImage(neb1, cx - R, cy - R, 2 * R, 2 * R);
+      const r2 = R * 0.8, fx = cx + Math.cos(t * 0.6) * R * 0.3, fy = cy + Math.sin(t * 0.5) * R * 0.2;
+      g.drawImage(neb2, fx - r2, fy - r2, 2 * r2, 2 * r2);
       warp += (1 - warp) * Math.min(1, dt * 2.5);
       const reach = Math.max(w, h) * 0.78;
       g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
@@ -72,14 +85,13 @@
         g.beginPath(); g.arc(s.x, s.y, s.r * dpr, 0, 7); g.fill();
       }
       if (flash > 0.01) { g.globalCompositeOperation = 'source-over'; g.globalAlpha = flash; g.fillStyle = '#b9a8ff'; g.fillRect(0, 0, w, h); flash *= 1 - Math.min(1, dt * 4); }
-      raf = requestAnimationFrame(frame);
     }
     function play() { if (!running && visible && !document.hidden) { running = true; last = performance.now(); raf = requestAnimationFrame(frame); } }
     function pause() { running = false; cancelAnimationFrame(raf); }
     return {
       start() {
         resize(); addEventListener('resize', resize);
-        const n = innerWidth < 700 ? 150 : 260;
+        const n = small ? 110 : 240;
         for (let i = 0; i < n; i++) { const s = {}; spawn(s, true); stars.push(s); }
         // Pas de calcul quand l'intro n'est plus à l'écran ou que l'onglet est caché
         new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? play() : pause(); }).observe(cv);
@@ -111,6 +123,8 @@
     }
     Field.start();
     rays.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 1600, fill: 'forwards', easing: 'ease-out' });
+    // Accroche, boutons et appareils apparaissent pendant que l'emblème s'anime : le visiteur lit plus tôt
+    setTimeout(() => $$('.reveal').forEach((r) => r.classList.add('in')), 450);
     // 1. Emblème : bascule 3D avec rebond
     mark.animate([
       { opacity: 0, transform: 'perspective(800px) rotateY(-120deg) rotateX(25deg) scale(.25)' },
@@ -129,8 +143,6 @@
     word.classList.add('in');
     await sleep(500);
     tag.classList.add('in');
-    await sleep(250);
-    $$('.reveal').forEach((r) => r.classList.add('in'));
     // Les arcs de diffusion « émettent » régulièrement
     setInterval(() => $('#spW2').animate([{ strokeOpacity: .55 }, { strokeOpacity: 1 }, { strokeOpacity: .55 }], { duration: 900 }), 1800);
   }
@@ -183,9 +195,41 @@
     try { await navigator.clipboard.writeText(c.dataset.copy); c.classList.add('done'); setTimeout(() => c.classList.remove('done'), 1800); } catch (e) { /* copie refusée : l'adresse reste lisible */ }
   }));
 
+  // ─────────────── Le bon téléchargement pour l'appareil du visiteur ───────────────
+  // Carte de l'appareil en premier, avec la pastille « Ton appareil » ; le bouton du haut y mène directement.
+  // Fire TV et box Android : la marche à suivre avec Downloader est déjà ouverte.
+  const appareil = (() => {
+    const ua = navigator.userAgent || '';
+    if (/Xbox/i.test(ua)) return { carte: 'xbox', nom: 'Xbox', direct: true };
+    if (/AFT[A-Z]|Silk\//.test(ua)) return { carte: 'android', nom: 'Fire TV', direct: true, ouvrir: true };
+    if (/Android/i.test(ua)) {
+      const tv = /\bTV\b|GoogleTV|Android TV|BRAVIA|SHIELD|Chromecast|MiTV|MIBOX/i.test(ua);
+      return { carte: 'android', nom: tv ? 'Android TV' : 'Android', direct: true, ouvrir: tv };
+    }
+    if (/iPhone|iPod/.test(ua)) return { carte: 'apple', nom: 'iPhone' };
+    if (/iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return { carte: 'apple', nom: 'iPad' };
+    if (/Windows NT/.test(ua)) return { carte: 'windows', nom: 'Windows', direct: true };
+    return null;
+  })();
+  if (appareil) {
+    const carte = $(`[data-plateforme="${appareil.carte}"]`);
+    if (carte) {
+      carte.classList.add('is-yours');
+      const pastille = document.createElement('span');
+      pastille.className = 'yours'; pastille.textContent = T('Ton appareil', 'Your device');
+      $('.plat-top', carte).insertBefore(pastille, $('.state', carte));
+      if (appareil.ouvrir) { const d = $('details.how', carte); if (d) d.open = true; }
+      const cta = $('.hero-cta .btn');
+      if (cta) {
+        cta.textContent = appareil.direct ? T('Télécharger pour ', 'Download for ') + appareil.nom : T('FluxTV pour ', 'FluxTV for ') + appareil.nom;
+        cta.href = '#' + carte.id;
+      }
+    }
+  }
+
   // ─────────────── Apparition des blocs au défilement ───────────────
   if (!calm && 'IntersectionObserver' in window) {
-    const els = $$('.head, .feat, .plat, .home-show, .home-points > div, .steps li, .home-dl, .faq details, .policy');
+    const els = $$('.head, .feat, .plat, .trois li, .home-show, .home-points > div, .steps li, .home-dl, .faq details, .policy, .privacy-points li');
     els.forEach((el) => el.classList.add('rise'));
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) if (e.isIntersecting) {
