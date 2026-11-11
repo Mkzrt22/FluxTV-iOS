@@ -1,0 +1,132 @@
+Building for debugging...
+[0/8] /Users/runner/work/FluxTV-iOS/FluxTV-iOS/Core/.build/arm64-apple-macosx/debug/FluxCorePackageTests.derived/runner.swift
+[1/8] Write sources
+[3/8] Copying Fixtures
+[3/8] Write sources
+[5/8] Write swift-version-7974D3F7F03D5E95.txt
+[7/17] Compiling FluxCore Demo.swift
+[8/17] Compiling FluxCore HTTP.swift
+[9/17] Compiling FluxCore JSON.swift
+[10/17] Compiling FluxCore Library.swift
+[11/17] Compiling FluxCore M3U.swift
+[12/17] Compiling FluxCore Models.swift
+[13/17] Compiling FluxCore Repository.swift
+[14/17] Compiling FluxCore TextTools.swift
+[15/17] Emitting module FluxCore
+[16/20] Compiling FluxCore Tr.swift
+[17/20] Compiling FluxCore XMLTV.swift
+[18/20] Compiling FluxCore Xtream.swift
+[19/23] Compiling FluxCoreTests resource_bundle_accessor.swift
+[20/23] Emitting module FluxCoreTests
+[21/23] Compiling FluxCoreTests CoreTests.swift
+[22/25] Compiling FluxCorePackageTests runner.swift
+[23/25] Emitting module FluxCorePackageTests
+[23/25] Write Objects.LinkFileList
+[24/25] Linking FluxCorePackageTests
+Build complete! (26.15s)
+Test Suite 'All tests' started at 2026-11-11 19:02:05.071.
+Test Suite 'FluxCorePackageTests.xctest' started at 2026-11-11 19:02:05.076.
+Test Suite 'EnglishTests' started at 2026-11-11 19:02:05.076.
+Test Case '-[FluxCoreTests.EnglishTests testEnglishTexts]' started.
+Test Case '-[FluxCoreTests.EnglishTests testEnglishTexts]' passed (0.007 seconds).
+Test Suite 'EnglishTests' passed at 2026-11-11 19:02:05.084.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.007 (0.007) seconds
+Test Suite 'LibraryTests' started at 2026-11-11 19:02:05.084.
+Test Case '-[FluxCoreTests.LibraryTests testFavorites]' started.
+Test Case '-[FluxCoreTests.LibraryTests testFavorites]' passed (0.001 seconds).
+Test Case '-[FluxCoreTests.LibraryTests testFileRoundTrip]' started.
+Test Case '-[FluxCoreTests.LibraryTests testFileRoundTrip]' passed (0.006 seconds).
+Test Case '-[FluxCoreTests.LibraryTests testHistoryKeepsOneEpisodePerSeries]' started.
+Test Case '-[FluxCoreTests.LibraryTests testHistoryKeepsOneEpisodePerSeries]' passed (0.001 seconds).
+Test Case '-[FluxCoreTests.LibraryTests testNextEpisode]' started.
+Test Case '-[FluxCoreTests.LibraryTests testNextEpisode]' passed (0.001 seconds).
+Test Case '-[FluxCoreTests.LibraryTests testResumeAndWatched]' started.
+Test Case '-[FluxCoreTests.LibraryTests testResumeAndWatched]' passed (0.000 seconds).
+Test Suite 'LibraryTests' passed at 2026-11-11 19:02:05.094.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.009 (0.010) seconds
+Test Suite 'M3UTests' started at 2026-11-11 19:02:05.094.
+Test Case '-[FluxCoreTests.M3UTests testAttributes]' started.
+Test Case '-[FluxCoreTests.M3UTests testAttributes]' passed (0.000 seconds).
+Test Case '-[FluxCoreTests.M3UTests testCatalog]' started.
+Test Case '-[FluxCoreTests.M3UTests testCatalog]' passed (0.006 seconds).
+Test Case '-[FluxCoreTests.M3UTests testIds]' started.
+Test Case '-[FluxCoreTests.M3UTests testIds]' passed (0.001 seconds).
+Test Case '-[FluxCoreTests.M3UTests testParse]' started.
+Test Case '-[FluxCoreTests.M3UTests testParse]' passed (0.003 seconds).
+Test Suite 'M3UTests' passed at 2026-11-11 19:02:05.104.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.009 (0.010) seconds
+Test Suite 'ResolverTests' started at 2026-11-11 19:02:05.104.
+Test Case '-[FluxCoreTests.ResolverTests testDemoCatalog]' started.
+Test Case '-[FluxCoreTests.ResolverTests testDemoCatalog]' passed (0.001 seconds).
+Test Case '-[FluxCoreTests.ResolverTests testFavoriteSeriesKeepsItsId]' started.
+Test Case '-[FluxCoreTests.ResolverTests testFavoriteSeriesKeepsItsId]' passed (0.000 seconds).
+Test Case '-[FluxCoreTests.ResolverTests testPlaybackURLs]' started.
+Test Case '-[FluxCoreTests.ResolverTests testPlaybackURLs]' passed (0.000 seconds).
+Test Case '-[FluxCoreTests.ResolverTests testRepositoryDemo]' started.
+Test Case '-[FluxCoreTests.ResolverTests testRepositoryDemo]' passed (0.011 seconds).
+Test Suite 'ResolverTests' passed at 2026-11-11 19:02:05.118.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.013 (0.014) seconds
+Test Suite 'RobustnessTests' started at 2026-11-11 19:02:05.119.
+Test Case '-[FluxCoreTests.RobustnessTests testBigListsAreReadObjectByObject]' started.
+Test Case '-[FluxCoreTests.RobustnessTests testBigListsAreReadObjectByObject]' passed (0.168 seconds).
+Test Case '-[FluxCoreTests.RobustnessTests testGuideIdsIgnoreCase]' started.
+Test Case '-[FluxCoreTests.RobustnessTests testGuideIdsIgnoreCase]' passed (0.002 seconds).
+Test Case '-[FluxCoreTests.RobustnessTests testJSONFalseMeansNothing]' started.
+Test Case '-[FluxCoreTests.RobustnessTests testJSONFalseMeansNothing]' passed (0.000 seconds).
+Test Case '-[FluxCoreTests.RobustnessTests testKodiOptionsAndBOM]' started.
+Test Case '-[FluxCoreTests.RobustnessTests testKodiOptionsAndBOM]' passed (0.000 seconds).
+Test Case '-[FluxCoreTests.RobustnessTests testLiveFormatFallback]' started.
+Test Case '-[FluxCoreTests.RobustnessTests testLiveFormatFallback]' passed (0.000 seconds).
+Test Case '-[FluxCoreTests.RobustnessTests testPlaylistAndGuideSurviveServerErrors]' started.
+Test Case '-[FluxCoreTests.RobustnessTests testPlaylistAndGuideSurviveServerErrors]' passed (0.015 seconds).
+Test Case '-[FluxCoreTests.RobustnessTests testResumePositionsAreCapped]' started.
+Test Case '-[FluxCoreTests.RobustnessTests testResumePositionsAreCapped]' passed (0.007 seconds).
+Test Suite 'RobustnessTests' passed at 2026-11-11 19:02:05.313.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.193 (0.195) seconds
+Test Suite 'TextToolsTests' started at 2026-11-11 19:02:05.313.
+Test Case '-[FluxCoreTests.TextToolsTests testAdultAndSearch]' started.
+Test Case '-[FluxCoreTests.TextToolsTests testAdultAndSearch]' passed (0.003 seconds).
+Test Case '-[FluxCoreTests.TextToolsTests testCategories]' started.
+Test Case '-[FluxCoreTests.TextToolsTests testCategories]' passed (0.001 seconds).
+Test Case '-[FluxCoreTests.TextToolsTests testChannelNames]' started.
+Test Case '-[FluxCoreTests.TextToolsTests testChannelNames]' passed (0.001 seconds).
+Test Case '-[FluxCoreTests.TextToolsTests testTitles]' started.
+Test Case '-[FluxCoreTests.TextToolsTests testTitles]' passed (0.001 seconds).
+Test Suite 'TextToolsTests' passed at 2026-11-11 19:02:05.318.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.004 (0.005) seconds
+Test Suite 'XMLTVTests' started at 2026-11-11 19:02:05.318.
+Test Case '-[FluxCoreTests.XMLTVTests testParse]' started.
+Test Case '-[FluxCoreTests.XMLTVTests testParse]' passed (0.001 seconds).
+Test Suite 'XMLTVTests' passed at 2026-11-11 19:02:05.319.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'XtreamTests' started at 2026-11-11 19:02:05.319.
+Test Case '-[FluxCoreTests.XtreamTests testAccount]' started.
+Test Case '-[FluxCoreTests.XtreamTests testAccount]' passed (0.004 seconds).
+Test Case '-[FluxCoreTests.XtreamTests testCategoriesAndLive]' started.
+Test Case '-[FluxCoreTests.XtreamTests testCategoriesAndLive]' passed (0.002 seconds).
+Test Case '-[FluxCoreTests.XtreamTests testHelpers]' started.
+Test Case '-[FluxCoreTests.XtreamTests testHelpers]' passed (0.001 seconds).
+Test Case '-[FluxCoreTests.XtreamTests testMovies]' started.
+Test Case '-[FluxCoreTests.XtreamTests testMovies]' passed (0.001 seconds).
+Test Case '-[FluxCoreTests.XtreamTests testPlaylistLinkBecomesAccount]' started.
+Test Case '-[FluxCoreTests.XtreamTests testPlaylistLinkBecomesAccount]' passed (0.000 seconds).
+Test Case '-[FluxCoreTests.XtreamTests testSeriesInfoArray]' started.
+Test Case '-[FluxCoreTests.XtreamTests testSeriesInfoArray]' passed (0.001 seconds).
+Test Case '-[FluxCoreTests.XtreamTests testSeriesInfoObject]' started.
+Test Case '-[FluxCoreTests.XtreamTests testSeriesInfoObject]' passed (0.005 seconds).
+Test Case '-[FluxCoreTests.XtreamTests testServerNormalization]' started.
+Test Case '-[FluxCoreTests.XtreamTests testServerNormalization]' passed (0.000 seconds).
+Test Case '-[FluxCoreTests.XtreamTests testShortEPG]' started.
+Test Case '-[FluxCoreTests.XtreamTests testShortEPG]' passed (0.004 seconds).
+Test Case '-[FluxCoreTests.XtreamTests testURLs]' started.
+Test Case '-[FluxCoreTests.XtreamTests testURLs]' passed (0.003 seconds).
+Test Suite 'XtreamTests' passed at 2026-11-11 19:02:05.340.
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.020 (0.022) seconds
+Test Suite 'FluxCorePackageTests.xctest' passed at 2026-11-11 19:02:05.340.
+	 Executed 36 tests, with 0 failures (0 unexpected) in 0.256 (0.264) seconds
+Test Suite 'All tests' passed at 2026-11-11 19:02:05.340.
+	 Executed 36 tests, with 0 failures (0 unexpected) in 0.256 (0.269) seconds
+◇ Test run started.
+↳ Testing Library Version: 1902
+↳ Target Platform: arm64e-apple-macos14.0
+✔ Test run with 0 tests in 0 suites passed after 0.001 seconds.

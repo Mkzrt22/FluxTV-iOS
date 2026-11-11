@@ -1,0 +1,21 @@
+Xcode 26.6 · FluxTV 1.2, build 14 · mode : verifier
+✔ archive iOS
+── Contrôles iOS
+  bzh.fluxtv.player 1.2 (14), iphoneos26.5, système 17.0 minimum
+  ✔ manifeste de confidentialité
+  ✔ aucun compte intégré
+  ✔ réglages d'essai absents (version Release)
+  ✔ icône App Store 1024 × 1024
+  ✔ MobileVLCKit : arm64, système 9.0 minimum,  37M
+  taille de l'app :  41M
+✔ archive AppleTV
+── Contrôles AppleTV
+  bzh.fluxtv.player 1.2 (14), appletvos26.5, système 17.0 minimum
+  ✔ manifeste de confidentialité
+  ✔ aucun compte intégré
+  ✔ réglages d'essai absents (version Release)
+  ✔ icône App Store 1280 × 768
+  ✔ image « Top Shelf »
+  ✔ TVVLCKit : arm64, système 10.2 minimum,  36M
+  taille de l'app :  46M
+✔ Tout est conforme

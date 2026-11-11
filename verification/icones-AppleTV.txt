@@ -1,0 +1,21 @@
+App Icon 400x240 tv
+App Icon 480x320 tv
+App Icon 1280x768 marketing
+App Icon 1360x848 marketing
+App Icon 800x480 tv
+App Icon 960x640 tv
+App Icon - App Store/Back/Content 1280x768 marketing
+App Icon - App Store/Front/Content 1280x768 marketing
+App Icon - App Store/Middle/Content 1280x768 marketing
+App Icon/Back/Content 400x240 tv
+App Icon/Back/Content 800x480 tv
+App Icon/Front/Content 400x240 tv
+App Icon/Front/Content 800x480 tv
+App Icon/Middle/Content 400x240 tv
+App Icon/Middle/Content 800x480 tv
+Top Shelf Image 1920x720 tv
+Top Shelf Image 3840x1440 tv
+Top Shelf Image Wide 2320x720 tv
+Top Shelf Image Wide 4640x1440 tv
+App Icon ?x? universal
+App Icon ?x? marketing
