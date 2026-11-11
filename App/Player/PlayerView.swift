@@ -50,6 +50,8 @@ struct PlayerView: View {
     @State private var retries = 0
     /// Direct : nouvelle tentative programmée (pas de message d'erreur en attendant).
     @State private var retryPending = false
+    /// Direct : la chaîne a été rouverte dans l'autre format (MPEG-TS ↔ HLS).
+    @State private var triedAlternate = false
     @State private var scrubbing = false
     @State private var scrubValue: Double = 0
     @State private var seekFlash: String?
@@ -458,6 +460,11 @@ struct PlayerView: View {
         switch status {
         case .playing:
             retries = 0
+            if triedAlternate {
+                // L'autre format a marché : il servira pour les chaînes suivantes de cette session
+                triedAlternate = false
+                if item.isLive, let ext = PlaybackResolver.liveExtension(of: item.url) { app.sessionLiveExtension = ext }
+            }
         case .ended:
             if item.isLive {
                 // Flux coupé : on le rouvre (trois fois au plus, puis message)
@@ -473,10 +480,15 @@ struct PlayerView: View {
                 close()
             }
         case .failed:
-            // Le direct décroche parfois : deux nouvelles tentatives avant d'afficher l'erreur
+            // Le direct décroche parfois : deux nouvelles tentatives avant d'afficher l'erreur.
+            // La seconde se fait dans l'autre format (MPEG-TS ↔ HLS) : certains serveurs n'en servent qu'un.
             if item.isLive && retries < 2 {
                 retries += 1
                 retryPending = true
+                if retries == 2, let other = PlaybackResolver.alternateLive(item.url) {
+                    item = item.with(url: other)
+                    triedAlternate = true
+                }
                 Task {
                     try? await Task.sleep(nanoseconds: 1_500_000_000)
                     retryPending = false
@@ -525,6 +537,7 @@ struct PlayerView: View {
         channelIndex = request.channels.firstIndex { $0.id == channel.id }
         item = newItem
         retries = 0
+        triedAlternate = false
         app.library.addHistory(newItem.ref)
         app.requestProgrammes(for: channel)
         engine.open(newItem, caching: app.settings.networkCaching)

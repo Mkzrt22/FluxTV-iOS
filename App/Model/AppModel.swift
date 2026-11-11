@@ -143,6 +143,7 @@ final class AppModel: ObservableObject {
 
     private func use(_ s: Source) {
         source = s
+        sessionLiveExtension = nil
         repo = Repository(source: s)
         live = nil
         liveError = nil
@@ -164,6 +165,7 @@ final class AppModel: ObservableObject {
         }
         SourceKeychain.save(s)
         source = s
+        sessionLiveExtension = nil
         repo = candidate
         account = await candidate.account
         live = nil
@@ -178,6 +180,7 @@ final class AppModel: ObservableObject {
         Task { await old?.clearCache() }
         SourceKeychain.delete()
         source = nil
+        sessionLiveExtension = nil
         repo = nil
         account = nil
         live = nil
@@ -261,8 +264,11 @@ final class AppModel: ObservableObject {
 
     // ───────────────────────────── Lecture ─────────────────────────────
 
+    /// Format du direct qui a marché pendant cette session après l'échec de l'autre (réglage « auto »).
+    var sessionLiveExtension: String?
+
     var liveExtension: String {
-        settings.liveFormat == "auto" ? (account?.liveExtension ?? "ts") : settings.liveFormat
+        settings.liveFormat == "auto" ? (sessionLiveExtension ?? account?.liveExtension ?? "ts") : settings.liveFormat
     }
 
     private func url(for ref: ContentRef) -> URL? {

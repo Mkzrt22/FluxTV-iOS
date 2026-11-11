@@ -1,4 +1,7 @@
 import XCTest
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 @testable import FluxCore
 
 private func fixture(_ name: String) throws -> Data {
@@ -240,9 +243,9 @@ final class XMLTVTests: XCTestCase {
     func testParse() throws {
         let now = try XCTUnwrap(XMLTV.date("20261022183000 +0200"))
         let map = XMLTV.parse(try fixture("guide.xml"), wanted: ["TF1.fr"], now: now)
-        XCTAssertEqual(map.keys.sorted(), ["TF1.fr"])
-        XCTAssertEqual(map["TF1.fr"]?.map(\.title), ["Le 18 h", "Jeu & Quiz"])
-        XCTAssertEqual(map["TF1.fr"]?.first?.desc, "Infos.")
+        XCTAssertEqual(map.keys.sorted(), ["tf1.fr"])
+        XCTAssertEqual(map["tf1.fr"]?.map(\.title), ["Le 18 h", "Jeu & Quiz"])
+        XCTAssertEqual(map["tf1.fr"]?.first?.desc, "Infos.")
         XCTAssertEqual(XMLTV.date("20261022180000 +0200"), XMLTV.date("20261022160000 +0000"))
         XCTAssertEqual(XMLTV.date("20261022160000"), XMLTV.date("20261022160000 +0000"))
         XCTAssertNil(XMLTV.date("2026"))
@@ -368,6 +371,270 @@ final class ResolverTests: XCTestCase {
 }
 
 /// Textes en anglais (choix de la langue au premier lancement ou dans les réglages).
+// ───────────────────────────── Robustesse ─────────────────────────────
+
+/// Faux serveur : chaque requête de l'app reçoit la réponse décidée par le test, sans réseau.
+final class StubServer: URLProtocol, @unchecked Sendable {
+    private static let lock = NSLock()
+    private static var answer: (@Sendable (URL) -> (Int, Data))?
+
+    static func respond(_ handler: @escaping @Sendable (URL) -> (Int, Data)) {
+        lock.lock(); answer = handler; lock.unlock()
+    }
+
+    static func makeHTTP() -> HTTPClient {
+        let cfg = URLSessionConfiguration.ephemeral
+        cfg.protocolClasses = [StubServer.self]
+        return HTTPClient(configuration: cfg)
+    }
+
+    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+
+    override func startLoading() {
+        StubServer.lock.lock(); let handler = StubServer.answer; StubServer.lock.unlock()
+        guard let url = request.url, let (status, body) = handler.map({ $0(url) }),
+              let response = HTTPURLResponse(url: url, statusCode: status, httpVersion: "HTTP/1.1", headerFields: nil) else {
+            client?.urlProtocol(self, didFailWithError: URLError(.badServerResponse))
+            return
+        }
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: body)
+        client?.urlProtocolDidFinishLoading(self)
+    }
+
+    override func stopLoading() {}
+}
+
+/// Réponses du faux serveur, modifiables en cours de test.
+final class Answers: @unchecked Sendable {
+    private let lock = NSLock()
+    private var playlistValue = Data()
+    private var guideValue = Data()
+    private var statusValue = 200
+
+    var playlist: String {
+        get { lock.lock(); defer { lock.unlock() }; return String(decoding: playlistValue, as: UTF8.self) }
+        set { lock.lock(); playlistValue = Data(newValue.utf8); lock.unlock() }
+    }
+    var guide: String {
+        get { lock.lock(); defer { lock.unlock() }; return String(decoding: guideValue, as: UTF8.self) }
+        set { lock.lock(); guideValue = Data(newValue.utf8); lock.unlock() }
+    }
+    var status: Int {
+        get { lock.lock(); defer { lock.unlock() }; return statusValue }
+        set { lock.lock(); statusValue = newValue; lock.unlock() }
+    }
+
+    func answer(_ url: URL) -> (Int, Data) {
+        lock.lock(); defer { lock.unlock() }
+        return url.path.hasSuffix("guide.xml") ? (200, guideValue) : (statusValue, playlistValue)
+    }
+}
+
+final class RobustnessTests: XCTestCase {
+
+    func testKodiOptionsAndBOM() {
+        let split = M3U.splitURLOptions("http://cdn.example/a.m3u8|User-Agent=VLC%2F3.0&Referer=http://x/")
+        XCTAssertEqual(split.url, "http://cdn.example/a.m3u8")
+        XCTAssertEqual(split.userAgent, "VLC/3.0")
+        XCTAssertEqual(M3U.splitURLOptions("http://cdn.example/a.m3u8|Referer=http://x/").url, "http://cdn.example/a.m3u8")
+        XCTAssertNil(M3U.splitURLOptions("http://cdn.example/a.m3u8|Referer=http://x/").userAgent)
+        // Une barre qui n'annonce pas d'options reste dans l'adresse
+        XCTAssertEqual(M3U.splitURLOptions("http://cdn.example/a|b.m3u8").url, "http://cdn.example/a|b.m3u8")
+        XCTAssertEqual(M3U.splitURLOptions("rtmp://x/y|z=1").url, "rtmp://x/y|z=1")
+
+        let text = "\u{FEFF}#EXTM3U x-tvg-url=\"http://epg.example/g.xml\"\r\n" +
+            "#EXTINF:-1 tvg-id=\"A\",Une\r\nhttp://cdn.example/1.m3u8|User-Agent=Kodi+Lecteur\r\n" +
+            "#EXTINF:-1,Deux\n#EXTVLCOPT:http-user-agent=VLC\nhttp://cdn.example/2.m3u8|User-Agent=Autre\n"
+        let parsed = M3U.parse(text)
+        XCTAssertEqual(parsed.epgURL, "http://epg.example/g.xml", "guide annoncé malgré le BOM")
+        XCTAssertEqual(parsed.entries.map(\.url), ["http://cdn.example/1.m3u8", "http://cdn.example/2.m3u8"])
+        // #EXTVLCOPT garde la priorité sur l'option collée à l'adresse
+        XCTAssertEqual(parsed.entries.map(\.userAgent), ["Kodi Lecteur", "VLC"])
+    }
+
+    func testGuideIdsIgnoreCase() throws {
+        let now = try XCTUnwrap(XMLTV.date("20261022183000 +0200"))
+        // « tf1.FR » dans la playlist, « TF1.fr » dans le guide : la même chaîne
+        let map = XMLTV.parse(try fixture("guide.xml"), wanted: [" tf1.FR "], now: now)
+        XCTAssertEqual(Array(map.keys), ["tf1.fr"])
+        XCTAssertEqual(map[XMLTV.key("TF1.fr")]?.count, 2)
+    }
+
+    func testJSONFalseMeansNothing() throws {
+        let o = try XCTUnwrap(JSON.object(Data(#"{"a":false,"b":true,"n":0,"one":1,"t":"x","d":7.5}"#.utf8)))
+        XCTAssertNil(o.str("a"))
+        XCTAssertEqual(o.str("b"), "1")
+        XCTAssertEqual(o.str("n"), "0")
+        XCTAssertEqual(o.str("one"), "1")
+        XCTAssertEqual(o.str("d"), "7.5")
+        XCTAssertFalse(o.flag("a"))
+        XCTAssertTrue(o.flag("b"))
+        XCTAssertTrue(o.flag("one"))
+        // Panels qui envoient « false » à la place d'un logo ou d'un identifiant de guide
+        let live = XtreamParse.liveStreams(Data(#"[{"stream_id":5,"name":"Une","stream_icon":false,"epg_channel_id":false,"tv_archive":false,"num":false}]"#.utf8))
+        XCTAssertEqual(live.count, 1)
+        XCTAssertNil(live.first?.logo)
+        XCTAssertNil(live.first?.tvgId)
+        XCTAssertEqual(live.first?.archiveDays, 0)
+        XCTAssertEqual(live.first?.num, 0)
+    }
+
+    func testBigListsAreReadObjectByObject() {
+        // Tableau avec espaces, textes pleins d'accolades et de guillemets, intrus, objets imbriqués,
+        // et une fin coupée en route : tout ce qui est entier est gardé
+        let array = "\u{FEFF} [ {\"stream_id\": 1, \"name\": \"A } \\\" { [\", \"custom\": {\"a\": [1, {\"b\": 2}]}},\n" +
+            "  \"intrus\", 42, null, [ {\"stream_id\": 99, \"name\": \"dans un tableau\"} ],\n" +
+            "  {\"stream_id\": \"2\", \"name\": \"Chemin C:\\\\films\\\\\", \"x\": []},\n" +
+            "  {\"stream_id\": 3, \"name\": \"Coupé en rou"
+        XCTAssertEqual(XtreamParse.vodStreams(Data(array.utf8)).map(\.streamId), ["1", "2"])
+
+        // Certains panels envoient un objet dont les valeurs sont les éléments
+        let object = #"{"10": {"stream_id": 10, "name": "X"}, "11": {"series_id": 11, "name": "Y"}, "user_info": {"auth": 0}}"#
+        XCTAssertEqual(XtreamParse.vodStreams(Data(object.utf8)).map(\.streamId), ["10"])
+        XCTAssertEqual(XtreamParse.series(Data(object.utf8)).map(\.seriesId), ["11"])
+
+        var count = 0
+        JSON.eachObject(in: Data(#"[{"a":1},{"b":{"c":[{"d":1}]}},{}]"#.utf8)) { _ in count += 1 }
+        XCTAssertEqual(count, 3)
+
+        // Réponses vides ou qui ne sont pas des listes
+        for junk in ["", "[]", "{}", "null", "<html><body>Erreur</body></html>", "]]}}", #"{"user_info":{"auth":0}}"#] {
+            XCTAssertTrue(XtreamParse.vodStreams(Data(junk.utf8)).isEmpty, junk)
+            XCTAssertTrue(XtreamParse.categories(Data(junk.utf8)).isEmpty, junk)
+        }
+
+        // Une grande liste : même résultat qu'avec la lecture d'un bloc
+        let many = "[" + (1...3000).map { "{\"stream_id\":\($0),\"name\":\"Film \($0)\",\"category_id\":\"\($0 % 7)\"}" }.joined(separator: ",") + "]"
+        let movies = XtreamParse.vodStreams(Data(many.utf8))
+        XCTAssertEqual(movies.count, 3000)
+        XCTAssertEqual(movies.last?.id, "vod:3000")
+        XCTAssertEqual(movies.last?.categoryId, "4")
+    }
+
+    func testLiveFormatFallback() throws {
+        let ts = try XCTUnwrap(URL(string: "http://h:8080/live/jean/code%20secret/123.ts?token=a.b"))
+        XCTAssertEqual(PlaybackResolver.liveExtension(of: ts), "ts")
+        let hls = try XCTUnwrap(PlaybackResolver.alternateLive(ts))
+        XCTAssertEqual(hls.absoluteString, "http://h:8080/live/jean/code%20secret/123.m3u8?token=a.b")
+        XCTAssertEqual(PlaybackResolver.liveExtension(of: hls), "m3u8")
+        XCTAssertEqual(PlaybackResolver.alternateLive(hls), ts)
+        // Serveur installé dans un sous-dossier
+        XCTAssertEqual(PlaybackResolver.alternateLive(try XCTUnwrap(URL(string: "https://h/iptv/live/u/p/7.M3U8")))?.absoluteString,
+                       "https://h/iptv/live/u/p/7.ts")
+        // Tout le reste est laissé tel quel : films, épisodes, playlists M3U quelconques
+        for other in ["http://h/movie/u/p/5.mp4", "http://h/series/u/p/5.mkv", "http://cdn/x/y.m3u8",
+                      "http://h/live/u/p/chaine.ts", "http://h/live/u/p/12", "http://h/u/p/12.ts"] {
+            let url = try XCTUnwrap(URL(string: other))
+            XCTAssertNil(PlaybackResolver.liveExtension(of: url), other)
+            XCTAssertNil(PlaybackResolver.alternateLive(url), other)
+        }
+        // Le contenu rouvert garde son titre, sa fiche et son agent utilisateur
+        let item = PlayItem(ref: ContentRef(id: "live:123", kind: .live, name: "TF1"), url: ts, title: "TF1", subtitle: "Journal",
+                            artwork: nil, isLive: true, userAgent: "Essai", startAt: nil)
+        let again = item.with(url: hls)
+        XCTAssertEqual(again.url, hls)
+        XCTAssertEqual(again.id, "live:123")
+        XCTAssertEqual(again.title, "TF1")
+        XCTAssertEqual(again.userAgent, "Essai")
+        XCTAssertTrue(again.isLive)
+    }
+
+    func testResumePositionsAreCapped() {
+        var lib = LibraryData()
+        let start = Date(timeIntervalSince1970: 1_700_000_000)
+        let total = LibraryData.positionsMax + 120
+        for i in 0..<total {
+            lib.savePosition(ContentRef(id: "vod:\(i)", kind: .movie, name: "Film \(i)"), position: 120, duration: 0,
+                             now: start.addingTimeInterval(Double(i) * 60))
+        }
+        XCTAssertLessThanOrEqual(lib.positions.count, LibraryData.positionsMax)
+        XCTAssertGreaterThanOrEqual(lib.positions.count, LibraryData.positionsMax - 60)
+        XCTAssertNotNil(lib.resume("vod:\(total - 1)"), "la plus récente reste")
+        XCTAssertNil(lib.resume("vod:0"), "la plus ancienne part")
+    }
+
+    /// Playlist et guide reçus d'un faux serveur : une page d'erreur ne remplace jamais ce qui marchait.
+    func testPlaylistAndGuideSurviveServerErrors() async throws {
+        let base = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("fluxtv-tests-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: base) }
+        let answers = Answers()
+        StubServer.respond { answers.answer($0) }
+        let http = StubServer.makeHTTP()
+
+        let stamp = DateFormatter()
+        stamp.dateFormat = "yyyyMMddHHmmss"
+        stamp.timeZone = TimeZone(secondsFromGMT: 0)
+        stamp.locale = Locale(identifier: "en_US_POSIX")
+        let now = Date()
+        answers.guide = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><tv>" +
+            "<programme start=\"\(stamp.string(from: now.addingTimeInterval(-1800))) +0000\" " +
+            "stop=\"\(stamp.string(from: now.addingTimeInterval(1800))) +0000\" channel=\"TF1.fr\"><title>En cours</title></programme></tv>"
+        answers.playlist = "\u{FEFF}#EXTM3U\n#EXTINF:-1 tvg-id=\"TF1.FR\",TF1\nhttp://serveur.test/live/1.m3u8|User-Agent=Essai\n"
+
+        let source = Source.playlist(url: "http://serveur.test/liste.m3u", epg: "http://serveur.test/guide.xml")
+        let first = Repository(source: source, http: http, cacheBase: base)
+        let live = try await first.live()
+        XCTAssertEqual(live.channels.map(\.url), ["http://serveur.test/live/1.m3u8"])
+        XCTAssertEqual(live.channels.first?.userAgent, "Essai")
+
+        // Guide : « TF1.FR » dans la playlist, « TF1.fr » dans le guide
+        let channel = try XCTUnwrap(live.channels.first)
+        let programmes = await first.programmes(for: channel)
+        XCTAssertEqual(programmes.map(\.title), ["En cours"])
+
+        // Le serveur répond par une page d'erreur : la playlist qui marche reste, maintenant…
+        answers.playlist = "<html><body>Maintenance</body></html>"
+        let forced = try await Repository(source: source, http: http, cacheBase: base).live(force: true)
+        XCTAssertEqual(forced.channels.count, 1)
+        // … et au lancement suivant (avant, la page d'erreur restait 12 h dans le cache)
+        let later = try await Repository(source: source, http: http, cacheBase: base).live()
+        XCTAssertEqual(later.channels.count, 1)
+        // Serveur en panne : idem
+        answers.status = 503
+        let down = try await Repository(source: source, http: http, cacheBase: base).live(force: true)
+        XCTAssertEqual(down.channels.count, 1)
+        answers.status = 200
+
+        // Le guide a plus de 6 h et le serveur répond n'importe quoi : celui qui marche reste
+        let files = FileManager.default.enumerator(at: base, includingPropertiesForKeys: nil)?.compactMap { $0 as? URL } ?? []
+        let guideFile = try XCTUnwrap(files.first { $0.lastPathComponent == "epg.xml" })
+        try FileManager.default.setAttributes([.modificationDate: Date().addingTimeInterval(-7 * 3600)], ofItemAtPath: guideFile.path)
+        answers.guide = "<html><body>Maintenance</body></html>"
+        let stale = Repository(source: source, http: http, cacheBase: base)
+        let staleLive = try await stale.live()
+        let kept = await stale.programmes(for: try XCTUnwrap(staleLive.channels.first))
+        XCTAssertEqual(kept.map(\.title), ["En cours"])
+        let touched = try XCTUnwrap(FileManager.default.attributesOfItem(atPath: guideFile.path)[.modificationDate] as? Date)
+        XCTAssertGreaterThan(Date().timeIntervalSince(touched), 5 * 3600, "nouvel essai du guide bientôt, pas à chaque lancement")
+        XCTAssertLessThan(Date().timeIntervalSince(touched), 6 * 3600)
+
+        // Guide injoignable : le guide précédent sert encore (avant : guide vide)
+        try FileManager.default.setAttributes([.modificationDate: Date().addingTimeInterval(-7 * 3600)], ofItemAtPath: guideFile.path)
+        answers.guide = ""
+        let offline = Repository(source: source, http: http, cacheBase: base)
+        let offlineLive = try await offline.live()
+        let still = await offline.programmes(for: try XCTUnwrap(offlineLive.channels.first))
+        XCTAssertEqual(still.map(\.title), ["En cours"])
+
+        // Aucune playlist connue et une page d'erreur : message clair, rien en cache
+        let other = Source.playlist(url: "http://serveur.test/autre.m3u", epg: nil)
+        for _ in 0..<2 {
+            do {
+                _ = try await Repository(source: other, http: http, cacheBase: base).live()
+                XCTFail("une erreur était attendue")
+            } catch let error as FluxError {
+                XCTAssertEqual(error, FluxError.emptyPlaylist)
+            }
+        }
+        // Le serveur se rétablit : la playlist arrive aussitôt
+        answers.playlist = "#EXTM3U\n#EXTINF:-1,Une\nhttp://serveur.test/live/9.m3u8\n"
+        let back = try await Repository(source: other, http: http, cacheBase: base).live()
+        XCTAssertEqual(back.channels.count, 1)
+    }
+}
+
 final class EnglishTests: XCTestCase {
     override func tearDown() {
         Tr.english = false

@@ -49,6 +49,12 @@ struct PlayItem: Identifiable, Sendable {
     let userAgent: String?
     /// Position de départ (reprise), en secondes.
     var startAt: Double?
+
+    /// Le même contenu à une autre adresse (direct dans l'autre format).
+    func with(url: URL) -> PlayItem {
+        PlayItem(ref: ref, url: url, title: title, subtitle: subtitle, artwork: artwork, isLive: isLive,
+                 userAgent: userAgent, startAt: startAt)
+    }
 }
 
 enum PlaybackResolver {
@@ -62,6 +68,28 @@ enum PlaybackResolver {
         case .episode: return account.episodeURL(num, ext: ref.ext ?? "mkv")
         case .series, .other: return nil
         }
+    }
+
+    /// Format d'un direct Xtream (…/live/compte/code/123.ts ou .m3u8) : « ts », « m3u8 », ou nil
+    /// si l'adresse n'en est pas un.
+    static func liveExtension(of url: URL) -> String? {
+        let parts = url.path.split(separator: "/")
+        guard parts.count >= 4, parts[parts.count - 4] == "live", let file = parts.last,
+              let dot = file.lastIndex(of: "."), dot != file.startIndex, file[..<dot].allSatisfy(\.isASCIIDigit) else { return nil }
+        let ext = file[file.index(after: dot)...].lowercased()
+        return ext == "ts" || ext == "m3u8" ? ext : nil
+    }
+
+    /**
+     La même chaîne dans l'autre format (MPEG-TS ↔ HLS). Certains serveurs n'en servent qu'un :
+     quand une chaîne ne démarre pas, le lecteur essaie l'autre avant d'afficher une erreur.
+     */
+    static func alternateLive(_ url: URL) -> URL? {
+        guard let ext = liveExtension(of: url), var parts = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
+        let path = parts.percentEncodedPath
+        guard path.count > ext.count else { return nil }
+        parts.percentEncodedPath = String(path.dropLast(ext.count)) + (ext == "ts" ? "m3u8" : "ts")
+        return parts.url
     }
 }
 
@@ -89,6 +117,13 @@ struct DiskCache: Sendable {
 
     /// Données, même périmées (secours hors ligne).
     func readAny(_ name: String) -> Data? { try? Data(contentsOf: file(name)) }
+
+    func exists(_ name: String) -> Bool { FileManager.default.fileExists(atPath: file(name).path) }
+
+    /// Change la date d'une entrée (elle sera redemandée plus tôt ou plus tard).
+    func touch(_ name: String, _ date: Date) {
+        try? FileManager.default.setAttributes([.modificationDate: date], ofItemAtPath: file(name).path)
+    }
 
     func write(_ name: String, _ data: Data) {
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -161,25 +196,37 @@ actor Repository {
         if !force, let p = playlist { return p }
         guard case .playlist(let urlString, let epgOverride) = source else { return M3UCatalog() }
         var data = force ? nil : cache.read("playlist.m3u", maxAge: Repository.catalogMaxAge)
+        var read: M3UCatalog?
         if data == nil {
             guard let url = URL(string: urlString) else { throw FluxError.badAddress }
             do {
                 let fresh = try await http.data(url, timeout: 120)
-                cache.write("playlist.m3u", fresh)
-                data = fresh
+                let parsed = Repository.catalog(from: fresh)
+                // Vérifiée avant d'être gardée : une page d'erreur du serveur ne remplace jamais
+                // une playlist qui marche (elle restait 12 h en cache)
+                if !parsed.isEmpty {
+                    cache.write("playlist.m3u", fresh)
+                    read = parsed
+                } else if !cache.exists("playlist.m3u") {
+                    throw FluxError.emptyPlaylist
+                }
             } catch {
                 // Hors ligne : la dernière playlist connue fait l'affaire
-                guard let old = cache.readAny("playlist.m3u") else { throw error }
-                data = old
+                guard cache.exists("playlist.m3u") else { throw error }
             }
+            if read == nil { data = cache.readAny("playlist.m3u") }
         }
-        let body = data.flatMap { d -> Data? in Gzip.isGzip(d) ? Gzip.decompress(d) : d } ?? Data()
-        let text = String(decoding: body, as: UTF8.self)
-        var cat = M3U.catalog(from: text)
+        var cat = read ?? Repository.catalog(from: data ?? Data())
         if let epgOverride, !epgOverride.isEmpty { cat.epgURL = epgOverride }
         if cat.isEmpty { throw FluxError.emptyPlaylist }
         playlist = cat
         return cat
+    }
+
+    /// Playlist telle que reçue (gzip compris) → chaînes, films et séries.
+    private static func catalog(from data: Data) -> M3UCatalog {
+        let body = Gzip.isGzip(data) ? (Gzip.decompress(data) ?? Data()) : data
+        return M3U.catalog(from: String(decoding: body, as: UTF8.self))
     }
 
     // ───────────────────────────── Direct ─────────────────────────────
@@ -336,7 +383,7 @@ actor Repository {
         // Playlist : guide XMLTV
         guard let tvg = channel.tvgId else { return [] }
         await loadXMLTVIfNeeded()
-        return xmltv?[tvg] ?? []
+        return xmltv?[XMLTV.key(tvg)] ?? []
     }
 
     /// Programme complet (replay inclus) pour le guide.
@@ -362,13 +409,25 @@ actor Repository {
             return
         }
         let wanted = Set(p.live.compactMap(\.tvgId))
-        var data = cache.read("epg.xml", maxAge: 6 * 3600)
-        if data == nil, let fresh = try? await http.data(url, timeout: 180) {
-            cache.write("epg.xml", fresh)
-            data = fresh
+        let maxAge: TimeInterval = 6 * 3600
+        if let fresh = cache.read("epg.xml", maxAge: maxAge) {
+            xmltv = XMLTV.parse(fresh, wanted: wanted)
+            return
         }
-        guard let data else { xmltv = [:]; return }
-        xmltv = XMLTV.parse(data, wanted: wanted)
+        if let downloaded = try? await http.data(url, timeout: 180) {
+            let read = XMLTV.parse(downloaded, wanted: wanted)
+            // Une page d'erreur reçue à la place du guide ne remplace pas celui qui marche
+            if !read.isEmpty || !cache.exists("epg.xml") {
+                cache.write("epg.xml", downloaded)
+                xmltv = read
+                return
+            }
+            // Rien d'utile dans la réponse : nouvel essai dans une demi-heure
+            cache.touch("epg.xml", Date().addingTimeInterval(-maxAge + 30 * 60))
+        }
+        // Téléchargement raté ou réponse inutilisable : le guide précédent, même ancien
+        // (avant, un échec laissait le guide vide alors qu'il y en avait un sur l'appareil)
+        xmltv = cache.readAny("epg.xml").map { XMLTV.parse($0, wanted: wanted) } ?? [:]
     }
 
     // ───────────────────────────── Outils ─────────────────────────────
@@ -384,7 +443,8 @@ actor Repository {
         do {
             let d = try await fetch()
             // Réponse vide ou d'erreur : on ne remplace pas une liste valide
-            if d.count > 2 || cache.readAny(name) == nil { cache.write(name, d) }
+            // (existence vérifiée sans relire l'ancienne liste, qui peut peser plus de 100 Mo)
+            if d.count > 2 || !cache.exists(name) { cache.write(name, d) }
             return d.count > 2 ? d : (cache.readAny(name) ?? d)
         } catch {
             if let old = cache.readAny(name) { return old }

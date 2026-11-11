@@ -16,6 +16,8 @@ struct PlaybackPosition: Codable, Hashable, Sendable {
 struct LibraryData: Codable, Sendable, Equatable {
     static let historyMax = 60
     static let watchedMax = 5000
+    /// Reprises gardées (contenus commencés, jamais terminés) : les plus récentes.
+    static let positionsMax = 500
     /// En dessous, on ne propose pas de reprise (début du film).
     static let resumeMinSeconds: Double = 15
     /// Au-delà de 95 %, le contenu est considéré comme vu (générique de fin).
@@ -87,6 +89,11 @@ struct LibraryData: Codable, Sendable, Equatable {
         }
         if position >= LibraryData.resumeMinSeconds {
             positions[ref.id] = PlaybackPosition(position: position, duration: max(0, duration), updated: now)
+            // Au fil des années, les reprises abandonnées s'accumuleraient sans fin
+            if positions.count > LibraryData.positionsMax {
+                let extra = positions.count - LibraryData.positionsMax + 50
+                for old in positions.sorted(by: { $0.value.updated < $1.value.updated }).prefix(extra) { positions[old.key] = nil }
+            }
         }
         return false
     }

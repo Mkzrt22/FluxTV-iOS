@@ -159,21 +159,19 @@ enum XtreamParse {
     }
 
     static func categories(_ data: Data) -> [Category] {
-        guard let arr = JSON.array(data) else { return [] }
         var seen = Set<String>()
-        return arr.compactMap { item in
-            guard let o = item as? JSONObject, let id = o.str("category_id"), let name = o.str("category_name"),
-                  seen.insert(id).inserted else { return nil }
-            return Category(id: id, rawName: name)
+        var out: [Category] = []
+        JSON.eachObject(in: data) { o in
+            guard let id = o.str("category_id"), let name = o.str("category_name"), seen.insert(id).inserted else { return }
+            out.append(Category(id: id, rawName: name))
         }
+        return out
     }
 
     static func liveStreams(_ data: Data) -> [LiveChannel] {
-        guard let arr = JSON.array(data) else { return [] }
         var out: [LiveChannel] = []
-        out.reserveCapacity(arr.count)
-        for item in arr {
-            guard let o = item as? JSONObject, let sid = o.str("stream_id") else { continue }
+        JSON.eachObject(in: data) { o in
+            guard let sid = o.str("stream_id") else { return }
             let archive = o.flag("tv_archive")
             out.append(LiveChannel(
                 id: Ids.live(sid), streamId: sid,
@@ -189,11 +187,9 @@ enum XtreamParse {
     }
 
     static func vodStreams(_ data: Data) -> [Movie] {
-        guard let arr = JSON.array(data) else { return [] }
         var out: [Movie] = []
-        out.reserveCapacity(arr.count)
-        for item in arr {
-            guard let o = item as? JSONObject, let sid = o.str("stream_id") else { continue }
+        JSON.eachObject(in: data) { o in
+            guard let sid = o.str("stream_id") else { return }
             out.append(Movie(
                 id: Ids.vod(sid), streamId: sid,
                 rawName: o.str("name") ?? o.str("title") ?? T("Sans titre", "Untitled"),
@@ -209,11 +205,9 @@ enum XtreamParse {
     }
 
     static func series(_ data: Data) -> [Series] {
-        guard let arr = JSON.array(data) else { return [] }
         var out: [Series] = []
-        out.reserveCapacity(arr.count)
-        for item in arr {
-            guard let o = item as? JSONObject, let sid = o.str("series_id") else { continue }
+        JSON.eachObject(in: data) { o in
+            guard let sid = o.str("series_id") else { return }
             let release = o.str("releaseDate") ?? o.str("release_date") ?? o.str("year")
             out.append(Series(
                 seriesId: sid,

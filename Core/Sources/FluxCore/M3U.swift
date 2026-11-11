@@ -33,8 +33,15 @@ enum M3U {
         var epg: String?
         var name = "", logo: String?, group = T("Autres", "Other"), tvgId: String?, ua: String?, num = 0
         var pending = false
+        var first = true
 
         text.enumerateLines { raw, _ in
+            var raw = raw
+            if first {
+                first = false
+                // Marque d'ordre des octets (BOM) en tête de fichier : elle cacherait « #EXTM3U »
+                if raw.unicodeScalars.first == "\u{FEFF}" { raw = String(raw.unicodeScalars.dropFirst()) }
+            }
             let line = raw.trimmingCharacters(in: .whitespaces)
             if line.isEmpty { return }
             if line.hasPrefix("#") {
@@ -66,12 +73,34 @@ enum M3U {
                 return
             }
             if pending {
-                entries.append(M3UEntry(name: name.isEmpty ? T("Sans nom", "Untitled") : name, url: line, logo: logo, group: group,
-                                        tvgId: tvgId, num: num, userAgent: ua))
+                let (address, agent) = splitURLOptions(line)
+                // #EXTVLCOPT garde la priorité sur une option collée à l'adresse
+                entries.append(M3UEntry(name: name.isEmpty ? T("Sans nom", "Untitled") : name, url: address, logo: logo, group: group,
+                                        tvgId: tvgId, num: num, userAgent: ua ?? agent))
             }
             pending = false; name = ""; logo = nil; tvgId = nil; ua = nil; group = T("Autres", "Other"); num = 0
         }
         return (entries, epg)
+    }
+
+    /**
+     Options collées à l'adresse, à la manière de Kodi : « http://…/flux.m3u8|User-Agent=VLC&Referer=… ».
+     Sans ce découpage, l'adresse entière (options comprises) partait au serveur et la chaîne ne
+     démarrait pas. Renvoie l'adresse seule et l'agent utilisateur demandé (ou nil).
+     */
+    static func splitURLOptions(_ line: String) -> (url: String, userAgent: String?) {
+        guard let bar = line.firstIndex(of: "|"), bar != line.startIndex, line.prefix(4).lowercased() == "http" else { return (line, nil) }
+        let options = line[line.index(after: bar)...]
+        guard options.contains("=") else { return (line, nil) }
+        var ua: String?
+        for part in options.split(separator: "&") {
+            guard let eq = part.firstIndex(of: "="), eq != part.startIndex,
+                  part[..<eq].trimmingCharacters(in: .whitespaces).lowercased() == "user-agent" else { continue }
+            let raw = String(part[part.index(after: eq)...]).replacingOccurrences(of: "+", with: " ")
+            let value = (raw.removingPercentEncoding ?? raw).trimmingCharacters(in: .whitespaces)
+            ua = value.isEmpty ? nil : value
+        }
+        return (line[..<bar].trimmingCharacters(in: .whitespaces), ua)
     }
 
     /// Attributs clé="valeur" d'une ligne #EXTINF / #EXTM3U (clés en minuscules).

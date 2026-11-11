@@ -1,7 +1,8 @@
 # Préparation de la fiche App Store, sur des Mac de GitHub. Rien n'est envoyé à Apple.
 #  - captures d'écran aux tailles demandées par Apple (iPhone 6,9", iPad 13", Apple TV), en français
 #    et en anglais, avec la démonstration ;
-#  - archives App Store non signées et contrôles (version, icônes, moteur VLC, aucun compte intégré).
+#  - archives App Store non signées et contrôles (version, icônes, moteur VLC, aucun compte intégré),
+#    puis tests du cœur de l'app (tests-coeur.txt).
 # Résultat : branche « ci-appstore ». Lancement : envoi sur la branche « appstore » ou « Run workflow ».
 # « [sans captures] » ou « [sans verification] » dans le message du commit : partie sautée (le
 # résultat précédent reste sur la branche).
@@ -39,6 +40,13 @@ jobs:
       - uses: actions/checkout@v4
       - name: Archives App Store non signées et contrôles
         run: .github/appstore-archive.sh verifier
+      - name: Tests du cœur
+        if: always()
+        run: |
+          mkdir -p appstore/verification
+          cd Core
+          swift test > ../appstore/verification/tests-coeur.txt 2>&1 || { tail -40 ../appstore/verification/tests-coeur.txt; exit 1; }
+          tail -3 ../appstore/verification/tests-coeur.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -10,9 +10,16 @@ import FoundationXML
  */
 enum XMLTV {
 
+    /**
+     Identifiant de chaîne tel qu'il est comparé : « TF1.fr » dans la playlist et « tf1.fr » dans
+     le guide désignent la même chaîne. Sans cela, le guide restait vide pour ces chaînes.
+     */
+    static func key(_ id: String) -> String { id.trimmingCharacters(in: .whitespaces).lowercased() }
+
+    /// Le résultat est indexé par `key`.
     static func parse(_ data: Data, wanted: Set<String>, now: Date = Date()) -> [String: [Programme]] {
         let body = Gzip.isGzip(data) ? (Gzip.decompress(data) ?? Data()) : data
-        let delegate = Collector(wanted: wanted, from: now.addingTimeInterval(-3 * 3600), to: now.addingTimeInterval(36 * 3600))
+        let delegate = Collector(wanted: Set(wanted.map(key)), from: now.addingTimeInterval(-3 * 3600), to: now.addingTimeInterval(36 * 3600))
         let parser = XMLParser(data: body)
         parser.delegate = delegate
         parser.shouldProcessNamespaces = false
@@ -75,7 +82,7 @@ enum XMLTV {
             element = elementName
             switch elementName {
             case "programme":
-                channel = attributeDict["channel"]
+                channel = attributeDict["channel"].map(XMLTV.key)
                 start = XMLTV.date(attributeDict["start"])
                 stop = XMLTV.date(attributeDict["stop"])
                 title = ""; desc = ""; titleCount = 0; descCount = 0
