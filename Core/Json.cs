@@ -255,7 +255,8 @@ namespace FluxTV.Core
             if (o == null || !o.TryGetValue(key, out var v) || v == null) return null;
             string s;
             if (v is string x) s = x;
-            else if (v is bool b) s = b ? "1" : "0";
+            // « false » là où un texte est attendu (logo, nom…) veut dire « rien », pas « 0 »
+            else if (v is bool b) { if (!b) return null; s = "1"; }
             else if (v is double d)
                 s = Math.Abs(d) < 1e15 && d == Math.Floor(d)
                     ? ((long)d).ToString(CultureInfo.InvariantCulture)

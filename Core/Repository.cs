@@ -167,6 +167,53 @@ namespace FluxTV.Core
             catch (UnauthorizedAccessException) { return null; }
         }
 
+        /// <summary>Chemin du fichier d'une entrée : les gros contenus s'y lisent et s'y écrivent en flux.</summary>
+        public string PathOf(string name) => FileOf(name);
+
+        public bool Exists(string name)
+        {
+            try { return File.Exists(FileOf(name)); }
+            catch (IOException) { return false; }
+            catch (UnauthorizedAccessException) { return false; }
+        }
+
+        /// <summary>L'entrée existe et a moins de maxAge.</summary>
+        public bool IsFresh(string name, TimeSpan maxAge)
+        {
+            var f = FileOf(name);
+            try { return File.Exists(f) && DateTime.UtcNow - File.GetLastWriteTimeUtc(f) <= maxAge; }
+            catch (IOException) { return false; }
+            catch (UnauthorizedAccessException) { return false; }
+        }
+
+        /// <summary>Remplace une entrée par un fichier déjà écrit (téléchargement vérifié).</summary>
+        public void Replace(string name, string sourcePath)
+        {
+            var f = FileOf(name);
+            try
+            {
+                if (File.Exists(f)) File.Delete(f);
+                File.Move(sourcePath, f);
+            }
+            catch (IOException) { }
+            catch (UnauthorizedAccessException) { }
+        }
+
+        /// <summary>Change la date d'une entrée (elle sera redemandée plus tôt ou plus tard).</summary>
+        public void Touch(string name, DateTime utc)
+        {
+            try { var f = FileOf(name); if (File.Exists(f)) File.SetLastWriteTimeUtc(f, utc); }
+            catch (IOException) { }
+            catch (UnauthorizedAccessException) { }
+        }
+
+        public void Delete(string name)
+        {
+            try { var f = FileOf(name); if (File.Exists(f)) File.Delete(f); }
+            catch (IOException) { }
+            catch (UnauthorizedAccessException) { }
+        }
+
         /// <summary>Données, même périmées (secours hors ligne).</summary>
         public byte[] ReadAny(string name)
         {
@@ -272,23 +319,39 @@ namespace FluxTV.Core
         {
             try
             {
-                var data = force ? null : cache.Read("playlist.m3u", CatalogMaxAge);
-                if (data == null)
+                const string name = "playlist.m3u";
+                M3UCatalog cat = null;
+                if (force || !cache.IsFresh(name, CatalogMaxAge))
                 {
+                    // Téléchargée à part, puis vérifiée : une page d'erreur du serveur ne remplace
+                    // jamais une playlist qui marche (elle restait en cache 12 h)
+                    var fresh = cache.PathOf("playlist.new");
                     try
                     {
-                        data = await HttpLoader.BytesAsync(Source.PlaylistUrl, TimeSpan.FromSeconds(120));
-                        cache.Write("playlist.m3u", data);
+                        await HttpLoader.DownloadAsync(Source.PlaylistUrl, fresh, TimeSpan.FromSeconds(120));
+                        var read = await Task.Run(() => ReadPlaylist(fresh));
+                        if (!read.IsEmpty)
+                        {
+                            cache.Replace(name, fresh);
+                            cat = read;
+                        }
+                        else if (!cache.Exists(name)) throw new FluxException(FluxError.EmptyPlaylist);
                     }
                     catch (FluxException)
                     {
                         // Hors ligne : la dernière playlist connue fait l'affaire
-                        data = cache.ReadAny("playlist.m3u");
-                        if (data == null) throw;
+                        if (!cache.Exists(name)) throw;
+                    }
+                    finally
+                    {
+                        cache.Delete("playlist.new");
                     }
                 }
-                var bytes = data;
-                var cat = await Task.Run(() => M3U.Catalog(HttpLoader.Decode(bytes)));
+                if (cat == null)
+                {
+                    var file = cache.PathOf(name);
+                    cat = await Task.Run(() => ReadPlaylist(file));
+                }
                 if (!string.IsNullOrEmpty(Source.EpgUrl)) cat.EpgUrl = Source.EpgUrl;
                 if (cat.IsEmpty) throw new FluxException(FluxError.EmptyPlaylist);
                 playlist = cat;
@@ -300,6 +363,19 @@ namespace FluxTV.Core
             }
         }
 
+        /// <summary>Playlist lue en flux depuis le disque (gzip et BOM gérés), jamais chargée en entier.</summary>
+        static M3UCatalog ReadPlaylist(string path)
+        {
+            try
+            {
+                using (var reader = Gzip.OpenText(path))
+                    return M3U.Catalog(reader);
+            }
+            catch (IOException) { return new M3UCatalog(); }
+            catch (UnauthorizedAccessException) { return new M3UCatalog(); }
+            catch (InvalidDataException) { return new M3UCatalog(); }
+        }
+
         // ───────────────────────────── Direct ─────────────────────────────
 
         public async Task<LiveCatalog> LiveAsync(bool force = false)
@@ -308,8 +384,8 @@ namespace FluxTV.Core
             LiveCatalog l;
             if (Source.Kind == SourceKind.Xtream)
             {
-                var catsText = await CachedAsync("live_categories.json", force, () => RawAsync("get_live_categories", TimeSpan.FromSeconds(45)));
-                var streamsText = await CachedAsync("live_streams.json", force, () => RawAsync("get_live_streams", TimeSpan.FromSeconds(90)));
+                var catsText = await CachedAsync("live_categories.json", force, () => RawBytesAsync("get_live_categories", TimeSpan.FromSeconds(45)));
+                var streamsText = await CachedAsync("live_streams.json", force, () => RawBytesAsync("get_live_streams", TimeSpan.FromSeconds(90)));
                 l = await Task.Run(() =>
                 {
                     var cats = XtreamParse.Categories(catsText);
@@ -336,7 +412,7 @@ namespace FluxTV.Core
             if (!force && vodCategoriesCache != null) return vodCategoriesCache;
             List<Category> cats;
             if (Source.Kind == SourceKind.Xtream)
-                cats = XtreamParse.Categories(await CachedAsync("vod_categories.json", force, () => RawAsync("get_vod_categories", TimeSpan.FromSeconds(45))));
+                cats = XtreamParse.Categories(await CachedAsync("vod_categories.json", force, () => RawBytesAsync("get_vod_categories", TimeSpan.FromSeconds(45))));
             else
                 cats = (await LoadPlaylistAsync(force)).VodCategories;
             vodCategoriesCache = cats;
@@ -350,7 +426,7 @@ namespace FluxTV.Core
             if (Source.Kind == SourceKind.Xtream)
             {
                 var text = await CachedAsync("vod_" + category + ".json", force,
-                    () => RawAsync("get_vod_streams", TimeSpan.FromSeconds(90), ("category_id", category)));
+                    () => RawBytesAsync("get_vod_streams", TimeSpan.FromSeconds(90), ("category_id", category)));
                 list = await Task.Run(() => XtreamParse.VodStreams(text));
             }
             else
@@ -368,7 +444,7 @@ namespace FluxTV.Core
             List<Movie> list;
             if (Source.Kind == SourceKind.Xtream)
             {
-                var text = await CachedAsync("vod_all.json", force, () => RawAsync("get_vod_streams", TimeSpan.FromSeconds(180)));
+                var text = await CachedAsync("vod_all.json", force, () => RawBytesAsync("get_vod_streams", TimeSpan.FromSeconds(180)));
                 list = await Task.Run(() => XtreamParse.VodStreams(text));
             }
             else
@@ -402,7 +478,7 @@ namespace FluxTV.Core
             if (!force && seriesCategoriesCache != null) return seriesCategoriesCache;
             List<Category> cats;
             if (Source.Kind == SourceKind.Xtream)
-                cats = XtreamParse.Categories(await CachedAsync("series_categories.json", force, () => RawAsync("get_series_categories", TimeSpan.FromSeconds(45))));
+                cats = XtreamParse.Categories(await CachedAsync("series_categories.json", force, () => RawBytesAsync("get_series_categories", TimeSpan.FromSeconds(45))));
             else
                 cats = (await LoadPlaylistAsync(force)).SeriesCategories;
             seriesCategoriesCache = cats;
@@ -416,7 +492,7 @@ namespace FluxTV.Core
             if (Source.Kind == SourceKind.Xtream)
             {
                 var text = await CachedAsync("series_" + category + ".json", force,
-                    () => RawAsync("get_series", TimeSpan.FromSeconds(90), ("category_id", category)));
+                    () => RawBytesAsync("get_series", TimeSpan.FromSeconds(90), ("category_id", category)));
                 list = await Task.Run(() => XtreamParse.SeriesList(text));
             }
             else
@@ -433,7 +509,7 @@ namespace FluxTV.Core
             List<Series> list;
             if (Source.Kind == SourceKind.Xtream)
             {
-                var text = await CachedAsync("series_all.json", force, () => RawAsync("get_series", TimeSpan.FromSeconds(180)));
+                var text = await CachedAsync("series_all.json", force, () => RawBytesAsync("get_series", TimeSpan.FromSeconds(180)));
                 list = await Task.Run(() => XtreamParse.SeriesList(text));
             }
             else
@@ -489,7 +565,7 @@ namespace FluxTV.Core
             // Playlist : guide XMLTV
             if (channel.TvgId == null) return new List<Programme>();
             await LoadXmltvIfNeededAsync();
-            return xmltv != null && xmltv.TryGetValue(channel.TvgId, out var l) ? l : new List<Programme>();
+            return xmltv != null && xmltv.TryGetValue(XmlTv.Key(channel.TvgId), out var l) ? l : new List<Programme>();
         }
 
         async Task<List<Programme>> FetchShortEpgAsync(string sid)
@@ -529,22 +605,39 @@ namespace FluxTV.Core
             catch (Exception) { xmltv = new Dictionary<string, List<Programme>>(); return; }
             if (string.IsNullOrEmpty(p.EpgUrl)) { xmltv = new Dictionary<string, List<Programme>>(); return; }
             var wanted = new HashSet<string>(p.Live.Where(c => c.TvgId != null).Select(c => c.TvgId), StringComparer.Ordinal);
-            var data = cache.Read("epg.xml", TimeSpan.FromHours(6));
-            if (data == null)
+            const string name = "epg.xml";
+            var maxAge = TimeSpan.FromHours(6);
+            Dictionary<string, List<Programme>> guide = null;
+            if (!cache.IsFresh(name, maxAge))
             {
+                // Écrit directement sur le disque, puis vérifié : une page d'erreur reçue à la place du
+                // guide ne remplace pas celui qui marche
+                var fresh = cache.PathOf("epg.new");
                 try
                 {
-                    data = await HttpLoader.BytesAsync(p.EpgUrl, TimeSpan.FromSeconds(180));
-                    cache.Write("epg.xml", data);
+                    await HttpLoader.DownloadAsync(p.EpgUrl, fresh, TimeSpan.FromSeconds(180));
+                    var read = await Task.Run(() => XmlTv.ParseFile(fresh, wanted, DateTimeOffset.UtcNow));
+                    if (read.Count > 0 || !cache.Exists(name))
+                    {
+                        cache.Replace(name, fresh);
+                        guide = read;
+                    }
+                    // Rien d'utile dans la réponse : l'ancien guide reste, nouvel essai dans une demi-heure
+                    else cache.Touch(name, DateTime.UtcNow - maxAge + TimeSpan.FromMinutes(30));
                 }
-                catch (FluxException)
+                catch (FluxException) { }
+                finally
                 {
-                    data = cache.ReadAny("epg.xml");
+                    cache.Delete("epg.new");
                 }
             }
-            if (data == null) { xmltv = new Dictionary<string, List<Programme>>(); return; }
-            var bytes = data;
-            xmltv = await Task.Run(() => XmlTv.Parse(bytes, wanted, DateTimeOffset.UtcNow));
+            if (guide == null)
+            {
+                if (!cache.Exists(name)) { xmltv = new Dictionary<string, List<Programme>>(); return; }
+                var file = cache.PathOf(name);
+                guide = await Task.Run(() => XmlTv.ParseFile(file, wanted, DateTimeOffset.UtcNow));
+            }
+            xmltv = guide;
         }
 
         // ───────────────────────────── Outils ─────────────────────────────
@@ -556,8 +649,16 @@ namespace FluxTV.Core
             return HttpLoader.TextAsync(account.ApiUrl(action, parameters), timeout);
         }
 
+        /// <summary>Réponse brute (octets), telle qu'elle ira dans le cache.</summary>
+        Task<byte[]> RawBytesAsync(string action, TimeSpan timeout, params (string, string)[] parameters)
+        {
+            var account = Source.Account;
+            if (account == null) throw new FluxException(FluxError.BadAddress);
+            return HttpLoader.BytesAsync(account.ApiUrl(action, parameters), timeout);
+        }
+
         /// <summary>Réponse en cache si fraîche ; sinon téléchargée (et l'ancienne en secours hors ligne).</summary>
-        async Task<string> CachedAsync(string name, bool force, Func<Task<string>> fetch)
+        async Task<string> CachedAsync(string name, bool force, Func<Task<byte[]>> fetch)
         {
             if (!force)
             {
@@ -566,11 +667,17 @@ namespace FluxTV.Core
             }
             try
             {
-                var text = await fetch();
-                var old = cache.ReadAny(name);
+                // Les octets reçus vont tels quels dans le cache : la liste de tous les films d'un gros
+                // fournisseur pèse plus de 100 Mo, inutile de la reconvertir ou de relire l'ancienne
+                var data = await fetch();
+                var text = HttpLoader.Decode(data);
                 // Réponse vide ou d'erreur : on ne remplace pas une liste valide
-                if (text.Length > 2 || old == null) cache.Write(name, Encoding.UTF8.GetBytes(text));
-                return text.Length > 2 || old == null ? text : HttpLoader.Decode(old);
+                if (text.Length > 2 || !cache.Exists(name))
+                {
+                    cache.Write(name, data ?? new byte[0]);
+                    return text;
+                }
+                return HttpLoader.Decode(cache.ReadAny(name));
             }
             catch (FluxException)
             {

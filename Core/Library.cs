@@ -25,6 +25,8 @@ namespace FluxTV.Core
     {
         public const int HistoryMax = 60;
         public const int WatchedMax = 5000;
+        /// <summary>Reprises gardées (contenus commencés, jamais terminés) : les plus récentes.</summary>
+        public const int PositionsMax = 500;
         /// <summary>En dessous, on ne propose pas de reprise (début du film).</summary>
         public const double ResumeMinSeconds = 15;
         /// <summary>Au-delà de 95 %, le contenu est considéré comme vu (générique de fin).</summary>
@@ -95,7 +97,13 @@ namespace FluxTV.Core
                 return true;
             }
             if (position >= ResumeMinSeconds)
+            {
                 Positions[r.Id] = new PlaybackPosition { Position = position, Duration = Math.Max(0, duration), Updated = now };
+                // Au fil des années, les reprises abandonnées s'accumuleraient sans fin
+                if (Positions.Count > PositionsMax)
+                    foreach (var old in Positions.OrderBy(p => p.Value.Updated).Take(Positions.Count - PositionsMax + 50).Select(p => p.Key).ToList())
+                        Positions.Remove(old);
+            }
             return false;
         }
 

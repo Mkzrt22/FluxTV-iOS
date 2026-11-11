@@ -346,9 +346,9 @@ namespace FluxTV.Tests
         {
             var now = XmlTv.Date("20261022183000 +0200").Value;
             var map = XmlTv.Parse(FixtureBytes("guide.xml"), new HashSet<string> { "TF1.fr" }, now);
-            Assert.Seq(new[] { "TF1.fr" }, map.Keys.OrderBy(k => k));
-            Assert.Seq(new[] { "Le 18 h", "Jeu & Quiz" }, map["TF1.fr"].Select(p => p.Title));
-            Assert.Equal("Infos.", map["TF1.fr"][0].Desc);
+            Assert.Seq(new[] { "tf1.fr" }, map.Keys.OrderBy(k => k));
+            Assert.Seq(new[] { "Le 18 h", "Jeu & Quiz" }, map["tf1.fr"].Select(p => p.Title));
+            Assert.Equal("Infos.", map["tf1.fr"][0].Desc);
             Assert.Equal(XmlTv.Date("20261022160000 +0000"), XmlTv.Date("20261022180000 +0200"));
             Assert.Equal(XmlTv.Date("20261022160000 +0000"), XmlTv.Date("20261022160000"));
             Assert.Null(XmlTv.Date("2026"), "date incomplète");
@@ -473,6 +473,240 @@ namespace FluxTV.Tests
             Assert.Equal(2, d.AllEpisodes.Count);
             var p = await repo.ProgrammesAsync(live.Channels[0]);
             Assert.True(Programme.NowNext(p, DateTimeOffset.UtcNow).Now != null, "programme en cours");
+        }
+
+        // ───────────────────────────── Robustesse (1.3.1) ─────────────────────────────
+
+        static byte[] Gzipped(byte[] data)
+        {
+            using (var output = new MemoryStream())
+            {
+                using (var zip = new System.IO.Compression.GZipStream(output, System.IO.Compression.CompressionMode.Compress))
+                    zip.Write(data, 0, data.Length);
+                return output.ToArray();
+            }
+        }
+
+        static string TempDir()
+        {
+            var dir = Path.Combine(Path.GetTempPath(), "fluxtv-tests-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(dir);
+            return dir;
+        }
+
+        public static void TestM3UKodiOptionsAndBom()
+        {
+            var (url, ua) = M3U.SplitUrlOptions("http://cdn.example/a.m3u8|User-Agent=VLC%2F3.0&Referer=http://x/");
+            Assert.Equal("http://cdn.example/a.m3u8", url);
+            Assert.Equal("VLC/3.0", ua);
+            Assert.Equal("http://cdn.example/a.m3u8", M3U.SplitUrlOptions("http://cdn.example/a.m3u8|Referer=http://x/").Url);
+            Assert.Null(M3U.SplitUrlOptions("http://cdn.example/a.m3u8|Referer=http://x/").UserAgent, "pas d'agent demandé");
+            // Une barre qui n'annonce pas d'options reste dans l'adresse
+            Assert.Equal("http://cdn.example/a|b.m3u8", M3U.SplitUrlOptions("http://cdn.example/a|b.m3u8").Url);
+            Assert.Equal("rtmp://x/y|z=1", M3U.SplitUrlOptions("rtmp://x/y|z=1").Url);
+
+            var text = "\uFEFF#EXTM3U x-tvg-url=\"http://epg.example/g.xml\"\r\n" +
+                       "#EXTINF:-1 tvg-id=\"A\",Une\r\nhttp://cdn.example/1.m3u8|User-Agent=Kodi+Lecteur\r\n" +
+                       "#EXTINF:-1,Deux\n#EXTVLCOPT:http-user-agent=VLC\nhttp://cdn.example/2.m3u8|User-Agent=Autre\n";
+            var (entries, epg) = M3U.Parse(text);
+            Assert.Equal("http://epg.example/g.xml", epg, "guide annoncé malgré le BOM");
+            Assert.Seq(new[] { "http://cdn.example/1.m3u8", "http://cdn.example/2.m3u8" }, entries.Select(e => e.Url));
+            // #EXTVLCOPT garde la priorité sur l'option collée à l'adresse
+            Assert.Seq(new[] { "Kodi Lecteur", "VLC" }, entries.Select(e => e.UserAgent));
+            // Même résultat quand la playlist est lue en flux
+            using (var reader = new StringReader(text))
+                Assert.Equal(2, M3U.Catalog(reader).Live.Count);
+        }
+
+        public static void TestPlaylistFileGzipAndBom()
+        {
+            var dir = TempDir();
+            try
+            {
+                var text = "#EXTM3U\n#EXTINF:-1 group-title=\"Été\",Chaîne Une\nhttp://cdn.example/1.m3u8\n";
+                var withBom = new byte[] { 0xEF, 0xBB, 0xBF }.Concat(Encoding.UTF8.GetBytes(text)).ToArray();
+                var plain = Path.Combine(dir, "a.m3u");
+                var packed = Path.Combine(dir, "b.m3u");
+                File.WriteAllBytes(plain, withBom);
+                File.WriteAllBytes(packed, Gzipped(withBom));
+                foreach (var file in new[] { plain, packed })
+                    using (var reader = Gzip.OpenText(file))
+                    {
+                        var cat = M3U.Catalog(reader);
+                        Assert.Equal("Chaîne Une", cat.Live.Single().Name);
+                        Assert.Equal("Été", cat.LiveCategories.Single().Name);
+                    }
+            }
+            finally { Directory.Delete(dir, true); }
+        }
+
+        public static void TestXmlTvIdsIgnoreCaseAndStreams()
+        {
+            var now = XmlTv.Date("20261022183000 +0200").Value;
+            // « tf1.FR » dans la playlist, « TF1.fr » dans le guide : la même chaîne
+            var wanted = new HashSet<string> { " tf1.FR " };
+            var map = XmlTv.Parse(FixtureBytes("guide.xml"), wanted, now);
+            Assert.Seq(new[] { "tf1.fr" }, map.Keys);
+            Assert.Equal(2, map[XmlTv.Key("TF1.fr")].Count);
+            Assert.Equal(2, XmlTv.Parse(Gzipped(FixtureBytes("guide.xml")), wanted, now)["tf1.fr"].Count);
+
+            var dir = TempDir();
+            try
+            {
+                var gz = Path.Combine(dir, "guide.xml.gz");
+                File.WriteAllBytes(gz, Gzipped(FixtureBytes("guide.xml")));
+                Assert.Equal(2, XmlTv.ParseFile(gz, wanted, now)["tf1.fr"].Count);
+                var plain = Path.Combine(dir, "guide.xml");
+                File.WriteAllBytes(plain, FixtureBytes("guide.xml"));
+                Assert.Equal(2, XmlTv.ParseFile(plain, wanted, now)["tf1.fr"].Count);
+                // Fichier coupé en route ou absent : pas d'erreur, ce qui a été lu est gardé
+                var all = File.ReadAllBytes(gz);
+                var cut = Path.Combine(dir, "coupe.xml.gz");
+                File.WriteAllBytes(cut, all.Take(all.Length / 2).ToArray());
+                XmlTv.ParseFile(cut, wanted, now);
+                Assert.Equal(0, XmlTv.ParseFile(Path.Combine(dir, "absent.xml"), wanted, now).Count);
+            }
+            finally { Directory.Delete(dir, true); }
+        }
+
+        public static void TestJsonFalseMeansNothing()
+        {
+            var o = Json.ParseObject("{\"a\":false,\"b\":true,\"n\":0,\"t\":\"x\"}");
+            Assert.Null(o.Str("a"), "false");
+            Assert.Equal("1", o.Str("b"));
+            Assert.Equal("0", o.Str("n"));
+            Assert.False(o.Flag("a"), "drapeau faux");
+            Assert.True(o.Flag("b"), "drapeau vrai");
+            // Panels qui envoient « false » à la place d'un logo ou d'un identifiant de guide
+            var live = XtreamParse.LiveStreams("[{\"stream_id\":5,\"name\":\"Une\",\"stream_icon\":false,\"epg_channel_id\":false,\"tv_archive\":false,\"num\":false}]");
+            Assert.Equal("Une", live.Single().Name);
+            Assert.Null(live[0].Logo, "logo");
+            Assert.Null(live[0].TvgId, "identifiant du guide");
+            Assert.Equal(0, live[0].ArchiveDays);
+            Assert.Equal(0, live[0].Num);
+        }
+
+        public static void TestResumePositionsAreCapped()
+        {
+            var lib = new LibraryData();
+            var t0 = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
+            int total = LibraryData.PositionsMax + 120;
+            for (int i = 0; i < total; i++)
+                lib.SavePosition(new ContentRef { Id = "vod:" + i, Kind = ContentKind.Movie, Name = "Film " + i }, 120, 0, t0.AddMinutes(i));
+            Assert.True(lib.Positions.Count <= LibraryData.PositionsMax, "plafond respecté");
+            Assert.True(lib.Positions.Count >= LibraryData.PositionsMax - 60, "pas de purge excessive");
+            Assert.True(lib.Resume("vod:" + (total - 1)) != null, "la plus récente reste");
+            Assert.Null(lib.Resume("vod:0"), "la plus ancienne part");
+        }
+
+        /// <summary>
+        /// Playlist et guide servis par un petit serveur local : téléchargement vers le disque, lecture en
+        /// flux, et surtout une page d'erreur qui ne remplace jamais une playlist qui marche.
+        /// </summary>
+        public static async Task TestPlaylistAndGuideOverHttp()
+        {
+            int port;
+            {
+                var probe = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0);
+                probe.Start();
+                port = ((System.Net.IPEndPoint)probe.LocalEndpoint).Port;
+                probe.Stop();
+            }
+            var prefix = "http://127.0.0.1:" + port + "/";
+            var listener = new System.Net.HttpListener();
+            listener.Prefixes.Add(prefix);
+            try { listener.Start(); }
+            catch (System.Net.HttpListenerException e)
+            {
+                Console.WriteLine("  (serveur local indisponible ici, essai ignoré : " + e.Message + ")");
+                return;
+            }
+            var now = DateTimeOffset.UtcNow;
+            string Stamp(DateTimeOffset d) => d.ToString("yyyyMMddHHmmss", System.Globalization.CultureInfo.InvariantCulture) + " +0000";
+            var guide = Encoding.UTF8.GetBytes(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><tv>" +
+                "<programme start=\"" + Stamp(now.AddMinutes(-30)) + "\" stop=\"" + Stamp(now.AddMinutes(30)) + "\" channel=\"TF1.fr\"><title>En cours</title></programme>" +
+                "</tv>");
+            string playlistBody = "\uFEFF#EXTM3U\n#EXTINF:-1 tvg-id=\"TF1.FR\",TF1\n" + prefix + "live/1.m3u8|User-Agent=Essai\n";
+            int playlistStatus = 200;
+            var serving = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    System.Net.HttpListenerContext ctx;
+                    try { ctx = await listener.GetContextAsync(); }
+                    catch (Exception) { return; }
+                    try
+                    {
+                        byte[] body;
+                        if (ctx.Request.Url.AbsolutePath == "/guide.xml.gz") body = Gzipped(guide);
+                        else
+                        {
+                            ctx.Response.StatusCode = playlistStatus;
+                            body = Encoding.UTF8.GetBytes(playlistBody);
+                        }
+                        ctx.Response.ContentLength64 = body.Length;
+                        await ctx.Response.OutputStream.WriteAsync(body, 0, body.Length);
+                        ctx.Response.Close();
+                    }
+                    catch (Exception) { }
+                }
+            });
+            var dir = TempDir();
+            try
+            {
+                var source = Source.Playlist(prefix + "liste.m3u", prefix + "guide.xml.gz");
+                var live = await new Repository(source, dir).LiveAsync();
+                Assert.Equal(prefix + "live/1.m3u8", live.Channels.Single().Url);
+                Assert.Equal("Essai", live.Channels[0].UserAgent);
+
+                // Guide : « TF1.FR » dans la playlist, « TF1.fr » dans le guide compressé
+                var repo = new Repository(source, dir);
+                var channel = (await repo.LiveAsync()).Channels[0];
+                var programmes = await repo.ProgrammesAsync(channel);
+                Assert.Equal("En cours", programmes.Single().Title);
+
+                // Le guide a plus de 6 h et le serveur répond n'importe quoi : celui qui marche reste
+                var guideFile = Directory.GetFiles(dir, "epg.xml", SearchOption.AllDirectories).Single();
+                File.SetLastWriteTimeUtc(guideFile, DateTime.UtcNow.AddHours(-7));
+                guide = Encoding.UTF8.GetBytes("<html><body>Maintenance</body></html>");
+                var later = new Repository(source, dir);
+                Assert.Equal("En cours", (await later.ProgrammesAsync((await later.LiveAsync()).Channels[0])).Single().Title);
+                Assert.True(DateTime.UtcNow - File.GetLastWriteTimeUtc(guideFile) > TimeSpan.FromHours(5), "nouvel essai du guide bientôt");
+                Assert.Equal(0, Directory.GetFiles(dir, "epg.new*", SearchOption.AllDirectories).Length);
+
+                // Le serveur répond par une page d'erreur : la playlist qui marche reste, maintenant…
+                playlistBody = "<html><body>Maintenance</body></html>";
+                Assert.Equal(1, (await new Repository(source, dir).LiveAsync(true)).Channels.Count);
+                // … et au lancement suivant (avant, la page d'erreur restait 12 h dans le cache)
+                Assert.Equal(1, (await new Repository(source, dir).LiveAsync()).Channels.Count);
+                // Serveur en panne : idem
+                playlistStatus = 503;
+                Assert.Equal(1, (await new Repository(source, dir).LiveAsync(true)).Channels.Count);
+
+                // Aucune playlist connue et une page d'erreur : message clair, rien en cache
+                playlistStatus = 200;
+                var other = Source.Playlist(prefix + "autre.m3u", null);
+                for (int i = 0; i < 2; i++)
+                {
+                    try
+                    {
+                        await new Repository(other, dir).LiveAsync();
+                        throw new Exception("une erreur était attendue");
+                    }
+                    catch (FluxException e) { Assert.Equal(FluxError.EmptyPlaylist, e.Kind); }
+                }
+                // Le serveur se rétablit : la playlist arrive aussitôt
+                playlistBody = "#EXTM3U\n#EXTINF:-1,Une\n" + prefix + "live/9.m3u8\n";
+                Assert.Equal(1, (await new Repository(other, dir).LiveAsync()).Channels.Count);
+            }
+            finally
+            {
+                listener.Stop();
+                listener.Close();
+                try { await serving; } catch (Exception) { }
+                try { Directory.Delete(dir, true); } catch (IOException) { }
+            }
         }
 
         public static void TestFormat()

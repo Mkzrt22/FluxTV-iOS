@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -102,6 +103,63 @@ namespace FluxTV.Core
             }
         }
 
+        /// <summary>
+        /// Télécharge vers un fichier sans garder le contenu en mémoire (playlists et guides TV de
+        /// plusieurs centaines de Mo). Le fichier n'apparaît, ou n'est remplacé, qu'une fois complet.
+        /// </summary>
+        public static async Task DownloadAsync(string url, string file, TimeSpan timeout, CancellationToken cancel = default)
+        {
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || (uri.Scheme != "http" && uri.Scheme != "https"))
+                throw new FluxException(FluxError.BadAddress);
+            var part = file + ".part";
+            bool done = false;
+            using (var cts = CancellationTokenSource.CreateLinkedTokenSource(cancel))
+            {
+                cts.CancelAfter(timeout);
+                try
+                {
+                    using (var response = await Client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cts.Token).ConfigureAwait(false))
+                    {
+                        if (!response.IsSuccessStatusCode)
+                            throw new FluxException(FluxError.Http, code: (int)response.StatusCode);
+                        Directory.CreateDirectory(Path.GetDirectoryName(file));
+                        using (var input = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                        using (var output = new FileStream(part, FileMode.Create, FileAccess.Write, FileShare.None, 81920, true))
+                            await input.CopyToAsync(output, 81920, cts.Token).ConfigureAwait(false);
+                    }
+                    if (File.Exists(file)) File.Delete(file);
+                    File.Move(part, file);
+                    done = true;
+                }
+                catch (OperationCanceledException) when (!cancel.IsCancellationRequested)
+                {
+                    throw new FluxException(FluxError.Timeout);
+                }
+                catch (HttpRequestException e)
+                {
+                    throw Map(e);
+                }
+                catch (IOException e)
+                {
+                    // Coupure pendant le transfert, ou disque plein
+                    throw new FluxException(FluxError.Network, e.Message);
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    throw new FluxException(FluxError.Network, e.Message);
+                }
+                finally
+                {
+                    if (!done)
+                    {
+                        try { if (File.Exists(part)) File.Delete(part); }
+                        catch (IOException) { }
+                        catch (UnauthorizedAccessException) { }
+                    }
+                }
+            }
+        }
+
         public static async Task<string> TextAsync(string url, TimeSpan timeout, CancellationToken cancel = default)
         {
             var bytes = await BytesAsync(url, timeout, cancel).ConfigureAwait(false);
@@ -134,6 +192,31 @@ namespace FluxTV.Core
     public static class Gzip
     {
         public static bool IsGzip(byte[] data) => data != null && data.Length > 2 && data[0] == 0x1F && data[1] == 0x8B;
+
+        /// <summary>Lecture décompressée au fil de l'eau (rien n'est gardé en mémoire).</summary>
+        public static Stream Reading(Stream compressed) =>
+            new System.IO.Compression.GZipStream(compressed, System.IO.Compression.CompressionMode.Decompress);
+
+        /// <summary>Fichier ouvert en lecture, décompressé au fil de l'eau s'il est en gzip.</summary>
+        public static Stream OpenFile(string path)
+        {
+            var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 81920);
+            try
+            {
+                int a = file.ReadByte(), b = file.ReadByte();
+                file.Position = 0;
+                return a == 0x1F && b == 0x8B ? Reading(file) : file;
+            }
+            catch
+            {
+                file.Dispose();
+                throw;
+            }
+        }
+
+        /// <summary>Texte UTF-8 d'un fichier, lu en flux (gzip et BOM gérés).</summary>
+        public static StreamReader OpenText(string path) =>
+            new StreamReader(OpenFile(path), new UTF8Encoding(false), true, 81920);
 
         public static byte[] Decompress(byte[] data)
         {

@@ -13,17 +13,40 @@ namespace FluxTV.Core
     /// </summary>
     public static class XmlTv
     {
+        /// <summary>
+        /// Identifiant de chaîne tel qu'il est comparé : « TF1.fr » dans la playlist et « tf1.fr » dans le
+        /// guide désignent la même chaîne. Sans cela, le guide restait vide pour ces chaînes.
+        /// </summary>
+        public static string Key(string id) => (id ?? "").Trim().ToLowerInvariant();
+
+        /// <summary>Le résultat est indexé par <see cref="Key"/>.</summary>
         public static Dictionary<string, List<Programme>> Parse(byte[] data, ISet<string> wanted, DateTimeOffset now)
         {
-            if (Gzip.IsGzip(data)) data = Gzip.Decompress(data) ?? new byte[0];
-            using (var stream = new MemoryStream(data))
+            using (var memory = new MemoryStream(data ?? new byte[0]))
+            using (var stream = Gzip.IsGzip(data) ? Gzip.Reading(memory) : memory)
                 return Parse(stream, wanted, now);
+        }
+
+        /// <summary>
+        /// Guide lu en flux depuis le disque, décompressé au fil de la lecture : un guide de plusieurs
+        /// centaines de Mo ne passe jamais en entier par la mémoire.
+        /// </summary>
+        public static Dictionary<string, List<Programme>> ParseFile(string path, ISet<string> wanted, DateTimeOffset now)
+        {
+            try
+            {
+                using (var stream = Gzip.OpenFile(path))
+                    return Parse(stream, wanted, now);
+            }
+            catch (IOException) { return new Dictionary<string, List<Programme>>(StringComparer.Ordinal); }
+            catch (UnauthorizedAccessException) { return new Dictionary<string, List<Programme>>(StringComparer.Ordinal); }
         }
 
         public static Dictionary<string, List<Programme>> Parse(Stream stream, ISet<string> wanted, DateTimeOffset now)
         {
             var from = now.AddHours(-3);
             var to = now.AddHours(36);
+            var keys = new HashSet<string>(wanted.Select(Key), StringComparer.Ordinal);
             var result = new Dictionary<string, List<Programme>>(StringComparer.Ordinal);
             var settings = new XmlReaderSettings
             {
@@ -46,10 +69,10 @@ namespace FluxTV.Core
                             r.Read();
                             continue;
                         }
-                        var channel = r.GetAttribute("channel");
+                        var channel = Key(r.GetAttribute("channel"));
                         var start = Date(r.GetAttribute("start"));
                         var stop = Date(r.GetAttribute("stop"));
-                        bool keep = channel != null && wanted.Contains(channel) && start.HasValue && stop.HasValue
+                        bool keep = channel.Length > 0 && keys.Contains(channel) && start.HasValue && stop.HasValue
                                     && stop > start && stop >= from && start <= to;
                         if (!keep)
                         {
@@ -88,6 +111,14 @@ namespace FluxTV.Core
             catch (XmlException)
             {
                 // Guide tronqué ou mal formé : on garde ce qui a été lu
+            }
+            catch (IOException)
+            {
+                // Fichier coupé pendant la lecture : idem
+            }
+            catch (InvalidDataException)
+            {
+                // Compression abîmée : idem
             }
             foreach (var k in result.Keys.ToList()) result[k] = result[k].OrderBy(p => p.Start).ToList();
             return result;

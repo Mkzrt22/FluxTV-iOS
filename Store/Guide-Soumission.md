@@ -103,16 +103,16 @@ IMPORTANT : FluxTV Player est un lecteur multimédia. Il ne fournit, n'héberge 
 
 ### Nouveautés de cette version
 
-Version 1.3 (si la 1.2 est déjà publiée) :
+Version 1.3.1 (si la 1.2 est déjà publiée) :
 
 ```
-Nouveau : un bouton « Noter FluxTV » dans Réglages › Soutenir FluxTV. Après quelques jours d'utilisation, l'app propose aussi, une seule fois, de la noter sur le Microsoft Store.
+Nouveau : un bouton « Noter FluxTV » dans Réglages › Soutenir FluxTV. Après quelques jours d'utilisation, l'app propose aussi, une seule fois, de la noter sur le Microsoft Store. Fiabilité : playlists au format Kodi mieux lues, guide TV reconnu même quand les identifiants diffèrent par leurs majuscules, moins de mémoire utilisée avec les très grandes listes.
 ```
 
-Version 1.3 (si la 1.2 n'a pas encore été publiée : la 1.3 la remplace) :
+Version 1.3.1 (si la 1.2 n'a pas encore été publiée : la 1.3.1 la remplace) :
 
 ```
-Nouveau : le Pack Soutien, facultatif, dans Réglages › Soutenir FluxTV. En remerciement, il débloque le thème Or et le badge Soutien. Toutes les fonctions restent gratuites. Et un bouton « Noter FluxTV » pour donner ton avis sur le Microsoft Store.
+Nouveau : le Pack Soutien, facultatif, dans Réglages › Soutenir FluxTV. En remerciement, il débloque le thème Or et le badge Soutien. Toutes les fonctions restent gratuites. Et un bouton « Noter FluxTV » pour donner ton avis sur le Microsoft Store. Fiabilité : playlists au format Kodi mieux lues, guide TV reconnu même quand les identifiants diffèrent par leurs majuscules, moins de mémoire utilisée avec les très grandes listes.
 ```
 
 Version 1.2 :
@@ -229,16 +229,16 @@ IMPORTANT: FluxTV Player is a media player. It does not provide, host or sell an
 
 ### What's new in this version
 
-Version 1.3 (if 1.2 is already published):
+Version 1.3.1 (if 1.2 is already published):
 
 ```
-New: a “Rate FluxTV” button in Settings › Support FluxTV. After a few days of use, the app also offers, just once, to rate it on the Microsoft Store.
+New: a “Rate FluxTV” button in Settings › Support FluxTV. After a few days of use, the app also offers, just once, to rate it on the Microsoft Store. Reliability: Kodi-style playlists are read correctly, the TV guide matches channels even when IDs differ in letter case, and very large lists use less memory.
 ```
 
-Version 1.3 (if 1.2 isn't published yet: 1.3 replaces it):
+Version 1.3.1 (if 1.2 isn't published yet: 1.3.1 replaces it):
 
 ```
-New: the optional Supporter Pack, in Settings › Support FluxTV. As a thank-you, it unlocks the Gold theme and the Supporter badge. Every feature stays free. Plus a “Rate FluxTV” button to share your opinion on the Microsoft Store.
+New: the optional Supporter Pack, in Settings › Support FluxTV. As a thank-you, it unlocks the Gold theme and the Supporter badge. Every feature stays free. Plus a “Rate FluxTV” button to share your opinion on the Microsoft Store. Reliability: Kodi-style playlists are read correctly, the TV guide matches channels even when IDs differ in letter case, and very large lists use less memory.
 ```
 
 Version 1.2:
@@ -348,7 +348,7 @@ description et nouveautés ci-dessus. Si le questionnaire de classification dema
 des achats, réponds **oui**. L'ancienne extension « soutien1 » (consommable) reste non publiée :
 supprime simplement son brouillon de soumission.
 
-## Invitation à noter l'app (version 1.3)
+## Invitation à noter l'app (depuis la version 1.3)
 
 Les règles du Microsoft Store interdisent d'influencer les notes : l'app ne demande donc jamais
 « 5 étoiles », ne filtre pas les avis et n'offre rien en échange. Elle propose simplement, **une seule
@@ -362,7 +362,23 @@ fois**, de la noter, à qui s'en sert vraiment :
 - le bouton « Noter FluxTV » reste toujours dans Réglages › Soutenir FluxTV.
 
 Rien à configurer dans l'Espace partenaires : les notes arrivent dans **Avis** (Reviews) de FluxTV Player.
-Envoie la 1.3 une fois la 1.2 publiée (ou, si la 1.2 est refusée, directement la 1.3 à sa place).
+Envoie la 1.3.1 une fois la 1.2 publiée (ou, si la 1.2 est refusée, directement la 1.3.1 à sa place). La 1.3.1 remplace
+le paquet 1.3 livré avant elle : mêmes nouveautés, plus les corrections de fiabilité ci-dessous.
+
+## Fiabilité (version 1.3.1)
+
+Relecture complète du cœur de l'app, sans changement visible à l'écran :
+
+- **Playlists au format Kodi** (`adresse|User-Agent=…`) : l'adresse est séparée de ses options, la chaîne démarre.
+- **Guide TV** : « TF1.fr » dans la playlist et « tf1.fr » dans le guide sont la même chaîne.
+- **Très grandes listes** : playlist et guide téléchargés directement sur le disque puis lus en flux
+  (plus de fichier de plusieurs centaines de Mo en mémoire) ; une conversion de moins pour les
+  grosses réponses des serveurs Xtream.
+- **Serveur en maintenance** : une page d'erreur reçue à la place de la playlist ne remplace plus la
+  playlist qui marchait (elle restait 12 h en cache).
+- `false` reçu à la place d'un logo ou d'un nom n'affiche plus « 0 » ; reprises de lecture limitées aux
+  500 plus récentes.
+- 37 tests du cœur (31 avant), dont un essai complet avec un petit serveur local.
 
 ## Ta copie personnelle
 

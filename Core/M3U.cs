@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -38,14 +39,29 @@ namespace FluxTV.Core
 
         public static (List<M3UEntry> Entries, string EpgUrl) Parse(string text)
         {
+            using (var reader = new StringReader(text ?? ""))
+                return ParseLines(reader);
+        }
+
+        /// <summary>
+        /// Lecture ligne à ligne : une playlist de 100 Mo n'est jamais chargée en entier en mémoire
+        /// (ni en texte, ni en tableau de lignes), seules ses entrées sont gardées.
+        /// </summary>
+        public static (List<M3UEntry> Entries, string EpgUrl) ParseLines(TextReader reader)
+        {
             var entries = new List<M3UEntry>();
             string epg = null;
             string name = "", logo = null, group = Tr.T("Autres", "Other"), tvgId = null, ua = null;
             int num = 0;
             bool pending = false;
+            bool first = true;
 
-            foreach (var raw in (text ?? "").Split('\n'))
+            string raw;
+            while ((raw = reader.ReadLine()) != null)
             {
+                // Marque d'ordre des octets (BOM) en tête de fichier : elle cacherait « #EXTM3U »
+                if (first && raw.Length > 0 && raw[0] == '\uFEFF') raw = raw.Substring(1);
+                first = false;
                 var line = raw.Trim();
                 if (line.Length == 0) continue;
                 if (line[0] == '#')
@@ -90,11 +106,15 @@ namespace FluxTV.Core
                     continue;
                 }
                 if (pending)
+                {
+                    var (address, agent) = SplitUrlOptions(line);
                     entries.Add(new M3UEntry
                     {
-                        Name = name.Length == 0 ? Tr.T("Sans nom", "Untitled") : name, Url = line, Logo = logo, Group = group, TvgId = tvgId, Num = num,
-                        UserAgent = ua,
+                        Name = name.Length == 0 ? Tr.T("Sans nom", "Untitled") : name, Url = address, Logo = logo, Group = group, TvgId = tvgId, Num = num,
+                        // #EXTVLCOPT garde la priorité sur une option collée à l'adresse
+                        UserAgent = ua ?? agent,
                     });
+                }
                 pending = false;
                 name = "";
                 logo = null;
@@ -104,6 +124,31 @@ namespace FluxTV.Core
                 num = 0;
             }
             return (entries, epg);
+        }
+
+        /// <summary>
+        /// Options collées à l'adresse, à la manière de Kodi : « http://…/flux.m3u8|User-Agent=VLC&amp;Referer=… ».
+        /// Sans ce découpage, l'adresse entière (options comprises) partait au serveur et la chaîne ne
+        /// démarrait pas. Renvoie l'adresse seule et l'agent utilisateur demandé (ou null).
+        /// </summary>
+        public static (string Url, string UserAgent) SplitUrlOptions(string line)
+        {
+            int bar = line.IndexOf('|');
+            if (bar <= 0 || !line.StartsWith("http", StringComparison.OrdinalIgnoreCase)) return (line, null);
+            var options = line.Substring(bar + 1);
+            if (options.IndexOf('=') < 0) return (line, null);
+            string ua = null;
+            foreach (var part in options.Split('&'))
+            {
+                int eq = part.IndexOf('=');
+                if (eq <= 0 || !part.Substring(0, eq).Trim().Equals("user-agent", StringComparison.OrdinalIgnoreCase)) continue;
+                var value = part.Substring(eq + 1);
+                try { value = Uri.UnescapeDataString(value.Replace('+', ' ')); }
+                catch (UriFormatException) { }
+                value = value.Trim();
+                ua = value.Length == 0 ? null : value;
+            }
+            return (line.Substring(0, bar).Trim(), ua);
         }
 
         static string NonEmpty(Dictionary<string, string> a, string key) =>
@@ -213,9 +258,13 @@ namespace FluxTV.Core
         }
 
         /// <summary>Répartit une playlist en chaînes, films et séries (épisodes regroupés par série).</summary>
-        public static M3UCatalog Catalog(string text)
+        public static M3UCatalog Catalog(string text) => Catalog(Parse(text));
+
+        /// <summary>Même répartition, la playlist étant lue en flux (fichier du cache).</summary>
+        public static M3UCatalog Catalog(TextReader reader) => Catalog(ParseLines(reader));
+
+        static M3UCatalog Catalog((List<M3UEntry> Entries, string EpgUrl) parsed)
         {
-            var parsed = Parse(text);
             var cat = new M3UCatalog { EpgUrl = parsed.EpgUrl };
             var liveGroups = new List<string>();
             var vodGroups = new List<string>();
