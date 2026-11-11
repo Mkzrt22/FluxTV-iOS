@@ -133,7 +133,7 @@ p { margin: 0; }
 .menu-ico.home svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .menu-ico.don { color: #04261a; background: linear-gradient(135deg, #6ee7b7, var(--ok)); }
 .menu-ico.don svg { fill: currentColor; }
-.menu-eyebrow { margin: 0; font: 700 11px Manrope; letter-spacing: .22em; text-transform: uppercase; color: var(--accent-bright); }
+.menu-eyebrow { margin: 0; font: 700 12px Manrope; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-bright); }
 .menu-title { margin: 2px 0 0; font: 700 22px Sora; letter-spacing: -.02em; color: var(--text); }
 .menu-desc { margin: 12px 0 8px; color: var(--text-dim); font-size: 14px; line-height: 1.5; }
 .menu-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
@@ -365,8 +365,8 @@ code.copy.done::after { content: "  ✓ copié"; color: var(--ok); font-family: 
 .faq details p { padding: 0 0 22px; color: var(--text-dim); }
 .privacy { background: linear-gradient(180deg, var(--abyss), var(--night)); }
 .policy { padding: clamp(22px, 4vw, 40px); border-radius: var(--radius); background: var(--card); box-shadow: inset 0 0 0 1px var(--stroke); }
-.policy h3 { font-size: 17px; color: var(--accent-bright); margin: 22px 0 6px; }
-.policy h3:first-child { margin-top: 0; }
+.policy h2, .policy h3 { font-size: 17px; line-height: 1.3; font-weight: 700; color: var(--accent-bright); margin: 22px 0 6px; }
+.policy h2:first-child, .policy h3:first-child { margin-top: 0; }
 .policy p { color: var(--text-dim); font-size: 15.5px; }
 
 /* Soutenir */
@@ -457,3 +457,5 @@ code.copy.done::after { content: "  ✓ copié"; color: var(--ok); font-family: 
 /* Pied de page : réseaux */
 .follow { margin-top: 16px; font-size: 14px; color: var(--text-dim); }
 .follow a { text-decoration: underline; text-underline-offset: 3px; }
+/* Pages annexes : un vrai titre principal (h1), à l'allure des titres de section */
+.head h1, .titre { font-family: Sora, Manrope, sans-serif; margin: 0; letter-spacing: -.02em; font-size: clamp(30px, 4.6vw, 54px); line-height: 1.06; font-weight: 700; }
