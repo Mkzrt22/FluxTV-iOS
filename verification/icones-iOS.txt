@@ -1,0 +1,4 @@
+AppIcon 1024x1024 phone
+AppIcon 1024x1024 pad
+AppIcon ?x? phone
+AppIcon ?x? pad
