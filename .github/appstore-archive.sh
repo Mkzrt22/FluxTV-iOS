@@ -25,7 +25,11 @@ erreur() { log "  ✘ $*"; statut=1; }
 avert() { log "  ⚠ $*"; }
 valeur() { /usr/libexec/PlistBuddy -c "Print :$2" "$1" 2>/dev/null; }
 # Les journaux publics ne montrent jamais le nom du titulaire du compte (identités de signature)
-masquer() { sed -E 's/((Apple|iPhone|iOS) (Distribution|Development|Developer)): [^(]*\(/\1: … (/g'; }
+masquer() {
+  sed -E 's/((Apple|iPhone|iOS) (Distribution|Development|Developer)): [^(]*\(/\1: … (/g' |
+    { if [ -n "${ASC_KEY_ID:-}" ]; then sed "s/${ASC_KEY_ID}/…/g"; else cat; fi } |
+    { if [ -n "${ASC_ISSUER_ID:-}" ]; then sed "s/${ASC_ISSUER_ID}/…/g"; else cat; fi }
+}
 
 if [ "$MODE" = envoyer ]; then
   for v in ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_P8; do
@@ -37,12 +41,8 @@ if [ "$MODE" = envoyer ]; then
   CLE_DIR="$(mktemp -d)"
   trap 'rm -rf "$CLE_DIR"' EXIT
   CLE="$CLE_DIR/AuthKey_$ASC_KEY_ID.p8"
-  # Contenu du fichier .p8 collé tel quel (ou en base64)
-  case "$ASC_KEY_P8" in
-    *"BEGIN PRIVATE KEY"*) printf '%s\n' "$ASC_KEY_P8" > "$CLE" ;;
-    *) printf '%s' "$ASC_KEY_P8" | base64 --decode > "$CLE" 2>/dev/null ;;
-  esac
-  chmod 600 "$CLE"
+  # Contenu du fichier .p8 remis en forme (collé depuis le Bloc-notes, ou encodé en base64)
+  python3 .github/asc.py cle "$CLE" | tee -a "$OUT/journal.txt" || exit 1
   grep -q "BEGIN PRIVATE KEY" "$CLE" || { log "✘ ASC_KEY_P8 ne contient pas une clé .p8"; exit 1; }
 elif [ "$MODE" != verifier ]; then
   echo "Usage : $0 verifier|envoyer"
@@ -151,7 +151,8 @@ EOF
     log "✔ $1 envoyé à App Store Connect (build $BUILD) : traitement par Apple, puis TestFlight"
   else
     erreur "envoi $1"
-    grep -E "error|Error|ERROR|failed" "build/envoi-$1.log" | grep -v "^ *$" | head -30 | masquer | tee -a "$OUT/journal.txt"
+    grep -E "error|Error|ERROR|failed|Failed|requires|No profiles|certificate|Cloud signing|not permitted|already been used|ITMS-" \
+      "build/envoi-$1.log" | grep -v "^ *$" | head -60 | masquer | tee -a "$OUT/journal.txt"
   fi
 }
 

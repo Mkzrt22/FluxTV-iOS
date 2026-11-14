@@ -4,8 +4,9 @@ L'envoi se fait depuis GitHub, sur un Mac de GitHub : pas besoin de Mac ni de ce
 signe l'app lui-même au moment de l'envoi. Il faut seulement une **clé d'API App Store
 Connect**, rangée dans les secrets du dépôt GitHub.
 
-Le workflow « App Store - envoi » ne part **jamais tout seul** : il faut la clé dans les secrets,
-le workflow sur la branche `main`, et un lancement à la main avec le mot `ENVOYER`.
+Le workflow « App Store - envoi » ne part **jamais tout seul** : il faut la clé dans les secrets
+et un lancement à la main avec le mot `ENVOYER` (ou `VERIFIER` pour contrôler la clé sans rien
+envoyer).
 
 ## 1. Créer la clé d'API (une seule fois)
 
@@ -37,13 +38,19 @@ https://github.com/Mkzrt22/FluxTV-iOS › **Settings** › **Secrets and variabl
 
 GitHub ne réaffiche jamais un secret, et il n'apparaît pas dans les journaux.
 
-## 3. Lancer l'envoi (avec l'accord donné à Claude)
+## 3. Lancer l'envoi (avec ton accord : Claude peut le lancer pour toi)
 
-1. Claude met le workflow sur `main` (après ton accord).
-2. https://github.com/Mkzrt22/FluxTV-iOS/actions › **App Store - envoi** › **Run workflow** ›
-   écrire `ENVOYER` › plateformes `les-deux` › **Run workflow**.
-3. Environ 20 à 30 minutes : fabrication, contrôles (version, icônes, aucun compte intégré),
+https://github.com/Mkzrt22/FluxTV-iOS/actions › **App Store - envoi** › **Run workflow** (branche
+`main`) › écrire `ENVOYER` › plateformes `les-deux` › **Run workflow**. Trois étapes :
+
+1. **Clé Apple** (1 minute, lecture seule) : la clé est-elle acceptée, l'app existe-t-elle dans App
+   Store Connect, sous quel numéro de version, quels builds sont déjà envoyés. Une clé fausse est
+   signalée ici, avec le secret à corriger, et rien d'autre ne part.
+2. **Envoi** (20 à 30 minutes) : fabrication, contrôles (version, icônes, aucun compte intégré),
    signature par Apple et envoi. Si un contrôle échoue, rien n'est envoyé.
+3. **Traitement par Apple** (10 à 30 minutes) : attend que les builds soient prêts dans TestFlight.
+
+Avec `VERIFIER` au lieu de `ENVOYER`, seule l'étape 1 a lieu.
 
 ## 4. Ensuite, dans App Store Connect
 

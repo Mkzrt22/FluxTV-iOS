@@ -1,19 +1,19 @@
 # Envoi de FluxTV sur App Store Connect (TestFlight, puis validation par Apple).
 #
-# DÉSACTIVÉ tant que les trois conditions ne sont pas réunies :
-#   1. la clé d'API App Store Connect est dans les secrets du dépôt : ASC_KEY_ID, ASC_ISSUER_ID et
-#      ASC_KEY_P8 (contenu du fichier .p8) ;
-#   2. ce fichier est sur la branche principale (main) ;
-#   3. quelqu'un le lance à la main : onglet Actions › « App Store - envoi » › Run workflow, en
-#      écrivant ENVOYER dans la case de confirmation.
-# Jamais lancé automatiquement. Apple signe les apps lui-même (aucun certificat à fabriquer).
-# Mode d'emploi : AppStore/Envoi-App-Store.md
+# Ne part JAMAIS tout seul : il faut la clé d'API App Store Connect dans les secrets du dépôt
+# (ASC_KEY_ID, ASC_ISSUER_ID et ASC_KEY_P8, contenu du fichier .p8) et un lancement à la main :
+# onglet Actions › « App Store - envoi » › Run workflow, en écrivant dans la case de confirmation :
+#   VERIFIER  contrôle de la clé et de l'app dans App Store Connect, en une minute, sans rien envoyer ;
+#   ENVOYER   même contrôle, puis fabrication, signature par Apple et envoi (TestFlight), puis suivi
+#             du traitement par Apple.
+# Apple signe les apps lui-même (aucun certificat à fabriquer). Rien n'est soumis à la validation :
+# la soumission se fait ensuite dans App Store Connect. Mode d'emploi : AppStore/Envoi-App-Store.md
 name: App Store - envoi
 on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: "Écris ENVOYER pour envoyer le build à Apple"
+        description: "ENVOYER pour envoyer le build à Apple, VERIFIER pour contrôler la clé seulement"
         required: true
         default: "non"
       plateformes:
@@ -27,16 +27,51 @@ concurrency:
   group: appstore-envoi
   cancel-in-progress: false
 jobs:
+  cle:
+    name: Clé Apple et app dans App Store Connect
+    if: ${{ inputs.confirmation == 'ENVOYER' || inputs.confirmation == 'VERIFIER' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      build: ${{ steps.verif.outputs.build }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: verif
+        name: Contrôle (lecture seule)
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: python3 .github/asc.py verifier $(( GITHUB_RUN_NUMBER + 10 ))
+
   envoi:
+    name: Fabrication, signature par Apple et envoi
+    needs: cle
     if: ${{ inputs.confirmation == 'ENVOYER' }}
     runs-on: macos-latest
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
-      - name: Archives, signature par Apple et envoi
+      - name: Archives, contrôles, signature et envoi
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
           PLATEFORMES: ${{ inputs.plateformes }}
+          BUILD_NUMBER: ${{ needs.cle.outputs.build }}
         run: .github/appstore-archive.sh envoyer
+
+  suivi:
+    name: Traitement par Apple
+    needs: [cle, envoi]
+    if: ${{ inputs.confirmation == 'ENVOYER' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - name: Attente du build dans TestFlight (lecture seule)
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: python3 .github/asc.py suivi "${{ needs.cle.outputs.build }}" "${{ inputs.plateformes }}"
