@@ -198,6 +198,9 @@ namespace FluxTV.Core
                         if (await Task.WhenAny(read, Task.Delay(Timeout.Infinite, cts.Token)) != read) return null;
                         int n = await read;
                         if (n <= 0) return null;
+                        // Pas une requête HTTP (essai en HTTPS d'un navigateur, par exemple) : on coupe tout
+                        // de suite, le navigateur repasse aussitôt en HTTP au lieu d'attendre le délai
+                        if (count == 0 && (buffer[0] < 'A' || buffer[0] > 'Z')) return null;
                         count += n;
                     }
                 }

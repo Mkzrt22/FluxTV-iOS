@@ -1062,6 +1062,12 @@ namespace FluxTV.Tests
             var refused = new MemoryStream();
             Assert.Null(await new PhoneLink().ServeAsync(new MemoryStream(Bytes("BONJOUR\r\n\r\n")), refused, TimeSpan.FromSeconds(2)), "requête invalide");
             Assert.True(Encoding.ASCII.GetString(refused.ToArray()).StartsWith("HTTP/1.1 400 "), "réponse 400");
+            // Essai en HTTPS (début d'une poignée de main TLS) : coupé tout de suite, sans réponse
+            var tls = new MemoryStream();
+            started = DateTime.UtcNow;
+            Assert.Null(await new PhoneLink().ServeAsync(new MemoryStream(new byte[] { 0x16, 0x03, 0x01, 0x02, 0x00, 0x01 }), tls, TimeSpan.FromSeconds(5)), "essai HTTPS");
+            Assert.Equal(0L, tls.Length, "rien répondu à un essai HTTPS");
+            Assert.True(DateTime.UtcNow - started < TimeSpan.FromSeconds(1), "coupé sans attendre");
             var cut = new MemoryStream();
             Assert.Null(await new PhoneLink().ServeAsync(new MemoryStream(Bytes("GET / HT")), cut, TimeSpan.FromSeconds(2)), "connexion coupée");
             Assert.Equal(0L, cut.Length, "rien répondu à une connexion coupée");
