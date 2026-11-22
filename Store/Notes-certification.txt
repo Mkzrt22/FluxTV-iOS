@@ -20,9 +20,15 @@ CONTROLS (Xbox controller)
 - Movies / Series: open a title, then "Play". Left/right = seek 10 s, LB/RB = seek 30 s.
 - Resume: stop a movie, it appears in "Continue watching" on the home screen.
 
+ADD YOUR SOURCE FROM A PHONE (NEW IN 1.4)
+Typing a long playlist link or password with a controller is tedious, so the setup screen offers "From my phone":
+- The console shows a QR code. The phone (on the same home network) opens a small local web page served by the app itself, pastes its Xtream account or playlist link and taps "Send to the TV". The console then connects exactly as if the details had been typed with the controller, and the phone shows the result (connected, or the error to fix).
+- The page only exists while this screen is open: it closes as soon as the source is added, when the user presses Back, after 15 minutes, or after 30 requests with a wrong code. Each opening uses a new random 6-character code in the address. It is reachable on the local network only (private IPv4 address of the console, port 8765); nothing goes through the internet or any FluxTV server.
+- To try it: on the setup screen (first launch, or Settings › "Change source", pressed twice to confirm), choose "From my phone" and scan the QR code with any phone on the same network, or type the address shown under the QR code into the phone's browser. Sending a made-up account shows the error on both the phone and the TV.
+
 CAPABILITIES
 - internetClient: playlists, TV guide (XMLTV), images and video streams from the source chosen by the user.
-- privateNetworkClientServer: many users run their playlist or TV server on their home network (e.g. http://192.168.x.x). The app only acts as a client; it does not listen for incoming connections.
+- privateNetworkClientServer: many users run their playlist or TV server on their home network (e.g. http://192.168.x.x), which the app reaches as a client. It is also used by "From my phone" (see above): only while that setup screen is open, the app listens on the console's local network address so that the user's phone can send the source details.
 
 PRIVACY
 No personal data is collected. No analytics, no advertising, no account. The server address, username and password entered by the user are stored encrypted on the device (Windows Credential Locker / PasswordVault) and are only sent to the server chosen by the user. Privacy policy: see the URL in the Store listing.

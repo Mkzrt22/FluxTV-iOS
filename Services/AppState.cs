@@ -108,7 +108,11 @@ namespace FluxTV.Services
         }
 
         /// <summary>Vérifie la source puis l'enregistre. Lève une erreur lisible si elle ne fonctionne pas.</summary>
-        public async Task ConnectAsync(Source s)
+        /// <summary>
+        /// Vérifie la source puis l'adopte. <paramref name="accepted"/> est appelé dès qu'elle est acceptée,
+        /// juste avant que l'app passe à l'accueil (le téléphone affiche alors « C'est fait »).
+        /// </summary>
+        public async Task ConnectAsync(Source s, Action accepted = null)
         {
             var candidate = new Repository(s, CacheBase);
             AccountInfo info = null;
@@ -124,6 +128,7 @@ namespace FluxTV.Services
                 if (l.Channels.Count == 0 && vod.Count == 0 && series.Count == 0) throw new FluxException(FluxError.EmptyPlaylist);
             }
             if (!TestMode) SourceStore.Save(s);
+            accepted?.Invoke();
             Source = s;
             Repo = candidate;
             Account = info;

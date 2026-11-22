@@ -100,6 +100,7 @@ FluxTV Player est un lecteur IPTV gratuit et élégant, pensé pour la télévis
 
 AJOUTEZ VOTRE SOURCE
 • Compte Xtream (serveur, utilisateur, mot de passe) ou lien de playlist M3U
+• Depuis votre téléphone : scannez le QR code affiché sur la télé et collez vos infos, sans rien taper à la manette
 • Guide des programmes XMLTV pris en charge
 • Mode démonstration pour découvrir l'app sans abonnement
 
@@ -130,6 +131,18 @@ IMPORTANT : FluxTV Player est un lecteur multimédia. Il ne fournit, n'héberge 
 ```
 
 ### Nouveautés de cette version
+
+Version 1.4 (si la 1.3.1 est déjà publiée) :
+
+```
+Nouveau : ajoutez votre source depuis votre téléphone. Choisissez « Depuis mon téléphone », scannez le QR code affiché sur la télé, collez votre compte Xtream ou votre lien de playlist, puis touchez « Envoyer à la télé ». Plus besoin de tout taper à la manette, et tout reste sur votre réseau local.
+```
+
+Version 1.4 (si la 1.3.1 n'est pas encore publiée : la 1.4 la remplace) :
+
+```
+Nouveau : ajoutez votre source depuis votre téléphone. Choisissez « Depuis mon téléphone », scannez le QR code affiché sur la télé, collez votre compte Xtream ou votre lien de playlist, puis touchez « Envoyer à la télé » : plus besoin de tout taper à la manette, et tout reste sur votre réseau local. Aussi : un bouton « Noter FluxTV » dans Réglages › Soutenir FluxTV. Fiabilité : playlists au format Kodi mieux lues, guide TV reconnu même quand les identifiants diffèrent par leurs majuscules, moins de mémoire utilisée avec les très grandes listes.
+```
 
 Version 1.3.1 (si la 1.2 est déjà publiée) :
 
@@ -165,6 +178,7 @@ Première version de FluxTV Player sur Xbox, en français et en anglais.
 
 ```
 Lecteur IPTV gratuit : comptes Xtream et playlists M3U
+Source ajoutée depuis le téléphone (QR code)
 TV en direct avec guide des programmes
 Films et séries avec reprise automatique
 Pilotage complet à la manette
@@ -184,6 +198,7 @@ Dépose les fichiers du dossier `Captures` dans cet ordre, avec ces légendes :
 |---|---|
 | `home.png` | Toutes vos chaînes, films et séries au même endroit |
 | `live.png` | La TV en direct avec le guide des programmes |
+| `telephone.png` | Ajoutez votre source depuis votre téléphone |
 | `play-channels.png` | Zappez sans quitter la lecture |
 | `movies.png` | Vos films en grandes affiches |
 | `movie.png` | Fiches détaillées et reprise automatique |
@@ -223,6 +238,7 @@ FluxTV Player is a free, elegant IPTV player designed for the TV: watch YOUR own
 
 ADD YOUR SOURCE
 • Xtream account (server, username, password) or M3U playlist link
+• From your phone: scan the QR code on the TV and paste your details, no typing with the controller
 • XMLTV program guide supported
 • Demo mode to explore the app without a subscription
 
@@ -256,6 +272,18 @@ IMPORTANT: FluxTV Player is a media player. It does not provide, host or sell an
 ```
 
 ### What's new in this version
+
+Version 1.4 (if 1.3.1 is already published):
+
+```
+New: add your source from your phone. Choose “From my phone”, scan the QR code on the TV, paste your Xtream account or playlist link, then tap “Send to the TV”. No more typing everything with the controller, and it all stays on your home network.
+```
+
+Version 1.4 (if 1.3.1 isn't published yet: 1.4 replaces it):
+
+```
+New: add your source from your phone. Choose “From my phone”, scan the QR code on the TV, paste your Xtream account or playlist link, then tap “Send to the TV”: no more typing everything with the controller, and it all stays on your home network. Also: a “Rate FluxTV” button in Settings › Support FluxTV. Reliability: Kodi-style playlists are read correctly, the TV guide matches channels even when IDs differ in letter case, and very large lists use less memory.
+```
 
 Version 1.3.1 (if 1.2 is already published):
 
@@ -291,6 +319,7 @@ First release of FluxTV Player on Xbox, in English and French.
 
 ```
 Free IPTV player: Xtream accounts and M3U playlists
+Add your source from your phone (QR code)
 Live TV with program guide
 Movies and series with auto-resume
 Full controller navigation
@@ -309,6 +338,7 @@ In English and French
 |---|---|
 | `home-en.png` | All your channels, movies and series in one place |
 | `live-en.png` | Live TV with the program guide |
+| `telephone-en.png` | Add your source from your phone |
 | `play-channels-en.png` | Switch channels without leaving playback |
 | `movies-en.png` | Your movies as big posters |
 | `movie-en.png` | Detailed pages and auto-resume |
@@ -407,6 +437,35 @@ Relecture complète du cœur de l'app, sans changement visible à l'écran :
 - `false` reçu à la place d'un logo ou d'un nom n'affiche plus « 0 » ; reprises de lecture limitées aux
   500 plus récentes.
 - 37 tests du cœur (31 avant), dont un essai complet avec un petit serveur local.
+
+## Depuis mon téléphone (version 1.4)
+
+Taper un lien de playlist ou un mot de passe à la manette est pénible : l'écran de bienvenue propose
+maintenant **« Depuis mon téléphone »**, en premier choix.
+
+1. La console affiche un **QR code** (et son adresse, à taper si le téléphone n'a pas d'appareil photo).
+2. Le téléphone, **sur le même Wi-Fi**, l'ouvre : une petite page FluxTV, en français ou en anglais
+   comme l'app, avec deux onglets, « Compte Xtream » et « Playlist M3U ».
+3. « Envoyer à la télé » : la console se connecte comme si tu avais tout tapé, et le téléphone affiche
+   le résultat. En cas d'erreur (mot de passe refusé…), « Corriger » redonne le formulaire déjà rempli,
+   sauf le mot de passe.
+
+Sécurité :
+
+- la page n'existe que **pendant cet écran** : elle se ferme dès que la source est ajoutée, quand on fait
+  Retour, au bout de **15 minutes**, ou après **30 essais** avec un mauvais code ;
+- un **code au hasard** de 6 caractères dans l'adresse, différent à chaque ouverture ;
+- **réseau local uniquement** (adresse privée de la console, port 8765) : rien ne passe par Internet ni
+  par un serveur FluxTV, et le mot de passe n'est jamais renvoyé au téléphone.
+
+**À essayer sur ta Xbox avant d'envoyer la 1.4** : le serveur de compilation vérifie la page, le QR code et
+l'envoi depuis un « téléphone » simulé, mais il ne peut pas tester le vrai trajet Wi-Fi téléphone → Xbox.
+Installe la 1.4 (Device Portal, mode développeur), puis Réglages › « Changer de source » (deux fois) ›
+« Depuis mon téléphone » : scanne le QR code avec ton téléphone et envoie ton compte. Si le téléphone
+n'arrive pas à ouvrir la page, envoie-moi une photo de l'écran.
+
+Envoie la 1.4 **une fois la 1.3.1 publiée** (« Mettre à jour » la soumission, puis remplacer le paquet).
+Si la 1.3.1 n'est pas encore partie, envoie directement la 1.4 à sa place : elle contient tout.
 
 ## Ta copie personnelle
 

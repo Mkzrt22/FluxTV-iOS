@@ -524,10 +524,12 @@ namespace FluxTV.Views
                 ShowApp("home");
                 return;
             }
-            if (screen == "setup")
+            if (screen == "setup" || screen == "telephone")
             {
+                // « telephone » : ajout de la source depuis le téléphone (QR code d'une adresse type, aucune page ouverte)
                 app.TestMode = true;
                 ShowSetup();
+                if (screen == "telephone") Tv.Later(() => (ContentFrame.Content as SetupPage)?.ShowPhoneForTest());
                 return;
             }
             app.UseForTest(Source.Demo);

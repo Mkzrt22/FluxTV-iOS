@@ -794,5 +794,343 @@ namespace FluxTV.Tests
             Tr.Clock24 = true;
             Assert.Equal("Jeudi 2 octobre 2025", Format.Day(new DateTimeOffset(2025, 10, 2, 12, 0, 0, TimeSpan.Zero)));
         }
+
+        // ───────────────────────────── Téléphone : QR code ─────────────────────────────
+
+        /// <summary>Bits de format de la norme (ISO/IEC 18004, annexe C), par niveau L, M, Q, H et par masque.</summary>
+        static readonly int[,] FormatTable =
+        {
+            { 0x77C4, 0x72F3, 0x7DAA, 0x789D, 0x662F, 0x6318, 0x6C41, 0x6976 },
+            { 0x5412, 0x5125, 0x5E7C, 0x5B4B, 0x45F9, 0x40CE, 0x4F97, 0x4AA0 },
+            { 0x355F, 0x3068, 0x3F31, 0x3A06, 0x24B4, 0x2183, 0x2EDA, 0x2BED },
+            { 0x1689, 0x13BE, 0x1CE7, 0x19D0, 0x0762, 0x0255, 0x0D0C, 0x083B },
+        };
+
+        public static void TestQrCode()
+        {
+            // Adresse type affichée par la console : version 3 (29 × 29 modules), facile à lire de loin
+            var q = QrCode.Encode("http://192.168.100.200:8765/K7P2QX");
+            Assert.Equal(3, q.Version, "version");
+            Assert.Equal(29, q.Size, "taille");
+            Assert.Equal(QrCode.Correction.M, q.Level, "niveau de correction");
+
+            // Trois repères de coin, entourés d'une bande claire
+            foreach (var (fx, fy) in new[] { (0, 0), (q.Size - 7, 0), (0, q.Size - 7) })
+                for (int dy = 0; dy < 7; dy++)
+                    for (int dx = 0; dx < 7; dx++)
+                        Assert.Equal(Math.Max(Math.Abs(dx - 3), Math.Abs(dy - 3)) != 2, q[fx + dx, fy + dy], $"repère ({fx + dx}, {fy + dy})");
+            for (int i = 0; i < 8; i++)
+            {
+                Assert.False(q[7, i] || q[i, 7], "bande claire en haut à gauche");
+                Assert.False(q[q.Size - 8, i] || q[q.Size - 1 - i, 7], "bande claire en haut à droite");
+                Assert.False(q[7, q.Size - 1 - i] || q[i, q.Size - 8], "bande claire en bas à gauche");
+            }
+            // Lignes de synchronisation et module sombre fixe
+            for (int i = 8; i < q.Size - 8; i++)
+            {
+                Assert.Equal(i % 2 == 0, q[i, 6], "ligne de synchronisation");
+                Assert.Equal(i % 2 == 0, q[6, i], "colonne de synchronisation");
+            }
+            Assert.True(q[8, q.Size - 8], "module sombre fixe");
+
+            // Bits de format (deux copies) = table de la norme, pour chaque niveau
+            foreach (QrCode.Correction level in Enum.GetValues(typeof(QrCode.Correction)))
+            {
+                var c = QrCode.Encode("FluxTV " + level, level);
+                int first = 0, second = 0;
+                for (int i = 0; i <= 5; i++) if (c[8, i]) first |= 1 << i;
+                if (c[8, 7]) first |= 1 << 6;
+                if (c[8, 8]) first |= 1 << 7;
+                if (c[7, 8]) first |= 1 << 8;
+                for (int i = 9; i < 15; i++) if (c[14 - i, 8]) first |= 1 << i;
+                for (int i = 0; i < 8; i++) if (c[c.Size - 1 - i, 8]) second |= 1 << i;
+                for (int i = 8; i < 15; i++) if (c[8, c.Size - 15 + i]) second |= 1 << i;
+                Assert.Equal(FormatTable[(int)level, c.Mask], first, "bits de format " + level);
+                Assert.Equal(first, second, "deuxième copie des bits de format " + level);
+            }
+
+            // À partir de la version 7 : bloc de version (norme, annexe D : 0x07C94 pour la version 7)
+            var big = QrCode.Encode(new string('a', 110));
+            Assert.Equal(7, big.Version, "version 7");
+            int v1 = 0, v2 = 0;
+            for (int i = 0; i < 18; i++)
+            {
+                if (big[big.Size - 11 + i % 3, i / 3]) v1 |= 1 << i;
+                if (big[i / 3, big.Size - 11 + i % 3]) v2 |= 1 << i;
+            }
+            Assert.Equal(0x07C94, v1, "bloc de version en haut à droite");
+            Assert.Equal(0x07C94, v2, "bloc de version en bas à gauche");
+
+            // Capacités exactes en octets (niveau M) : 14 en version 1, 26 en version 2
+            Assert.Equal(1, QrCode.Encode(new string('x', 14)).Version, "14 octets");
+            Assert.Equal(2, QrCode.Encode(new string('x', 15)).Version, "15 octets");
+            Assert.Equal(2, QrCode.Encode(new string('x', 26)).Version, "26 octets");
+            Assert.Equal(3, QrCode.Encode(new string('x', 27)).Version, "27 octets");
+            Assert.Equal(40, QrCode.Encode(new string('x', 1273), QrCode.Correction.H).Version, "maximum en H");
+            Assert.Throws(() => QrCode.Encode(new string('x', 1274), QrCode.Correction.H), "texte trop long");
+        }
+
+        // ───────────────────────────── Téléphone : page locale ─────────────────────────────
+
+        static byte[] Bytes(string s) => Encoding.UTF8.GetBytes(s);
+
+        public static void TestPhoneHttp()
+        {
+            var raw = Bytes("POST /ABCDEF?x=1 HTTP/1.1\r\nHost: 192.168.1.5:8765\r\ncontent-length: 11\r\n\r\ntype=m3u&a=");
+            var head = MiniHttp.TryParseHead(raw, raw.Length);
+            Assert.Equal("POST", head.Method, "méthode");
+            Assert.Equal("/ABCDEF", head.Path, "chemin");
+            Assert.Equal("x=1", head.Query, "paramètres");
+            Assert.Equal(11, head.ContentLength, "longueur du corps");
+            Assert.Equal("192.168.1.5:8765", head.Headers["Host"], "en-têtes sans casse");
+            Assert.Equal(raw.Length - 11, head.HeadLength, "début du corps");
+            Assert.Null(MiniHttp.TryParseHead(raw, 20), "en-tête incomplet");
+
+            // Requêtes invalides ou trop grosses
+            Assert.Throws(() => MiniHttp.TryParseHead(Bytes("BONJOUR\r\n\r\n"), 11), "ligne de requête");
+            Assert.Throws(() => MiniHttp.TryParseHead(Bytes("GET x HTTP/1.1\r\n\r\n"), 18), "chemin sans « / »");
+            var huge = Bytes("POST / HTTP/1.1\r\nContent-Length: 999999\r\n\r\n");
+            Assert.Throws(() => MiniHttp.TryParseHead(huge, huge.Length), "corps trop long");
+            var negative = Bytes("POST / HTTP/1.1\r\nContent-Length: -1\r\n\r\n");
+            Assert.Throws(() => MiniHttp.TryParseHead(negative, negative.Length), "longueur négative");
+            var endless = Bytes(new string('a', MiniHttp.MaxHead));
+            Assert.Throws(() => MiniHttp.TryParseHead(endless, endless.Length), "en-tête sans fin");
+
+            // Formulaire : « + », caractères accentués, « % » mal formé, champ en double
+            var form = MiniHttp.ParseForm("server=http%3A%2F%2Fh%3A8080&user=jean+luc&pass=%C3%A9t%C3%A9%21&x=%ZZ&user=autre&vide");
+            Assert.Equal("http://h:8080", form["server"], "adresse décodée");
+            Assert.Equal("jean luc", form["user"], "premier champ gardé");
+            Assert.Equal("été!", form["pass"], "UTF-8");
+            Assert.Equal("%ZZ", form["x"], "« % » mal formé");
+            Assert.Equal("", form["vide"], "champ sans valeur");
+
+            // Réponse : jamais en cache ni dans un cadre, longueur en octets
+            var text = Encoding.UTF8.GetString(MiniHttp.Response(200, "text/html; charset=utf-8", "é"));
+            Assert.True(text.StartsWith("HTTP/1.1 200 OK\r\n"), "ligne d'état");
+            Assert.True(text.Contains("\r\nContent-Length: 2\r\n"), "longueur en octets");
+            Assert.True(text.Contains("\r\nCache-Control: no-store\r\n") && text.Contains("\r\nX-Frame-Options: DENY\r\n"), "ni cache ni cadre");
+            Assert.True(text.Contains("\r\nConnection: close\r\n") && text.EndsWith("\r\n\r\né"), "corps");
+
+            // Adresses du réseau local et codes
+            foreach (var ip in new[] { "192.168.1.20", "10.0.0.7", "172.16.0.1", "172.31.255.254" })
+                Assert.True(PhoneLink.IsPrivateIPv4(ip), ip);
+            foreach (var ip in new[] { "172.32.0.1", "8.8.8.8", "169.254.3.4", "127.0.0.1", "192.168.1", "192.168.1.256", "a.b.c.d", "", null })
+                Assert.False(PhoneLink.IsPrivateIPv4(ip), ip ?? "null");
+            var codes = Enumerable.Range(0, 50).Select(_ => PhoneLink.NewCode()).ToList();
+            Assert.True(codes.All(c => c.Length == 6 && c.All(ch => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".IndexOf(ch) >= 0)), "codes lisibles (sans 0, O, 1 ni I)");
+            Assert.True(codes.Distinct().Count() > 45, "codes tirés au hasard");
+            Assert.Equal("http://192.168.1.20:8765/K7P2QX", new PhoneLink("K7P2QX").Url("192.168.1.20", 8765), "adresse du QR code");
+        }
+
+        static PhoneLink.Result Ask(PhoneLink link, string method, string path, string body = "")
+        {
+            var raw = Bytes(method + " " + path + " HTTP/1.1\r\nHost: test\r\nContent-Length: " + Encoding.UTF8.GetByteCount(body) + "\r\n\r\n" + body);
+            return link.Handle(MiniHttp.TryParseHead(raw, raw.Length), body);
+        }
+
+        static int StatusOf(PhoneLink.Result r) => int.Parse(Encoding.ASCII.GetString(r.Response, 9, 3));
+
+        static string BodyOf(PhoneLink.Result r)
+        {
+            var s = Encoding.UTF8.GetString(r.Response);
+            return s.Substring(s.IndexOf("\r\n\r\n", StringComparison.Ordinal) + 4);
+        }
+
+        public static void TestPhoneLinkForm()
+        {
+            var link = new PhoneLink("K7P2QX");
+
+            // Accueil, formulaire (code aussi en minuscules), rien reçu sur une simple visite
+            Assert.Equal(200, StatusOf(Ask(link, "GET", "/")), "accueil");
+            var page = Ask(link, "GET", "/K7P2QX");
+            Assert.Equal(200, StatusOf(page), "formulaire");
+            Assert.True(BodyOf(page).Contains("action=\"/K7P2QX\""), "formulaire envoyé à la bonne adresse");
+            Assert.True(BodyOf(page).Contains("lang=\"fr\"") && BodyOf(page).Contains("Envoyer à la télé"), "page en français");
+            Assert.False(BodyOf(page).Contains("http-equiv") || BodyOf(page).Contains("src=\"http"), "aucune ressource externe");
+            Assert.Null(page.Source, "simple visite");
+            Assert.Equal(200, StatusOf(Ask(link, "GET", "/k7p2qx/")), "code en minuscules");
+            Assert.Equal(PhoneLinkState.Waiting, link.State, "en attente");
+
+            // Champs manquants : message, valeurs gardées et échappées, mot de passe jamais renvoyé
+            var missing = Ask(link, "POST", "/K7P2QX", "type=xtream&server=%22%3E%3Cscript%3Ealert(1)%3C%2Fscript%3E&user=&pass=secret42");
+            Assert.Null(missing.Source, "compte incomplet");
+            var html = BodyOf(missing);
+            Assert.True(html.Contains("class=\"err\"") && html.Contains("Remplis le serveur"), "message d'erreur");
+            Assert.True(html.Contains("&quot;&gt;&lt;script&gt;") && !html.Contains("<script>alert"), "valeur échappée");
+            Assert.False(html.Contains("secret42"), "mot de passe jamais renvoyé");
+            Assert.Equal(PhoneLinkState.Waiting, link.State, "toujours en attente");
+
+            // Compte Xtream : la source part vers la console, une seule fois
+            var sent = Ask(link, "POST", "/K7P2QX", "type=xtream&server=mon-serveur.example%3A8080&user=moi&pass=s%C3%A9cret+%26+co");
+            Assert.Equal(200, StatusOf(sent), "envoi");
+            Assert.Equal(SourceKind.Xtream, sent.Source.Kind, "source Xtream");
+            Assert.Equal("http://mon-serveur.example:8080", sent.Source.Account.Server, "serveur");
+            Assert.Equal("moi", sent.Source.Account.Username, "identifiant");
+            Assert.Equal("sécret & co", sent.Source.Account.Password, "mot de passe");
+            Assert.True(BodyOf(sent).Contains("/K7P2QX/etat"), "page d'attente qui suit la connexion");
+            Assert.Equal(PhoneLinkState.Connecting, link.State, "connexion en cours");
+            Assert.Null(Ask(link, "POST", "/K7P2QX", "type=xtream&server=a&user=b&pass=c").Source, "pas de deuxième envoi pendant la connexion");
+            Assert.True(BodyOf(Ask(link, "GET", "/K7P2QX/etat")).Contains("\"etat\":\"connexion\""), "état : connexion");
+            Assert.True(BodyOf(Ask(link, "GET", "/K7P2QX")).Contains("/K7P2QX/etat"), "page d'attente si on revient au lien");
+
+            // Erreur rapportée au téléphone (texte échappé pour le JSON et la page)
+            link.Report(PhoneLinkState.Failed, "Identifiants refusés <b>\"x\"</b>");
+            Assert.Equal("{\"etat\":\"erreur\",\"message\":\"Identifiants refusés \\u003cb\\u003e\\\"x\\\"\\u003c/b\\u003e\"}",
+                         BodyOf(Ask(link, "GET", "/K7P2QX/etat")), "état : erreur");
+            // « Corriger » : le formulaire revient rempli (sauf le mot de passe), avec l'erreur en haut
+            var fix = BodyOf(Ask(link, "GET", "/K7P2QX"));
+            Assert.True(fix.Contains("class=\"err\">Identifiants refusés &lt;b&gt;&quot;x&quot;&lt;/b&gt;</div>"), "erreur en haut du formulaire");
+            Assert.True(fix.Contains("value=\"http://mon-serveur.example:8080\"") || fix.Contains("value=\"mon-serveur.example:8080\""), "serveur déjà rempli");
+            Assert.True(fix.Contains("value=\"moi\""), "identifiant déjà rempli");
+            Assert.False(fix.Contains("sécret"), "mot de passe jamais renvoyé");
+
+            // Le téléphone corrige : lien Xtream complet collé dans « Serveur »
+            var pasted = Ask(link, "POST", "/K7P2QX", "type=xtream&user=&pass=&server=" +
+                             Uri.EscapeDataString("http://h.example:80/get.php?username=u1&password=p1&type=m3u_plus"));
+            Assert.Equal("http://h.example:80", pasted.Source.Account.Server, "serveur du lien");
+            Assert.Equal("u1", pasted.Source.Account.Username, "identifiant du lien");
+            Assert.Equal("p1", pasted.Source.Account.Password, "mot de passe du lien");
+
+            // Playlist M3U (adresse sans « http:// », guide TV), et lien Xtream collé côté playlist
+            link.Report(PhoneLinkState.Failed, "x");
+            var m3u = Ask(link, "POST", "/K7P2QX", "type=m3u&url=listes.example%2Ftv.m3u&epg=+http%3A%2F%2Fg.example%2Fguide.xml+");
+            Assert.Equal(SourceKind.Playlist, m3u.Source.Kind, "source playlist");
+            Assert.Equal("http://listes.example/tv.m3u", m3u.Source.PlaylistUrl, "adresse complétée");
+            Assert.Equal("http://g.example/guide.xml", m3u.Source.EpgUrl, "guide TV");
+            link.Report(PhoneLinkState.Failed, "x");
+            var viaM3u = Ask(link, "POST", "/K7P2QX", "type=m3u&url=" +
+                             Uri.EscapeDataString("http://h.example:8080/get.php?username=u2&password=p2&type=m3u_plus&output=ts"));
+            Assert.Equal(SourceKind.Xtream, viaM3u.Source.Kind, "playlist Xtream → compte Xtream");
+            Assert.Equal("u2", viaM3u.Source.Account.Username, "identifiant de la playlist");
+            link.Report(PhoneLinkState.Failed, "x");
+            var empty = Ask(link, "POST", "/K7P2QX", "type=m3u&url=+&epg=");
+            Assert.Null(empty.Source, "adresse vide");
+            Assert.True(BodyOf(empty).Contains("class=\"err\"") && BodyOf(empty).Contains("id=\"t-m\" checked"), "erreur sur l'onglet playlist");
+
+            // Réussite : plus aucun envoi accepté
+            link.Report(PhoneLinkState.Connected);
+            Assert.True(BodyOf(Ask(link, "GET", "/K7P2QX/etat")).Contains("\"etat\":\"ok\""), "état : ok");
+            Assert.True(BodyOf(Ask(link, "GET", "/K7P2QX")).Contains("est fait"), "page « c'est fait »");
+            Assert.Null(Ask(link, "POST", "/K7P2QX", "type=xtream&server=a&user=b&pass=c").Source, "rien après la réussite");
+
+            // Mauvais code : 404, et la page se ferme après trop d'essais (même avec le bon code ensuite)
+            var other = new PhoneLink("AAAAAA");
+            Assert.Equal(404, StatusOf(Ask(other, "GET", "/AAAAAB")), "mauvais code");
+            Assert.Equal(404, StatusOf(Ask(other, "GET", "/AAAAAA/autre")), "page inconnue");
+            Assert.Equal(404, StatusOf(Ask(other, "GET", "/AAAAAA/etat/x")), "chemin trop long");
+            Assert.Equal(404, StatusOf(Ask(other, "GET", "/favicon.ico")), "icône");
+            Assert.Equal(405, StatusOf(Ask(other, "PUT", "/AAAAAA")), "méthode refusée");
+            Assert.False(other.Closed, "quelques erreurs");
+            for (int i = 0; i < PhoneLink.MaxBadRequests; i++) Ask(other, "GET", "/X" + i);
+            Assert.True(other.Closed, "fermée après trop d'essais");
+            Assert.Equal(404, StatusOf(Ask(other, "GET", "/AAAAAA")), "plus rien, même avec le bon code");
+
+            // Pages en anglais quand l'app est en anglais
+            Tr.English = true;
+            try
+            {
+                var en = BodyOf(Ask(new PhoneLink("K7P2QX"), "GET", "/K7P2QX"));
+                Assert.True(en.Contains("lang=\"en\"") && en.Contains("Send to the TV") && en.Contains("Xtream account"), "page en anglais");
+            }
+            finally { Tr.English = false; }
+        }
+
+        /// <summary>Connexion qui n'envoie jamais rien et ignore l'annulation (comme certains flux réseau).</summary>
+        sealed class MuteStream : Stream
+        {
+            public override bool CanRead => true;
+            public override bool CanSeek => false;
+            public override bool CanWrite => false;
+            public override long Length => throw new NotSupportedException();
+            public override long Position { get => 0; set => throw new NotSupportedException(); }
+            public override void Flush() { }
+            public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+            public override Task<int> ReadAsync(byte[] buffer, int offset, int count, System.Threading.CancellationToken token) =>
+                new TaskCompletionSource<int>().Task;
+            public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+            public override void SetLength(long value) => throw new NotSupportedException();
+            public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        }
+
+        /// <summary>Le vrai trajet : un « téléphone » (HttpClient) parle à la page servie sur une connexion TCP.</summary>
+        public static async Task TestPhoneLinkOverNetwork()
+        {
+            // Client muet abandonné au bout du délai, requête invalide refusée proprement
+            var started = DateTime.UtcNow;
+            Assert.Null(await new PhoneLink().ServeAsync(new MuteStream(), Stream.Null, TimeSpan.FromMilliseconds(300)), "client muet");
+            Assert.True(DateTime.UtcNow - started < TimeSpan.FromSeconds(3), "abandonné au bout du délai");
+            var refused = new MemoryStream();
+            Assert.Null(await new PhoneLink().ServeAsync(new MemoryStream(Bytes("BONJOUR\r\n\r\n")), refused, TimeSpan.FromSeconds(2)), "requête invalide");
+            Assert.True(Encoding.ASCII.GetString(refused.ToArray()).StartsWith("HTTP/1.1 400 "), "réponse 400");
+            var cut = new MemoryStream();
+            Assert.Null(await new PhoneLink().ServeAsync(new MemoryStream(Bytes("GET / HT")), cut, TimeSpan.FromSeconds(2)), "connexion coupée");
+            Assert.Equal(0L, cut.Length, "rien répondu à une connexion coupée");
+
+            var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0);
+            listener.Start();
+            int port = ((System.Net.IPEndPoint)listener.LocalEndpoint).Port;
+            var link = new PhoneLink("K7P2QX");
+            var received = new System.Collections.Concurrent.BlockingCollection<Source>();
+            var serving = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    System.Net.Sockets.TcpClient client;
+                    try { client = await listener.AcceptTcpClientAsync(); }
+                    catch (Exception) { return; }
+                    _ = Task.Run(async () =>
+                    {
+                        using (client)
+                        {
+                            var stream = client.GetStream();
+                            var source = await link.ServeAsync(stream, stream, TimeSpan.FromSeconds(5));
+                            if (source != null) received.Add(source);
+                        }
+                    });
+                }
+            });
+            try
+            {
+                var url = link.Url("127.0.0.1", port);
+                using (var http = new System.Net.Http.HttpClient(new System.Net.Http.HttpClientHandler { UseProxy = false }) { Timeout = TimeSpan.FromSeconds(10) })
+                {
+                    Assert.True((await http.GetStringAsync(url)).Contains("name=\"server\""), "formulaire reçu par le téléphone");
+                    var post = await http.PostAsync(url, new System.Net.Http.FormUrlEncodedContent(new Dictionary<string, string>
+                    {
+                        ["type"] = "xtream", ["server"] = "http://serveur.example:8080", ["user"] = "moi", ["pass"] = "mot de passe & co ✓",
+                    }));
+                    Assert.Equal(System.Net.HttpStatusCode.OK, post.StatusCode, "envoi");
+                    Assert.True((await post.Content.ReadAsStringAsync()).Contains("/K7P2QX/etat"), "page d'attente");
+                    Assert.True(received.TryTake(out var source, 5000), "source reçue par la console");
+                    Assert.Equal("mot de passe & co ✓", source.Account.Password, "mot de passe intact");
+                    link.Report(PhoneLinkState.Failed, "Serveur injoignable");
+                    Assert.True((await http.GetStringAsync(url + "/etat")).Contains("Serveur injoignable"), "le téléphone voit l'erreur");
+                    var wrong = await http.GetAsync(link.Url("127.0.0.1", port).Replace("K7P2QX", "ABCDEF"));
+                    Assert.Equal(System.Net.HttpStatusCode.NotFound, wrong.StatusCode, "mauvais code");
+                    Assert.True(wrong.Headers.CacheControl?.NoStore == true, "jamais en cache");
+                }
+
+                // Corps arrivé en deux fois (réseau lent)
+                using (var phone = new System.Net.Sockets.TcpClient())
+                {
+                    await phone.ConnectAsync(System.Net.IPAddress.Loopback, port);
+                    var stream = phone.GetStream();
+                    var body = Bytes("type=m3u&url=http%3A%2F%2Flistes.example%2Ftv.m3u");
+                    var head = Bytes("POST /K7P2QX HTTP/1.1\r\nHost: x\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: " + body.Length + "\r\n\r\n");
+                    await stream.WriteAsync(head, 0, head.Length);
+                    await Task.Delay(150);
+                    await stream.WriteAsync(body, 0, body.Length);
+                    var reply = await new StreamReader(stream, Encoding.UTF8).ReadToEndAsync();
+                    Assert.True(reply.StartsWith("HTTP/1.1 200 OK"), "réponse au corps en deux fois");
+                    Assert.True(received.TryTake(out var playlist, 5000), "playlist reçue");
+                    Assert.Equal("http://listes.example/tv.m3u", playlist.PlaylistUrl, "adresse de la playlist");
+                }
+            }
+            finally
+            {
+                listener.Stop();
+                await Task.WhenAny(serving, Task.Delay(2000));
+            }
+        }
     }
 }

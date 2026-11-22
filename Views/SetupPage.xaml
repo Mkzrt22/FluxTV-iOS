@@ -28,7 +28,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- Présentation -->
-        <StackPanel VerticalAlignment="Center">
+        <StackPanel x:Name="Presentation" VerticalAlignment="Center">
             <Image Source="ms-appx:///Assets/BrandMark.png" Width="64" Height="64" HorizontalAlignment="Left" />
             <TextBlock Text="{ui:T Fr='Bienvenue sur FluxTV Player', En='Welcome to FluxTV Player'}" Style="{StaticResource DisplayText}" Margin="0,20,0,0" />
             <TextBlock Style="{StaticResource BodyText}" Margin="0,12,0,0" FontSize="16" LineHeight="24"
@@ -51,6 +51,18 @@
                         <StackPanel Margin="14,0,0,0">
                             <TextBlock Text="{ui:T Fr='Mon compte', En='My account'}" Style="{StaticResource ChoiceTitle}" Foreground="{StaticResource WhiteBrush}" />
                             <TextBlock Text="{ui:T Fr='Ton abonnement est déjà dans cette copie de l’app.', En='Your subscription is already in this copy of the app.'}" Style="{StaticResource ChoiceText}" Foreground="#E6FFFFFF" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Button>
+            <Button x:Name="PhoneChoice" Style="{StaticResource CardButton}" Height="70" Margin="0,12,0,0" Click="OnPhone">
+                <Grid>
+                    <Border CornerRadius="16" Background="{StaticResource GlassStrongBrush}" BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1" />
+                    <StackPanel Orientation="Horizontal" Margin="18,0" VerticalAlignment="Center">
+                        <TextBlock Text="&#xE8EA;" Style="{StaticResource IconText}" FontSize="20" Width="30" Foreground="{StaticResource AccentBrightBrush}" />
+                        <StackPanel Margin="14,0,0,0">
+                            <TextBlock Text="{ui:T Fr='Depuis mon téléphone', En='From my phone'}" Style="{StaticResource ChoiceTitle}" />
+                            <TextBlock Text="{ui:T Fr='Scanne un QR code, puis colle tes infos sur ton téléphone.', En='Scan a QR code, then paste your details on your phone.'}" Style="{StaticResource ChoiceText}" />
                         </StackPanel>
                     </StackPanel>
                 </Grid>
@@ -122,6 +134,68 @@
                 <Button Style="{StaticResource FluxButton}" Content="{ui:T Fr='Retour', En='Back'}" Margin="12,0,0,0" Click="OnBackToChoices" />
             </StackPanel>
         </StackPanel>
+
+        <!-- Depuis mon téléphone : QR code vers une petite page servie par la console, sur le réseau local -->
+        <Grid x:Name="PhoneForm" Grid.ColumnSpan="3" Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="44" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="{ui:T Fr='DEPUIS MON TÉLÉPHONE', En='FROM MY PHONE'}" Style="{StaticResource EyebrowText}" />
+                <TextBlock Text="{ui:T Fr='Scanne ce QR code avec ton téléphone', En='Scan this QR code with your phone'}" Style="{StaticResource DisplayText}"
+                           FontSize="28" LineHeight="34" Margin="0,10,0,0" />
+                <Grid Margin="0,18,0,0" RowSpacing="10" ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Border Width="24" Height="24" CornerRadius="12" Background="{StaticResource AccentGradient}" VerticalAlignment="Top">
+                        <TextBlock Text="1" Style="{StaticResource LabelText}" FontSize="12" Foreground="{StaticResource WhiteBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <TextBlock Grid.Column="1" Style="{StaticResource BodyText}" VerticalAlignment="Center"
+                               Text="{ui:T Fr='Connecte ton téléphone au même Wi-Fi que ta console.', En='Connect your phone to the same Wi-Fi as your console.'}" />
+                    <Border Grid.Row="1" Width="24" Height="24" CornerRadius="12" Background="{StaticResource AccentGradient}" VerticalAlignment="Top">
+                        <TextBlock Text="2" Style="{StaticResource LabelText}" FontSize="12" Foreground="{StaticResource WhiteBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource BodyText}" VerticalAlignment="Center"
+                               Text="{ui:T Fr='Vise le QR code avec l’appareil photo, puis ouvre le lien.', En='Point the camera at the QR code, then open the link.'}" />
+                    <Border Grid.Row="2" Width="24" Height="24" CornerRadius="12" Background="{StaticResource AccentGradient}" VerticalAlignment="Top">
+                        <TextBlock Text="3" Style="{StaticResource LabelText}" FontSize="12" Foreground="{StaticResource WhiteBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource BodyText}" VerticalAlignment="Center"
+                               Text="{ui:T Fr='Colle ton compte Xtream ou ton lien de playlist, puis touche « Envoyer à la télé ».', En='Paste your Xtream account or playlist link, then tap “Send to the TV”.'}" />
+                </Grid>
+                <StackPanel x:Name="PhoneAddress" Margin="0,18,0,0">
+                    <TextBlock Style="{StaticResource FaintText}"
+                               Text="{ui:T Fr='Pas de QR code ? Tape cette adresse dans le navigateur du téléphone :', En='No QR code? Type this address into your phone’s browser:'}" />
+                    <TextBlock x:Name="PhoneUrl" Style="{StaticResource SectionText}" Foreground="{StaticResource AccentBrightBrush}" Margin="0,4,0,0" />
+                </StackPanel>
+                <Grid Margin="0,16,0,0" ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ProgressRing x:Name="PhoneRing" Width="18" Height="18" Foreground="{StaticResource AccentBrightBrush}" VerticalAlignment="Top" Margin="0,1,0,0" />
+                    <TextBlock x:Name="PhoneStatus" Grid.Column="1" Style="{StaticResource DimText}" TextWrapping="WrapWholeWords" MaxLines="3" />
+                </Grid>
+                <StackPanel Orientation="Horizontal" Margin="0,18,0,0">
+                    <Button x:Name="PhoneRetry" Style="{StaticResource PrimaryButton}" Content="{ui:T Fr='Nouveau QR code', En='New QR code'}"
+                            Margin="0,0,12,0" Click="OnPhoneRetry" Visibility="Collapsed" />
+                    <Button x:Name="PhoneBack" Style="{StaticResource FluxButton}" Content="{ui:T Fr='Retour', En='Back'}" Click="OnBackToChoices" />
+                </StackPanel>
+            </StackPanel>
+            <!-- QR code : noir sur blanc, net, assez grand pour être lu depuis le canapé -->
+            <Border x:Name="QrCard" Grid.Column="2" Width="300" Height="300" VerticalAlignment="Center" Background="White" CornerRadius="22" Padding="14">
+                <Image x:Name="QrImage" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+        </Grid>
 
         <!-- Connexion en cours, erreur -->
         <StackPanel Grid.Column="2" VerticalAlignment="Bottom" Margin="0,0,0,4">
