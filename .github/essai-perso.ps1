@@ -8,9 +8,13 @@ New-Item -ItemType Directory -Force $dossier | Out-Null
 $journal = Join-Path $dossier 'perso.log'
 . (Join-Path $PSScriptRoot 'outils.ps1')
 
-# osslsigncode (signature des paquets d'app) via MSYS2, présent sur les serveurs Windows de GitHub
-& C:\msys64\usr\bin\bash.exe -lc 'pacman -Sy --noconfirm --needed mingw-w64-x86_64-osslsigncode' 2>&1 | Select-Object -Last 2 | ForEach-Object { Note "$_" }
-$env:PATH = "C:\msys64\mingw64\bin;$env:PATH"
+# osslsigncode (signature des paquets d'app) via MSYS2, présent sur les serveurs Windows de GitHub.
+# MSYS2 ne le publie plus que pour « ucrt64 » (l'ancienne variante « mingw64 » a disparu en 2026).
+foreach ($variante in @(@('mingw-w64-ucrt-x86_64-osslsigncode', 'C:\msys64\ucrt64\bin'), @('mingw-w64-x86_64-osslsigncode', 'C:\msys64\mingw64\bin'))) {
+    if (Get-Command osslsigncode -ErrorAction SilentlyContinue) { break }
+    & C:\msys64\usr\bin\bash.exe -lc "pacman -Sy --noconfirm --needed $($variante[0])" 2>&1 | Select-Object -Last 2 | ForEach-Object { Note "$_" }
+    $env:PATH = "$($variante[1]);$env:PATH"
+}
 if (-not (Get-Command osslsigncode -ErrorAction SilentlyContinue)) { Note 'osslsigncode indisponible'; exit 1 }
 
 $env:FLUXTV_SERVEUR = 'http://exemple.invalid:8080'

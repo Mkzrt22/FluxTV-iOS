@@ -403,15 +403,15 @@ namespace FluxTV.Core
                 "@keyframes r{to{transform:rotate(360deg)}}.done{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:var(--ok);color:#0b0a1e;font-size:28px;font-weight:800;margin:2px 0 14px}.small{font-size:13px;color:#8f89c2;margin-top:18px}";
 
             public static string Welcome() => Frame("FluxTV", "<h1>" + E(Tr.T("Scanne le QR code de ta télé", "Scan the QR code on your TV")) + "</h1><p>" +
-                E(Tr.T("Sur ta console, choisis « Depuis mon téléphone » : un QR code s'affiche. Scanne-le avec l'appareil photo de ce téléphone.",
+                E(Tr.T("Sur ta console, choisis «\u00A0Depuis mon téléphone\u00A0»\u00A0: un QR code s'affiche. Scanne-le avec l'appareil photo de ce téléphone.",
                        "On your console, choose “From my phone”: a QR code appears. Scan it with this phone's camera.")) + "</p>");
 
             public static string WrongCode() => Frame("FluxTV", "<h1>" + E(Tr.T("Ce lien n'est plus valable", "This link is no longer valid")) + "</h1><p>" +
-                E(Tr.T("Scanne à nouveau le QR code affiché sur ta télé : il change à chaque fois.",
+                E(Tr.T("Scanne à nouveau le QR code affiché sur ta télé\u00A0: il change à chaque fois.",
                        "Scan the QR code shown on your TV again: it changes every time.")) + "</p>");
 
             public static string AlreadyDone() => Frame("FluxTV", "<div class=\"card\"><div class=\"done\">✓</div><h1>" +
-                E(Tr.T("C'est fait !", "All done!")) + "</h1><p>" + E(Tr.T("Ta télé affiche tes chaînes. Tu peux fermer cette page.",
+                E(Tr.T("C'est fait\u00A0!", "All done!")) + "</h1><p>" + E(Tr.T("Ta télé affiche tes chaînes. Tu peux fermer cette page.",
                 "Your TV is showing your channels. You can close this page.")) + "</p></div>");
 
             public static string Form(string code, string error, Dictionary<string, string> values)
@@ -420,7 +420,7 @@ namespace FluxTV.Core
                 bool m3u = values != null && values.TryGetValue("type", out var t) && t == "m3u";
                 var sb = new StringBuilder();
                 sb.Append("<h1>").Append(E(Tr.T("Ajoute ta source", "Add your source"))).Append("</h1><p>")
-                  .Append(E(Tr.T("Colle ici les infos de ton abonnement : elles partent directement vers ta console, sur ton réseau.",
+                  .Append(E(Tr.T("Colle ici les infos de ton abonnement\u00A0: elles partent directement vers ta console, sur ton réseau.",
                                  "Paste your subscription details here: they go straight to your console, on your home network.")))
                   .Append("</p>");
                 if (error != null) sb.Append("<div class=\"err\">").Append(E(error)).Append("</div>");
@@ -438,7 +438,7 @@ namespace FluxTV.Core
                   .Append(V("user")).Append("\">")
                   .Append("<label class=\"f\" for=\"pass\">").Append(E(Tr.T("Mot de passe", "Password"))).Append("</label>")
                   .Append("<input type=\"password\" id=\"pass\" name=\"pass\" autocomplete=\"current-password\" autocapitalize=\"off\" autocorrect=\"off\" spellcheck=\"false\">")
-                  .Append("<div class=\"hint\">").Append(E(Tr.T("Tu peux aussi coller le lien complet de ta playlist Xtream dans « Serveur ».",
+                  .Append("<div class=\"hint\">").Append(E(Tr.T("Tu peux aussi coller le lien complet de ta playlist Xtream dans «\u00A0Serveur\u00A0».",
                                                                  "You can also paste your full Xtream playlist link into “Server”."))).Append("</div></div>")
                   // Playlist M3U
                   .Append("<div class=\"pane pm\"><label class=\"f\" for=\"url\">").Append(E(Tr.T("Adresse de la playlist", "Playlist URL"))).Append("</label>")
@@ -448,10 +448,10 @@ namespace FluxTV.Core
                   .Append("<input type=\"url\" id=\"epg\" name=\"epg\" inputmode=\"url\" autocapitalize=\"off\" autocorrect=\"off\" spellcheck=\"false\" placeholder=\"http://…/guide.xml\" value=\"")
                   .Append(V("epg")).Append("\"></div>")
                   .Append("<button type=\"submit\">").Append(E(Tr.T("Envoyer à la télé", "Send to the TV"))).Append("</button></form>")
-                  .Append("<p class=\"small\">").Append(E(Tr.T("FluxTV est un lecteur : il ne fournit aucune chaîne. Tes identifiants restent chiffrés sur ta console.",
+                  .Append("<p class=\"small\">").Append(E(Tr.T("FluxTV est un lecteur\u00A0: il ne fournit aucune chaîne. Tes identifiants restent chiffrés sur ta console.",
                                                                "FluxTV is a player: it doesn't provide any channels. Your credentials stay encrypted on your console.")))
                   .Append("</p>");
-                return Frame(Tr.T("FluxTV : ajoute ta source", "FluxTV: add your source"), sb.ToString());
+                return Frame(Tr.T("FluxTV\u00A0: ajoute ta source", "FluxTV: add your source"), sb.ToString());
             }
 
             public static string Sent(string code)
@@ -461,10 +461,10 @@ namespace FluxTV.Core
                               E(Tr.T("Connexion à ton abonnement…", "Connecting to your subscription…")) + "</p>" +
                               "<a class=\"btn\" id=\"fix\" href=\"/" + E(code) + "\" style=\"display:none\">" + E(Tr.T("Corriger", "Fix it")) + "</a></div>" +
                               "<noscript><p>" + E(Tr.T("Regarde ta télé pour la suite.", "Check your TV for what happens next.")) + "</p></noscript>";
-                var okTitle = JsonString(Tr.T("C'est fait !", "All done!"));
+                var okTitle = JsonString(Tr.T("C'est fait\u00A0!", "All done!"));
                 var okText = JsonString(Tr.T("Ta télé affiche maintenant tes chaînes. Tu peux fermer cette page.", "Your TV now shows your channels. You can close this page."));
                 var errTitle = JsonString(Tr.T("La connexion n'a pas marché", "The connection didn't work"));
-                var lost = JsonString(Tr.T("La télé ne répond plus : regarde-la, la connexion a peut-être réussi.", "The TV stopped answering: check it, the connection may have worked."));
+                var lost = JsonString(Tr.T("La télé ne répond plus\u00A0: regarde-la, la connexion a peut-être réussi.", "The TV stopped answering: check it, the connection may have worked."));
                 var script =
                     "var u='/" + code + "/etat',n=0;" +
                     "function q(i){return document.getElementById(i)}" +
@@ -473,7 +473,7 @@ namespace FluxTV.Core
                     "if(s.etat==='erreur'){q('spin').style.display='none';q('t').textContent=" + errTitle + ";q('m').textContent=s.message||'';q('fix').style.display='block';return}" +
                     "setTimeout(f,1500)}).catch(function(){if(++n>3){q('spin').style.display='none';q('m').textContent=" + lost + "}else setTimeout(f,2000)})}" +
                     "setTimeout(f,1200);";
-                return Frame(Tr.T("FluxTV : envoyé", "FluxTV: sent"), content, script);
+                return Frame(Tr.T("FluxTV\u00A0: envoyé", "FluxTV: sent"), content, script);
             }
         }
     }

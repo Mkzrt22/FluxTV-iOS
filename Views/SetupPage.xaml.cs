@@ -197,7 +197,7 @@ namespace FluxTV.Views
             catch (Exception ex)
             {
                 failed = true;
-                Journal.Write("Téléphone : page impossible à ouvrir : " + ex.Message);
+                Journal.Write("Téléphone\u00A0: page impossible à ouvrir\u00A0: " + ex.Message);
             }
             // Retour, ou autre essai, pendant l'ouverture : cette page-là ne sert plus
             if (generation != phoneGeneration || PhoneForm.Visibility != Visibility.Visible)
@@ -237,12 +237,12 @@ namespace FluxTV.Views
         {
             if (server != phone)
             {
-                server.Link.Report(PhoneLinkState.Failed, Tr.T("La télé a quitté cet écran : scanne à nouveau le QR code.", "The TV left this screen: scan the QR code again."));
+                server.Link.Report(PhoneLinkState.Failed, Tr.T("La télé a quitté cet écran\u00A0: scanne à nouveau le QR code.", "The TV left this screen: scan the QR code again."));
                 return;
             }
             if (busy)
             {
-                server.Link.Report(PhoneLinkState.Failed, Tr.T("La console est occupée : réessaie dans un instant.", "The console is busy: try again in a moment."));
+                server.Link.Report(PhoneLinkState.Failed, Tr.T("La console est occupée\u00A0: réessaie dans un instant.", "The console is busy: try again in a moment."));
                 return;
             }
             busy = true;
@@ -296,7 +296,7 @@ namespace FluxTV.Views
                     PhoneStatus.Text = Tr.T("En attente de ton téléphone…", "Waiting for your phone…");
                     break;
                 case PhoneStep.Connecting:
-                    PhoneStatus.Text = Tr.T("Infos reçues : connexion à ton abonnement…", "Details received: connecting to your subscription…");
+                    PhoneStatus.Text = Tr.T("Infos reçues\u00A0: connexion à ton abonnement…", "Details received: connecting to your subscription…");
                     break;
                 case PhoneStep.Failed:
                     PhoneStatus.Text = message + " " + Tr.T("Tu peux corriger sur ton téléphone.", "You can fix it on your phone.");
@@ -310,7 +310,7 @@ namespace FluxTV.Views
                                             "The console couldn't open the page for your phone. Try again, or add your source with the controller.");
                     break;
                 case PhoneStep.TooManyAttempts:
-                    PhoneStatus.Text = Tr.T("Page fermée : trop d'essais avec un mauvais code. Affiche un nouveau QR code pour recommencer.",
+                    PhoneStatus.Text = Tr.T("Page fermée\u00A0: trop d'essais avec un mauvais code. Affiche un nouveau QR code pour recommencer.",
                                             "Page closed: too many tries with a wrong code. Show a new QR code to start again.");
                     break;
                 case PhoneStep.Expired:

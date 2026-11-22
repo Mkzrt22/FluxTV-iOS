@@ -62,7 +62,7 @@
                         <TextBlock Text="&#xE8EA;" Style="{StaticResource IconText}" FontSize="20" Width="30" Foreground="{StaticResource AccentBrightBrush}" />
                         <StackPanel Margin="14,0,0,0">
                             <TextBlock Text="{ui:T Fr='Depuis mon téléphone', En='From my phone'}" Style="{StaticResource ChoiceTitle}" />
-                            <TextBlock Text="{ui:T Fr='Scanne un QR code, puis colle tes infos sur ton téléphone.', En='Scan a QR code, then paste your details on your phone.'}" Style="{StaticResource ChoiceText}" />
+                            <TextBlock Text="{ui:T Fr='Scanne un QR code et remplis tout sur ton téléphone.', En='Scan a QR code, then paste your details on your phone.'}" Style="{StaticResource ChoiceText}" />
                         </StackPanel>
                     </StackPanel>
                 </Grid>
@@ -119,7 +119,7 @@
                 <Button Style="{StaticResource FluxButton}" Content="{ui:T Fr='Retour', En='Back'}" Margin="12,0,0,0" Click="OnBackToChoices" />
             </StackPanel>
             <TextBlock Style="{StaticResource FaintText}" Margin="2,12,0,0" TextWrapping="WrapWholeWords"
-                       Text="{ui:T Fr='Tu peux aussi coller le lien complet de ta playlist Xtream dans « Serveur ».', En='You can also paste your full Xtream playlist link into “Server”.'}" />
+                       Text="{ui:T Fr='Tu peux aussi coller le lien complet de ta playlist Xtream dans «&#160;Serveur&#160;».', En='You can also paste your full Xtream playlist link into “Server”.'}" />
         </StackPanel>
 
         <!-- Playlist M3U -->
@@ -170,11 +170,11 @@
                         <TextBlock Text="3" Style="{StaticResource LabelText}" FontSize="12" Foreground="{StaticResource WhiteBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource BodyText}" VerticalAlignment="Center"
-                               Text="{ui:T Fr='Colle ton compte Xtream ou ton lien de playlist, puis touche « Envoyer à la télé ».', En='Paste your Xtream account or playlist link, then tap “Send to the TV”.'}" />
+                               Text="{ui:T Fr='Colle ton compte Xtream ou ton lien de playlist, puis touche «&#160;Envoyer&#160;à&#160;la&#160;télé&#160;».', En='Paste your Xtream account or playlist link, then tap “Send&#160;to&#160;the&#160;TV”.'}" />
                 </Grid>
                 <StackPanel x:Name="PhoneAddress" Margin="0,18,0,0">
                     <TextBlock Style="{StaticResource FaintText}"
-                               Text="{ui:T Fr='Pas de QR code ? Tape cette adresse dans le navigateur du téléphone :', En='No QR code? Type this address into your phone’s browser:'}" />
+                               Text="{ui:T Fr='Pas de QR code&#160;? Tape cette adresse dans le navigateur du téléphone&#160;:', En='No QR code? Type this address into your phone’s browser:'}" />
                     <TextBlock x:Name="PhoneUrl" Style="{StaticResource SectionText}" Foreground="{StaticResource AccentBrightBrush}" Margin="0,4,0,0" />
                 </StackPanel>
                 <Grid Margin="0,16,0,0" ColumnSpacing="10">
