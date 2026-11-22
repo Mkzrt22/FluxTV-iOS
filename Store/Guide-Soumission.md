@@ -59,6 +59,34 @@ Ordre conseillé dans l'Espace partenaires (partner.microsoft.com › Apps et je
   fonctionne sur PC (affichage adapté, souris et clavier, Échap = retour). Décoche HoloLens et Team.
 - Le Store signe lui-même le paquet : ne pas utiliser le certificat de test pour cette version.
 
+## 4 bis. Mieux se faire trouver (à faire avec la prochaine soumission, la 1.3.1)
+
+Sur Xbox, presque tout le monde arrive sur la page de l'app par la recherche du Store. Quatre
+changements, tous sur la fiche : **l'app elle-même ne change pas**.
+
+1. **Nom avec « IPTV »**, le mot que les gens tapent. Espace partenaires › FluxTV Player ›
+   **Gestion du produit › Gérer les noms de l'app** (Manage app names) › réserver
+   `FluxTV Player : lecteur IPTV` et `FluxTV Player: IPTV Player`. Puis, dans la soumission, fiche
+   française › **Nom du produit** › `FluxTV Player : lecteur IPTV` ; fiche anglaise ›
+   `FluxTV Player: IPTV Player`. Le nom affiché sur la console, sous l'icône, reste « FluxTV Player »
+   (il vient de l'app). **Ne supprime pas** l'ancien nom réservé « FluxTV Player » : l'app l'utilise.
+2. **Description** : « lecteur IPTV gratuit » dès la première phrase, la seule visible sans dérouler
+   (textes ci-dessous, déjà à jour).
+3. **Termes de recherche** : `iptv` et `epg` à la place de `films` et `séries`, trop généraux (Netflix
+   et les autres passent devant) : listes ci-dessous, déjà à jour.
+4. **Bande-annonce** (fiche › section « Bandes-annonces et ressources supplémentaires » › Ajouter une
+   bande-annonce) : sur Xbox, elle se lance toute seule en haut de la page de l'app (il faut aussi
+   l'illustration 16:9 `Xbox-Hero`, déjà en place). Uniquement des écrans de l'app Xbox, 25 s.
+
+| Fiche | Vidéo | Vignette (PNG 1920 × 1080) | Titre |
+|---|---|---|---|
+| Français | `FluxTV-Xbox-bande-annonce-FR.mp4` | `FluxTV-Xbox-bande-annonce-FR-vignette.png` | `FluxTV Player : lecteur IPTV gratuit pour Xbox` |
+| Anglais | `FluxTV-Xbox-trailer-EN.mp4` | `FluxTV-Xbox-trailer-EN-thumbnail.png` | `FluxTV Player: free IPTV player for Xbox` |
+
+**Mesurer d'où viennent les installations** : ajoute `?cid=` aux liens vers ta page du Store
+(`https://apps.microsoft.com/detail/9P4NX39QHPW1?cid=instagram`, `…?cid=site`, `…?cid=youtube`…). Les
+résultats : Espace partenaires › Acquisitions › « Vues et conversions de la page par ID de campagne ».
+
 ## 5. Fiche du Store — Français (France)
 
 Depuis la version 1.1, le paquet déclare **l'anglais et le français** : après le dépôt du paquet,
@@ -68,7 +96,7 @@ les deux (la fiche anglaise est au point 5 bis). L'app, elle, demande la langue 
 ### Description (10 000 caractères max)
 
 ```
-FluxTV Player est un lecteur élégant, pensé pour la télévision, pour regarder VOS propres sources : chaînes en direct, guide des programmes, films et séries, sur votre Xbox.
+FluxTV Player est un lecteur IPTV gratuit et élégant, pensé pour la télévision : regardez VOS propres sources (compte Xtream ou playlist M3U), chaînes en direct, guide des programmes, films et séries, sur votre Xbox et votre PC.
 
 AJOUTEZ VOTRE SOURCE
 • Compte Xtream (serveur, utilisateur, mot de passe) ou lien de playlist M3U
@@ -136,9 +164,9 @@ Première version de FluxTV Player sur Xbox, en français et en anglais.
 ### Fonctionnalités du produit (une par ligne, 20 max)
 
 ```
+Lecteur IPTV gratuit : comptes Xtream et playlists M3U
 TV en direct avec guide des programmes
 Films et séries avec reprise automatique
-Comptes Xtream et playlists M3U
 Pilotage complet à la manette
 Pistes audio et sous-titres au choix
 Fréquence de la télé adaptée à la vidéo
@@ -179,7 +207,7 @@ Dépose les fichiers du dossier `Captures` dans cet ordre, avec ces légendes :
 
 - **Titre abrégé** : FluxTV Player
 - **Titre vocal** : Flux T V Player
-- **Termes de recherche** (7 max) : `lecteur iptv`, `m3u`, `xtream`, `tv en direct`, `guide tv`, `films`, `séries`
+- **Termes de recherche** (7 max) : `iptv`, `lecteur iptv`, `m3u`, `xtream`, `tv en direct`, `guide tv`, `epg`
 - **Copyright** : © 2026 Kevin22
 - **Développé par** : Kevin22
 - **Configuration matérielle supplémentaire** : « Abonnement ou playlist IPTV personnel requis (non fourni). »
@@ -191,7 +219,7 @@ Même structure que la fiche française, avec ces textes.
 ### Description
 
 ```
-FluxTV Player is an elegant player designed for the TV, to watch YOUR own sources: live channels, TV guide, movies and series, on your Xbox.
+FluxTV Player is a free, elegant IPTV player designed for the TV: watch YOUR own sources (Xtream account or M3U playlist), live channels, TV guide, movies and series, on your Xbox and your PC.
 
 ADD YOUR SOURCE
 • Xtream account (server, username, password) or M3U playlist link
@@ -262,9 +290,9 @@ First release of FluxTV Player on Xbox, in English and French.
 ### Product features
 
 ```
+Free IPTV player: Xtream accounts and M3U playlists
 Live TV with program guide
 Movies and series with auto-resume
-Xtream accounts and M3U playlists
 Full controller navigation
 Choice of audio tracks and subtitles
 TV refresh rate matched to the video
@@ -299,7 +327,7 @@ titled hero art).
 
 - **Short title**: FluxTV Player
 - **Voice title**: Flux T V Player
-- **Search terms** (7 max): `iptv player`, `m3u`, `xtream`, `live tv`, `tv guide`, `movies`, `series`
+- **Search terms** (7 max): `iptv`, `iptv player`, `m3u`, `xtream`, `live tv`, `tv guide`, `epg`
 - **Copyright**: © 2026 Kevin22
 - **Developed by**: Kevin22
 - **Additional system requirements**: "Personal IPTV subscription or playlist required (not provided)."
