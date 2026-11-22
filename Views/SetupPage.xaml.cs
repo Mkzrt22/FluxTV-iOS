@@ -30,6 +30,7 @@ namespace FluxTV.Views
         bool busy;
         PhoneLinkServer phone;
         int phoneGeneration;
+        DispatcherTimer phoneHintTimer;
 
         public SetupPage()
         {
@@ -174,12 +175,13 @@ namespace FluxTV.Views
             PhoneBack.Focus(FocusState.Keyboard);
         }
 
-        /// <summary>Captures d'écran : le QR code d'une adresse type, sans ouvrir de page.</summary>
-        public void ShowPhoneForTest()
+        /// <summary>Captures d'écran : le QR code d'une adresse type, sans ouvrir de page (avec l'aide, si demandé).</summary>
+        public void ShowPhoneForTest(bool hint = false)
         {
             ShowForm(PhoneForm);
             DrawQr(TestUrl);
             SetPhoneStep(PhoneStep.Waiting);
+            if (hint) ShowPhoneHint();
         }
 
         /// <summary>Ouvre la page du téléphone (un nouveau code à chaque fois) et affiche son QR code.</summary>
@@ -216,6 +218,24 @@ namespace FluxTV.Views
             server.Ended += reason => _ = dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => OnPhoneEnded(server, reason));
             DrawQr(server.Url);
             SetPhoneStep(PhoneStep.Waiting);
+            // Toujours rien au bout de 45 secondes : la raison la plus courante est affichée
+            var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(45) };
+            timer.Tick += (sender, args) =>
+            {
+                timer.Stop();
+                if (server == phone && !server.Link.Visited && server.Link.State == PhoneLinkState.Waiting) ShowPhoneHint();
+            };
+            phoneHintTimer = timer;
+            timer.Start();
+        }
+
+        void ShowPhoneHint()
+        {
+            PhoneHint.Text = Tr.T("Le téléphone n'arrive pas à ouvrir la page\u00A0? Vérifie qu'il est sur le même Wi-Fi que la console, et pas en 4G ou 5G.",
+                                  "Your phone can't open the page? Make sure it's on the same Wi-Fi as the console, not on 4G or 5G.")
+                             + (Device.IsXbox ? "" : " " + Tr.T("Sur PC, le réseau Wi-Fi doit aussi être «\u00A0Privé\u00A0» dans les paramètres de Windows.",
+                                                                "On a PC, the Wi-Fi network must also be set to “Private” in Windows settings."));
+            PhoneHint.Visibility = Visibility.Visible;
         }
 
         /// <summary>
@@ -225,6 +245,8 @@ namespace FluxTV.Views
         void StopPhone()
         {
             phoneGeneration++;
+            phoneHintTimer?.Stop();
+            phoneHintTimer = null;
             var server = phone;
             phone = null;
             if (server == null) return;
@@ -286,6 +308,7 @@ namespace FluxTV.Views
             QrCard.Visibility = step == PhoneStep.NoNetwork || step == PhoneStep.CannotOpen ? Visibility.Collapsed : Visibility.Visible;
             QrCard.Opacity = open ? 1 : step == PhoneStep.Starting ? 0 : 0.18;
             PhoneAddress.Visibility = open ? Visibility.Visible : Visibility.Collapsed;
+            if (step != PhoneStep.Waiting) PhoneHint.Visibility = Visibility.Collapsed;
             PhoneStatus.Foreground = (Brush)Application.Current.Resources[step == PhoneStep.Failed || !open && !working ? "ErrorBrush" : "TextDimBrush"];
             switch (step)
             {

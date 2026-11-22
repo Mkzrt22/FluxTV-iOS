@@ -26,7 +26,7 @@ Note "App : $aumid"
 
 # Écran, attente (secondes). « @en » : le même écran en anglais (fichier « -en »)
 $ecrans = @(
-    @('intro', 4), @('intro-sortie', 0), @('demarrage', 11), @('setup', 6), @('telephone', 6), @('home', 7), @('rail', 7), @('row', 7), @('live', 8), @('movies', 8), @('series', 8),
+    @('intro', 4), @('intro-sortie', 0), @('demarrage', 11), @('setup', 6), @('telephone', 6), @('telephone-aide', 6), @('home', 7), @('rail', 7), @('row', 7), @('live', 8), @('movies', 8), @('series', 8),
     @('movie', 8), @('seriesdetail', 8), @('search', 9), @('settings', 7), @('credits', 8), @('play-live', 13), @('play-channels', 13),
     @('play-movie', 13), @('play-options', 13),
     # Pack Soutien : proposé, puis acheté (thème Or, badge au coin du logo)

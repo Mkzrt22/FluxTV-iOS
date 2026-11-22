@@ -942,12 +942,15 @@ namespace FluxTV.Tests
 
             // Accueil, formulaire (code aussi en minuscules), rien reçu sur une simple visite
             Assert.Equal(200, StatusOf(Ask(link, "GET", "/")), "accueil");
+            Assert.Equal(404, StatusOf(Ask(link, "GET", "/ZZZZZZ")), "autre code");
+            Assert.False(link.Visited, "page pas encore ouverte par le téléphone");
             var page = Ask(link, "GET", "/K7P2QX");
             Assert.Equal(200, StatusOf(page), "formulaire");
             Assert.True(BodyOf(page).Contains("action=\"/K7P2QX\""), "formulaire envoyé à la bonne adresse");
             Assert.True(BodyOf(page).Contains("lang=\"fr\"") && BodyOf(page).Contains("Envoyer à la télé"), "page en français");
             Assert.False(BodyOf(page).Contains("http-equiv") || BodyOf(page).Contains("src=\"http"), "aucune ressource externe");
             Assert.Null(page.Source, "simple visite");
+            Assert.True(link.Visited, "page ouverte par le téléphone");
             Assert.Equal(200, StatusOf(Ask(link, "GET", "/k7p2qx/")), "code en minuscules");
             Assert.Equal(PhoneLinkState.Waiting, link.State, "en attente");
 

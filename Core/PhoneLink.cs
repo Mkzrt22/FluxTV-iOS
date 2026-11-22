@@ -124,6 +124,7 @@ namespace FluxTV.Core
         PhoneLinkState state = PhoneLinkState.Waiting;
         string message;
         int badRequests;
+        bool visited;
         /// <summary>Champs du dernier envoi, sans le mot de passe : « Corriger » les redonne au téléphone.</summary>
         Dictionary<string, string> lastValues;
 
@@ -147,6 +148,9 @@ namespace FluxTV.Core
 
         /// <summary>Trop de requêtes avec un mauvais code : la page ne répond plus.</summary>
         public bool Closed { get { lock (gate) return badRequests >= MaxBadRequests; } }
+
+        /// <summary>Le téléphone a ouvert la page (avec le bon code) au moins une fois.</summary>
+        public bool Visited { get { lock (gate) return visited; } }
 
         /// <summary>Adresse à ouvrir sur le téléphone (celle du QR code).</summary>
         public string Url(string host, int port) => "http://" + host + ":" + port.ToString(CultureInfo.InvariantCulture) + "/" + Code;
@@ -249,6 +253,7 @@ namespace FluxTV.Core
                 lock (gate) badRequests++;
                 return Html(404, Pages.WrongCode());
             }
+            lock (gate) visited = true;
             if (parts.Length == 2)
             {
                 if (parts[1] != "etat") return Html(404, Pages.WrongCode());

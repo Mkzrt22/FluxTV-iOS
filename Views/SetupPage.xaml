@@ -185,6 +185,8 @@
                     <ProgressRing x:Name="PhoneRing" Width="18" Height="18" Foreground="{StaticResource AccentBrightBrush}" VerticalAlignment="Top" Margin="0,1,0,0" />
                     <TextBlock x:Name="PhoneStatus" Grid.Column="1" Style="{StaticResource DimText}" TextWrapping="WrapWholeWords" MaxLines="3" />
                 </Grid>
+                <!-- Aide si le téléphone n'a toujours pas ouvert la page (4G, autre Wi-Fi, réseau « Public » sur PC) -->
+                <TextBlock x:Name="PhoneHint" Style="{StaticResource FaintText}" Margin="28,8,0,0" TextWrapping="WrapWholeWords" MaxLines="4" Visibility="Collapsed" />
                 <StackPanel Orientation="Horizontal" Margin="0,18,0,0">
                     <Button x:Name="PhoneRetry" Style="{StaticResource PrimaryButton}" Content="{ui:T Fr='Nouveau QR code', En='New QR code'}"
                             Margin="0,0,12,0" Click="OnPhoneRetry" Visibility="Collapsed" />
