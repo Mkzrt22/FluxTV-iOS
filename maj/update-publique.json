@@ -1,9 +1,9 @@
 {
-  "versionCode": 43,
-  "versionName": "8.1.0",
+  "versionCode": 46,
+  "versionName": "8.3.0",
   "apkUrl": "https://mkzrt22.github.io/FluxTV-iOS/fluxtv.apk",
-  "sha256": "b732a81d53ce03212873af49c617ad9da7da6b4e856a461ddc2cc440cabfeca8",
-  "notes": "FluxTV 8.1 : FluxTV Home entièrement repensé. La télé en fond derrière l'accueil, les films et séries avec image, résumé et durée, tes applis à portée de télécommande et un mode ambiance.",
-  "notes_en": "FluxTV 8.1: a completely redesigned FluxTV Home. Live TV behind the home screen, movies and series with backdrop, synopsis and running time, your apps one click away, and an ambient mode.",
+  "sha256": "69d9415e257f4703586956623d638ff86fc233bee4001cd78f487892dd5740dd",
+  "notes": "FluxTV 8.3 : sur box TV, ajoute ta source depuis ton téléphone en scannant un QR code, sans rien taper à la télécommande. Et dans FluxTV Home, chaque appli s'ouvre bien quand on la choisit.",
+  "notes_en": "FluxTV 8.3: on TV boxes, add your source from your phone by scanning a QR code, no typing with the remote. And in FluxTV Home, every app now opens when you pick it.",
   "force": false
 }
