@@ -1,0 +1,52 @@
+# Vérification d'une branche de travail sur un Mac de GitHub, SANS RIEN PUBLIER :
+#  - tests du cœur (swift test) ;
+#  - compilation iPhone/iPad et Apple TV (simulateurs, sans signature) ;
+#  - essai sur simulateurs avec la démonstration (.github/simulateurs.sh) : captures d'écran.
+# Résultat : onglet Actions › « Vérification » (journal + artefact « captures », gardé 7 jours).
+# Ni release, ni branche « ci » / « ci-simulateurs » : le jeton n'a que le droit de lecture.
+name: Vérification
+on:
+  push:
+    branches: ["claude/**"]
+    paths-ignore: ["AppStore/**", "**.md"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: verification-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verification:
+    runs-on: macos-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - name: Moteur VLC (mis en cache)
+        uses: actions/cache@v4
+        with:
+          path: Vendor
+          key: vlckit-${{ hashFiles('Preparer.command') }}
+      - name: Tests du cœur
+        run: |
+          cd Core
+          swift test > ../tests-coeur.txt 2>&1 || { tail -60 ../tests-coeur.txt; exit 1; }
+          grep -E "Executed [0-9]+ tests" ../tests-coeur.txt | tail -1
+      - name: Compilation et essai sur simulateurs
+        # Sans GH_TOKEN : la publication finale du script échoue sans conséquence (lecture seule)
+        run: .github/simulateurs.sh
+      - name: Résumé (erreurs et avertissements)
+        if: always()
+        run: |
+          cat captures/journal.txt 2>/dev/null || true
+          for f in captures/compilation-*.log.gz; do
+            [ -f "$f" ] || continue
+            echo "== $f"
+            gzcat "$f" | grep -E ": (fatal )?error:|: warning:" | grep -v "/Vendor/" | sort -u | head -100
+          done
+          ! grep -q "✘" captures/journal.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: captures
+          path: captures
+          retention-days: 7
